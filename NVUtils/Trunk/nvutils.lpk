@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="NVUtils"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="V.V. Nesterov"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="."/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
+    </CompilerOptions>
+    <License Value="LGPL 2.0"/>
+    <Version Major="1" Minor="3"/>
+    <Files Count="5">
+      <Item1>
+        <Filename Value="linepars.pas"/>
+        <UnitName Value="LinePars"/>
+      </Item1>
+      <Item2>
+        <Filename Value="NVStrings.pas"/>
+        <UnitName Value="NVStrings"/>
+      </Item2>
+      <Item3>
+        <Filename Value="LLIST.PAS"/>
+        <UnitName Value="llist"/>
+      </Item3>
+      <Item4>
+        <Filename Value="nvbufstream.pp"/>
+        <UnitName Value="nvbufstream"/>
+      </Item4>
+      <Item5>
+        <Filename Value="crtext.pas"/>
+        <UnitName Value="CRTExt"/>
+      </Item5>
+    </Files>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
