@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="uLineAlgebra"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="units"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Files Count="17">
+      <Item1>
+        <Filename Value="ubalance.pas"/>
+        <UnitName Value="ubalance"/>
+      </Item1>
+      <Item2>
+        <Filename Value="ubalbak.pas"/>
+        <UnitName Value="ubalbak"/>
+      </Item2>
+      <Item3>
+        <Filename Value="ucholesk.pas"/>
+        <UnitName Value="ucholesk"/>
+      </Item3>
+      <Item4>
+        <Filename Value="ucompvec.pas"/>
+        <UnitName Value="ucompvec"/>
+      </Item4>
+      <Item5>
+        <Filename Value="ueigsym.pas"/>
+        <UnitName Value="ueigsym"/>
+      </Item5>
+      <Item6>
+        <Filename Value="ueigval.pas"/>
+        <UnitName Value="ueigval"/>
+      </Item6>
+      <Item7>
+        <Filename Value="ueigvec.pas"/>
+        <UnitName Value="ueigvec"/>
+      </Item7>
+      <Item8>
+        <Filename Value="uelmhes.pas"/>
+        <UnitName Value="uelmhes"/>
+      </Item8>
+      <Item9>
+        <Filename Value="ueltran.pas"/>
+        <UnitName Value="ueltran"/>
+      </Item9>
+      <Item10>
+        <Filename Value="ugausjor.pas"/>
+        <UnitName Value="ugausjor"/>
+      </Item10>
+      <Item11>
+        <Filename Value="uhqr.pas"/>
+        <UnitName Value="uhqr"/>
+      </Item11>
+      <Item12>
+        <Filename Value="uhqr2.pas"/>
+        <UnitName Value="uhqr2"/>
+      </Item12>
+      <Item13>
+        <Filename Value="ujacobi.pas"/>
+        <UnitName Value="ujacobi"/>
+      </Item13>
+      <Item14>
+        <Filename Value="ulineq.pas"/>
+        <UnitName Value="ulineq"/>
+      </Item14>
+      <Item15>
+        <Filename Value="ulu.pas"/>
+        <UnitName Value="ulu"/>
+      </Item15>
+      <Item16>
+        <Filename Value="uqr.pas"/>
+        <UnitName Value="uqr"/>
+      </Item16>
+      <Item17>
+        <Filename Value="usvd.pas"/>
+        <UnitName Value="usvd"/>
+      </Item17>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="uGenMath"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
