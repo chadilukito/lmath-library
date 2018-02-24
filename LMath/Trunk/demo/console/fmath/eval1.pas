@@ -3,8 +3,6 @@ program eval1;
 uses
   sysutils, crt, crtext, utypes, ueval;
 
-const
-  HelpLength = 91; //lines in Help File
 var
   WinHeight: integer;
   WinWidth: integer;
@@ -78,7 +76,6 @@ var
 var
   HelpFile:string;
   TheFile:TextFile;
-  I:Integer;
 Label EndIt;
 begin
   DimVector(HelpData,100);
