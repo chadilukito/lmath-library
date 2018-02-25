@@ -12,7 +12,7 @@ uses utypes, uminmax, uIntervals;
   2) A, B, C are within the golden ratio
   3) Func(B) < Func(A) and Func(B) < Func(C).
   The corresponding function values are returned in Fa, Fb, Fc }
-procedure MinBrack(Func : TFunc; var A, B, C: Float; out Fa, Fb, Fc : Float);
+procedure MinBrack(Func : TFunc; var A, B: Float; out C, Fa, Fb, Fc : Float);
 
 procedure SetBrakConstrain(L, R: Float);
 
@@ -28,7 +28,7 @@ begin
   Constrain := DefineInterval(L, R);
 end;
 
-procedure MinBrack(Func : TFunc; var A, B, C:float; out Fa, Fb, Fc : Float);
+procedure MinBrack(Func : TFunc; var A, B :float; out C, Fa, Fb, Fc : Float);
 begin
   if A > B then
     Swap(A, B);
