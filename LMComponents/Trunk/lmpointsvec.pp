@@ -179,12 +179,15 @@ end;
 
 function TPoints.GetMaxX: Float;
 var
-  I:Integer;
+  I:integer;
 begin
   Result := -MaxNum;
   for I := 0 to Count-1 do
     if Points[I].X > Result then
+    begin
       Result := Points[I].X;
+      Index := I;
+    end;
 end;
 
 function TPoints.GetMaxY: Float;
@@ -194,7 +197,10 @@ begin
   Result := -MaxNum;
   for I := 0 to Count-1 do
     if Points[I].Y > Result then
+    begin
       Result := Points[I].Y;
+      Index := I;
+    end;
 end;
 
 function TPoints.GetMinX: Float;
@@ -204,7 +210,10 @@ begin
   Result := MaxNum;
   for I := 0 to Count-1 do
     if Points[I].X < Result then
+    begin
       Result := Points[I].X;
+      Index := I;
+    end;
 end;
 
 function TPoints.GetMinY: Float;
@@ -214,7 +223,10 @@ begin
   Result := MaxNum;
   for I := 0 to Count-1 do
     if Points[I].Y < Result then
+    begin
       Result := Points[I].Y;
+      Index := I;
+    end;
 end;
 
 function TPoints.GetRange: Float;
