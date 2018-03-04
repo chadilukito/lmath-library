@@ -42,12 +42,33 @@ function IntervalDefined(AInterval:TInterval):boolean;
 // constructor of TInterval from ALo and AHi
 function DefineInterval(ALo,AHi:Float):TInterval;
 
+// move interval by a value (it is added to both Lo and Hi)
+procedure MoveInterval(V:float; var AInterval:TInterval);
+
+// move interval to a value (Lo is set to this value, Hi adjusted such that length remains constant)
+procedure MoveIntervalTo(V:Float; var AInterval:TInterval);
+
 implementation
 
 function DefineInterval(ALo, AHi:Float):TInterval;
 begin
   Result.Lo := ALo;
   Result.Hi := AHi;
+end;
+
+procedure MoveInterval(V: float; var AInterval: TInterval);
+begin
+  AInterval.Hi := AInterval.Hi + V;
+  AInterval.Lo := AInterval.Lo + V;
+end;
+
+procedure MoveIntervalTo(V: Float; var AInterval: TInterval);
+var
+  L:Float;
+begin
+  L := AInterval.Length;
+  AInterval.Lo := V;
+  AInterval.Hi := AInterval.Lo + L;
 end;
 
 function IntervalsIntersect(Lo1, Hi1, Lo2, Hi2: Float): boolean;
