@@ -12,12 +12,6 @@ type
 
  TPoints = class
  protected
-   function GetMaxX: Float; virtual;
-   function GetMaxY: Float; virtual;
-   function GetMinX: Float; virtual;
-   function GetMinY: Float; virtual;
-   function GetRange: Float; virtual;
-   function GetRangeY: Float; virtual;
    function GetBuffer(I: integer): pointer;
    function GetX(ind:integer):Float;
    function GetY(ind:integer):Float;
@@ -44,9 +38,7 @@ type
 
     //removes min(ACount, Count-Ind) points starting from Ind, moves rest to left. Returns count of actually removed points.
    function RemovePoints(Ind: integer; ACount:integer):integer;
-
-   //Reallocate(Step:integer) increases Capacity by Step
-   function Reallocate(Step:integer):integer;
+   function Reallocate(Step:integer):integer; //<Reallocate(Step:integer) increases Capacity by Step
    procedure FreePoints; virtual;
 
    //AllocatePoints(ACapacity:integer) allocate given capacity, regardless of what was before
@@ -55,6 +47,12 @@ type
    // sorts by X
    procedure SortX(descending:boolean);
 
+   function MaxX: Float; virtual; //< Maximal X value. After call, Index field points to element with this value
+   function MaxY: Float; virtual; //< Maximal Y value. After call, Index field points to element with this value
+   function MinX: Float; virtual; //< Minimal X value. After call, Index field points to element with this value
+   function MinY: Float; virtual; //< Minimal Y value. After call, Index field points to element with this value
+   function Range: Float; virtual; //< Range = MaxX - MinX
+   function RangeY: Float; virtual; //< RangeY = MaxY - MinY
    //SortY(descending:boolean) sorts by Y
    procedure SortY(descending:boolean);
 
@@ -71,16 +69,6 @@ type
    //DataBuffer[I:integer]:pointer
    //pointer to Points[I]. Useful for fast low-level fill-in
    property DataBuffer[I:integer]:pointer read GetBuffer;
-   property MinX:Float read GetMinX;
-   property MaxX:Float read GetMaxX;
-   property MinY:Float read GetMinY;
-   property MaxY:Float read GetMaxY;
-
-   // Range:Float MaxX - MinX
-   property Range:Float read GetRange;
-
-   // RangeY:Float MaxY - MinY
-   property RangeY:Float read GetRangeY;
  end;
 
 implementation
@@ -177,7 +165,7 @@ begin
   {$endif}
 end;
 
-function TPoints.GetMaxX: Float;
+function TPoints.MaxX: Float;
 var
   I:integer;
 begin
@@ -190,7 +178,7 @@ begin
     end;
 end;
 
-function TPoints.GetMaxY: Float;
+function TPoints.MaxY: Float;
 var
   I:Integer;
 begin
@@ -203,7 +191,7 @@ begin
     end;
 end;
 
-function TPoints.GetMinX: Float;
+function TPoints.MinX: Float;
 var
   I:Integer;
 begin
@@ -216,7 +204,7 @@ begin
     end;
 end;
 
-function TPoints.GetMinY: Float;
+function TPoints.MinY: Float;
 var
   I:Integer;
 begin
@@ -229,12 +217,12 @@ begin
     end;
 end;
 
-function TPoints.GetRange: Float;
+function TPoints.Range: Float;
 begin
   Result := MaxX - MinX;
 end;
 
-function TPoints.GetRangeY: Float;
+function TPoints.RangeY: Float;
 begin
   Result := MaxY - MinY;
 end;
