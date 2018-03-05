@@ -108,41 +108,8 @@ TPoints {$>$} TObject
 		\code{
 			public property DataBuffer[I:integer]: pointer;}
 	\end{flushleft}
-	\par Pointer to Points[I]. Useful for fast low-level filling of the data.\label{lmPointsVec.TPoints-MinX}
-	\index{MinX}
-	\item[\declarationitem{MinX, MaxX}\hfill]
-	\begin{flushleft}
-	\code{
-		public property MinX: Float;\\
-		public property MaxX: Float;}
-	\end{flushleft}
-	\par  \label{lmPointsVec.TPoints-MaxX}
-	\index{MaxX}
-	\item[\declarationitem{MinY, MaxY}\hfill]
-	\begin{flushleft}
-		\code{
-			public property MinY: Float;\\
-			public property MaxY: Float;}
-	\end{flushleft}
-	\label{lmPointsVec.TPoints-MinY}
-	\index{MinY}
-	\label{lmPointsVec.TPoints-Range}
-	\index{Range}
-	\item[\declarationitem{Range}\hfill]
-	\begin{flushleft}
-		\code{
-			public property Range: Float;}
-	\end{flushleft}
-	$Range=MaxX-MinX$\label{lmPointsVec.TPoints-RangeY}
-
-	\index{RangeY}
-	\item[\declarationitem{RangeY}\hfill]
-	\begin{flushleft}
-		\code{
-			public property RangeY: Float;}
-	\end{flushleft}
-	$RangeY=MaxY-MinY$
-	\end{itemize}
+	Pointer to Points[I]. Useful for fast low-level filling of the data.
+\end{itemize}
 	
 \subsubsection{Fields}
 \begin{itemize}
@@ -156,43 +123,41 @@ TPoints {$>$} TObject
 \item[\descriptiontitle{Description}]
 
 This is actual array of data. Public access to it is provided for direct operations in time-critical program sections. Don't forget to use and adjust \code{Count} and \code{Capacity} fields! Outside time-critical sections, use \code{X}, \code{Y} and \code{ThePoints} properties.
-	\par  \label{lmPointsVec.TPoints-Capacity}
-	\index{Capacity}
+	
+\par  \label{lmPointsVec.TPoints-Capacity}
+\index{Capacity}
 	\item[\declarationitem{Capacity}\hfill]
 	\begin{flushleft}
 		\code{
 			public Capacity:integer;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]	
-	This is currently \emph{allocated} \code{Points} length. It should not be confused with \code{Count} which shows number of currently \emph{assigned} points (or, to be exact, highest index of assigned element). If new points are added using \code{Append} method, \code{Count} is updated and memory is automatically reallocated as needed.  
-	\par  \label{lmPointsVec.TPoints-Count}
-	\index{Count}
-	\item[\declarationitem{Count}\hfill]
+	This is currently \emph{allocated} \code{Points} length. It should not be confused with \code{Count} which shows number of currently \emph{assigned} points (or, to be exact, highest index of assigned element). If new points are added using \code{Append} method, \code{Count} is updated and memory is automatically reallocated as needed.
+	  
+	\par  \label{lmPointsVec.TPoints-Index}
+	\index{Index}
+	\item[\declarationitem{Index}\hfill]
 	\begin{flushleft}
 		\code{
-			public Count:integer;}
+			public Index:integer;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]	
-	Highest index of assigned element in \code{Points}. It is automatically adjusted when \code{X[index]}, \code{Y[index]} or \code{ThePoints[index]} properties are assigned, when \code{RemovePoints} is used or when \code{Append} procedure is used to add a new point. \code{Append} adds always to \code{Points[Count]} position. Attempt to read beyond \code{Count} raises exception if -dDebug was used. If low-level access to \code{Points} array was used, \code{Count} should be adjusted manually.
+	General use pointer. After call of \hyperref[lmPointsVec.TPoints-MinX]{MinY, MaxY, MinX, MaxX} functions it points to the first element which has corresponding value.
 	\par  \end{itemize}
+	\par  \label{lmPointsVec.TPoints-Count}
+\index{Count}
+\begin{itemize}
+\item[\declarationitem{Count}\hfill]
+\begin{flushleft}
+	\code{
+		public Count:integer;}
+\end{flushleft}
+\item[\descriptiontitle{Description}]	
+Highest index of assigned element in \code{Points}. It is automatically adjusted when \code{X[index]}, \code{Y[index]} or \code{ThePoints[index]} properties are assigned, when \code{RemovePoints} is used or when \code{Append} procedure is used to add a new point. \code{Append} adds always to \code{Points[Count]} position. Attempt to read beyond \code{Count} raises exception if -dDebug was used. If low-level access to \code{Points} array was used, \code{Count} should be adjusted manually.
+\par  \end{itemize}
+
 \subsubsection{Methods}
-\paragraph{GetMaxX, GetMaxY, GetMinX, GetMinY}\hspace*{\fill}
-
-\label{lmPointsVec.TPoints-GetMaxX}
-\index{GetMaxX}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			protected function GetMaxX: Float; virtual;\\
-			protected function GetMaxY: Float; virtual;\\
-			protected function GetMinX: Float; virtual;\\
-			protected function GetMinY: Float; virtual;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Functions which get values for \code{MaxX, MinX, MaxY, MinY} properties. They use simple linear search. Override them if behaviour of your descendants make possible more efficient algorithms.
-\end{itemize}
 \paragraph{Create}\hspace*{\fill}
-
 \label{lmPointsVec.TPoints-Create}
 \index{Create}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -299,8 +264,46 @@ Frees \code{Points}, sets \code{Count} and \code{Capacity} to zero.
 	AllocatePoints(ACapacity:integer) allocates given capacity; unlike \code{Reallocate} does not take into account preexisting \code{Capacity}.
 	
 \end{itemize}
-\paragraph{SortX, SortY}\hspace*{\fill}
+\paragraph{MinX, MaxX, MinY, MaxY}
+\label{lmPointsVec.TPoints-MinX}
+\index{MinX}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			function MinX: Float; virtual;\\
+			function MaxX: Float; virtual;\\
+			function MinY: Float; virtual;\\
+			function MaxY: float virtual;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Return maximal and minimal X and Y values, according to the names. After the call, \hyperref[lmPointsVec.TPoints-Index]{Index} field points to the first found element with this value. These functions use simple linear search. If structure of your data allows more efficient algorithms, override these functions, but don't forget to update Index field. 
+\end{itemize}
+\label{lmPointsVec.TPoints-Range}
+\index{Range}
+\paragraph{Range}
+\begin{itemize}
+\item[\declarationitem{Declaration}\hfill]
+\begin{flushleft}
+	\code{
+		function Range: Float; virtual;}
+\end{flushleft}
+\item[\descriptiontitle{Description}]
+$Range=MaxX-MinX$\label{lmPointsVec.TPoints-RangeY}
+\end{itemize}
+\index{RangeY}
+\paragraph{RangeY}
+\begin{itemize}
+\item[\declarationitem{Declaration}\hfill]
+\begin{flushleft}
+	\code{
+		function RangeY: Float;}
+\end{flushleft}
+\item[\descriptiontitle{Description}]
+$RangeY=MaxY-MinY$
+\end{itemize}
 
+\paragraph{SortX, SortY}\hspace*{\fill}
 \label{lmPointsVec.TPoints-SortX}
 \index{SortX}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
