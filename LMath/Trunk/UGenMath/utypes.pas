@@ -143,8 +143,16 @@ end;
 function SameValue(A, B: Float): Boolean;
 var
   C,D:float;
+  APos, BPos : boolean;
 begin
-  D := abs(A-B);
+  APos := A > 0; // these 4 lines are needed to prevent float overflow
+  BPos := B > 0; // if very large negative and very large positive values are tested
+  Result := not ((APos xor BPos) and not (IsZero(A) and IsZero(B)));
+  if not Result then Exit;
+  if A > B then
+    D := A-B
+  else
+    D := B-A;
   Result := D < DefaultZeroEpsilon; // this is needed for comparisons of very small numbers
   if Result then Exit;
   A := abs(A);
