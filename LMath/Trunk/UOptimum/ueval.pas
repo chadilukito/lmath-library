@@ -22,13 +22,13 @@ unit ueval;
 interface
 
 uses
-  utypes, uErrors, uminmax, umath, utrigo, uhyper, uranmt, ufact, ubinom, 
+  Classes, SysUtils, utypes, uErrors, uminmax, umath, utrigo, uhyper, uranmt, ufact, ubinom,
   ugamma, uigamma, ubeta, uibeta, ulambert, upoidist, uexpdist, 
   unormal, ugamdist, uibtdist, uigmdist, uinvnorm, uinvgam, uinvbeta; 
 
 function InitEval : Integer;
 
-procedure SetVariable(VarName : Char; Value : Float);
+procedure SetVariable(VarName : string; Value : Float);
 
 procedure SetFunction(FuncName : String; Wrapper : TWrapper);
 
@@ -44,16 +44,14 @@ implementation
   -------------------------------------------------- }
 
 const
-  MaxVar  = 26;   { Max number of variables }
-  MaxFunc = 100;  { Max number of functions }
   TAB     = ^I;   { Tab character }
 
-type EvalVariable = record
-  Name  : Char;
+type TEvalVariable = class
+  Name  : String;
   Value : Float;
 end;
 
-type EvalFunction = record
+type TEvalFunction = class
   Name    : String;
   Wrapper : TWrapper;
 end;
@@ -67,8 +65,8 @@ const
   RadToDeg = 180.0 / Pi;
 
 var
-  Variables : array[1..MaxVar]  of EvalVariable;
-  Functions : array[1..MaxFunc] of EvalFunction;
+  Variables : TStringList;
+  Functions : TStringList;
 
   NFunc, e        : Integer;
   Position        : Integer;
@@ -77,80 +75,87 @@ var
   ErrorTag        : String;
   Look            : Char;
 
-procedure SetVariable(VarName : Char; Value : Float);
+procedure SetVariable(VarName : string; Value : Float);
 var
-  I : Integer;
+  Variable:TEvalVariable;
+  UName: string;
+  I:integer;
 begin
-  I := Ord(Upcase(VarName)) - 64;
-
-  Variables[I].Name  := VarName;
-  Variables[I].Value := Value;
+  UName := UpperCase(VarName);
+  if Variables.Find(UName,I) then
+    (Variables.Objects[I] as TEvalVariable).Value := Value
+  else begin
+    Variable := TEvalVariable.Create;
+    Variable.Name := VarName;
+    Variable.Value := Value;
+    Variables.AddObject(UName,Variable);
+  end;
 end;
 
-function GetVariable(VarName : Char) : Float;
+function GetVariable(VarName : string) : Float;
 var
   I : Integer;
 begin
   if ParsingError then
-    begin
-      GetVariable := 0.0;
-      Exit;
-    end;
-
-  I := Ord(Upcase(VarName)) - 64;
-
-  if (I >= 1) and (I <= MaxVar) then
-    begin
-      GetVariable := Variables[I].Value;
-      Exit;
-    end;
-
-  e := 3;
-  ErrorTag := VarName;
-  Position := Position - Length(VarName);
-  ParsingError := True;
-  GetVariable := 0.0;
+  begin
+    GetVariable := 0.0;
+    Exit;
+  end;
+  if Variables.Find(UpperCase(VarName),I) then
+    Result := (Variables.Objects[I] as TEvalVariable).Value
+  else begin
+    e := 3;
+    ErrorTag := VarName;
+    Position := Position - Length(VarName);
+    ParsingError := True;
+    GetVariable := 0.0;
+  end;
 end;
 
 procedure SetFunction(FuncName : String; Wrapper : TWrapper);
 var
   I : Integer;
+  UName:string;
+  Eve: TEvalFunction;
 begin
-  if NFunc = MaxFunc then Exit;
-
-  Inc(NFunc);
-
-  for I := 1 to Length(FuncName) do
-    FuncName[I] := UpCase(FuncName[I]);
-
-  Functions[NFunc].Name    := FuncName;
-  Functions[NFunc].Wrapper := Wrapper;
+  UName := UpperCase(FuncName);
+  if Functions.Find(UName,I) then
+  begin
+    e := 255;
+    ErrorTag := FuncName;
+  end else
+  begin
+    Eve := TEvalFunction.Create;
+    Eve.Name := FuncName;
+    Eve.Wrapper := Wrapper;
+    Functions.AddObject(UName,Eve);
+  end;
 end;
 
 function GetFunction(FuncName : String; ArgC : Integer; ArgV : TVector; StartPos : Integer) : Float;
 var
   I : Integer;
+  UName:string;
 begin
   if ParsingError then
-    begin
-      GetFunction := 0.0;
-      Exit;
-    end;
-
-  for I := 1 to MaxFunc do
-    if Functions[I].Name = FuncName then
-      begin
-        CurrentFunction := FuncName;
-        GetFunction := Functions[I].Wrapper(ArgC, ArgV);
-        CurrentFunction := '';
-        Exit;
-      end;
-
-  e := 4;
-  ErrorTag := FuncName;
-  Position := startPos;
-  ParsingError := True;
-  GetFunction := 0.0;
+  begin
+    GetFunction := 0.0;
+    Exit;
+  end;
+  UName := UpperCase(FuncName);
+  if Functions.Find(UName,I) then
+  begin
+    CurrentFunction := UName;
+    GetFunction := (Functions.Objects[I] as TEvalFunction).Wrapper(ArgC, ArgV);
+    CurrentFunction := '';
+  end else
+  begin
+    e := 4;
+    ErrorTag := FuncName;
+    Position := startPos;
+    ParsingError := True;
+    GetFunction := 0.0;
+  end;
 end;
 
 procedure GetChar;
@@ -231,22 +236,21 @@ end;
 function Match(What : Char) : Boolean;
 begin
   if ParsingError then
-    begin
-      Match := False;
-      Exit;
-    end;
+  begin
+    Match := False;
+    Exit;
+  end;
 
   if Look = What then
-    begin
-      GetChar;
-      SkipWhite;
-      Match := True;
-    end
-  else
-    begin
-      Unexpected;
-      Match := False;
-    end;
+  begin
+    GetChar;
+    SkipWhite;
+    Match := True;
+  end
+  else begin
+    Unexpected;
+    Match := False;
+  end;
 end;
 
 function GetName : String;
@@ -441,14 +445,8 @@ begin
             Res := GetFunction(Ident, ArgC, ArgV, FuncPos);
         end
     end
-  else begin
-    if Length(Ident) = 1 then
-      Res := GetVariable(Ident[1])
-    else begin
-      Res := 0.0;
-      ParsingError := true;
-    end;
-  end;
+  else
+    Res := GetVariable(Ident);
   SkipWhite;
   Identifier := Res;
 end;
@@ -677,24 +675,24 @@ var
   Res : Float;
 begin
   if ParsingError then
+  begin
+    ExpOp := 0.0;
+    Exit;
+  end;
+
+  Res := ImpOp;
+    
+  while Look = '^' do
+  begin
+    if ParsingError then
     begin
       ExpOp := 0.0;
       Exit;
     end;
 
-  Res := ImpOp;
-    
-  while Look = '^' do
-    begin
-      if ParsingError then
-        begin
-          ExpOp := 0.0;
-          Exit;
-        end;
-
-      Match('^');
-      Res := Power(Res, ImpOp);
-    end;
+    Match('^');
+    Res := Power(Res, ImpOp);
+  end;
 
   ExpOp := Res;
 end;
@@ -1049,6 +1047,18 @@ begin
   Randomize;
   InitMT(Trunc(Random * 1.0E+8));
 
+  Functions := TStringList.Create;
+  Functions.Sorted := true;
+  Functions.CaseSensitive := false;
+  Functions.Duplicates := dupError;
+  Functions.Capacity := 50;
+
+  Variables := TStringList.Create;
+  Variables.Sorted := true;
+  Variables.CaseSensitive := false;
+  Variables.Duplicates := dupError;
+  Variables.Capacity := 50;
+
   { Initialize the built-in functions }
 
   NFunc := 0;
@@ -1116,21 +1126,14 @@ begin
 end;
 
 function Eval(ExpressionString : String) : Float;
-var
-  I : Integer;
 begin
-  Source := '(' + ExpressionString + ')';
-  for I := 1 to Length(Source) do
-    Source[I] := UpCase(Source[I]);
-
+  Source := '('+StringReplace(UpperCase(ExpressionString),'**','^',[rfReplaceAll])+')'; // cheap and dirty, I know
   e := 0;
   Position := 0;
   ErrorTag := '';
   ParsingError := False;
-
   GetChar;
   SkipWhite;
-
   Eval := Expression;
 end;
 
