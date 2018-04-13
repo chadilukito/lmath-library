@@ -161,19 +161,14 @@ function Evaluate(S:string):float;
 var
   X:float;
   V:string;
-  C:char;
   I:integer;
 begin
   S := Trim(S);
+  V := 'X';
   I := Pos(':=',S);
-  C := 'X';
   if I > 0 then begin
     V := copy(S,1,I-1);
     V := Trim(V);
-    if length(V) = 1 then
-      C := V[1]
-    else
-      writeln(PrepareLine('Valid variable names are single letters of english alphabet only.',WinWidth));
     S := copy(S,I+2,length(S));
   end;
   X := eval(S);
@@ -181,7 +176,7 @@ begin
     writeln('Invalid expression: ',S)
   else
     writeln(X:10:4);
-  SetVariable(C,X);
+  SetVariable(V,X);
   Result := X;
 end;
 
