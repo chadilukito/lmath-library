@@ -34,6 +34,8 @@ procedure SetFunction(FuncName : String; Wrapper : TWrapper);
 
 function Eval(ExpressionString : String) : Float;
 
+procedure DoneEval;
+
 var
   ParsingError    : Boolean;
 
@@ -1051,13 +1053,15 @@ begin
   Functions.Sorted := true;
   Functions.CaseSensitive := false;
   Functions.Duplicates := dupError;
-  Functions.Capacity := 50;
+  Functions.Capacity := 100;
+  Functions.OwnsObjects := true;
 
   Variables := TStringList.Create;
   Variables.Sorted := true;
   Variables.CaseSensitive := false;
   Variables.Duplicates := dupError;
   Variables.Capacity := 50;
+  Variables.OwnsObjects := true;
 
   { Initialize the built-in functions }
 
@@ -1135,6 +1139,12 @@ begin
   GetChar;
   SkipWhite;
   Eval := Expression;
+end;
+
+procedure DoneEval;
+begin
+  FreeAndNil(Functions);
+  FreeAndNil(Variables);
 end;
 
 end.

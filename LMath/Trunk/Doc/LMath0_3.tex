@@ -6038,7 +6038,18 @@ Simple Expression Evaluator, Version: 1.1.
 Author : Aleksandar Ruzicic (admin@krcko.net) File: fbeval.bas
 BIG thanks goes to Jack W. Crenshaw for his "LET'S BUILD A COMPILER!" text series\\ (\href{http://compilers.iecc.com/crenshaw/}{http://compilers.iecc.com/crenshaw/})
 
-Pascal version by Jean Debord for use with DMath.
+Pascal version by Jean Debord for use with DMath, modified by V. Nesterov for LMath.
+
+Following functions and operators are defined:\\[6pt] 
+Operators: \code{+}, \code{-}, \code{*}, \code{/}, \code{\textbackslash} (integer division), \code{\%} (modulus), \code{\^} and \code{**} (exponentiation).\\[6pt]
+Bitwise: \code{>} shift right, \code{<} shift left, \code{\&} and, \code{|} or, \code{\$} xor, \code{!} not, \code{@} imp, \code{=} EQV.\\[6pt]
+Precedence: \code{!, \&, |, \$, =, @, \^, * and /, \textbackslash, \%, < and >, + and -}.\\
+Parenthesis may be used to override the precedence.\\[6pt]
+In DMath library, only 26 variables could be defined and only first letter of a variable name was meaningful; number of functions was limited to 100. In LMath beginning from version 0.3, number of functions and variables is not limited and identifiers can have unlimited length.
+
+Operator \code{**} is added to \code{\^} for exponentiation. It may be necessary in some environments where \code{\^} may have a special meaning.
+
+
 \subsection{Functions and Procedures}
 \subsubsection{InitEval}
 \label{ueval-InitEval}
@@ -6048,15 +6059,19 @@ Pascal version by Jean Debord for use with DMath.
 		\code{
 			function InitEval : Integer;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Initializes expression evaluation system. Must be called before first call to \code{eval}. Returns number of defined functions. 
 \end{itemize}
 \subsubsection{SetVariable}
 \label{ueval-SetVariable}
-\index{SetVariable}
+\index{SetVariable} \lmath{-6pt}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			procedure SetVariable(VarName : Char; Value : Float);}
+			procedure SetVariable(VarName : String; Value : Float);}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Defines variable \code{VarName }and initializes it with \code{Value}. Change in LMath: \code{VarName} is a string, may have arbitrary length and unlimited number of variables is possible. 
 \end{itemize}
 \subsubsection{SetFunction}
 \label{ueval-SetFunction}
@@ -6066,6 +6081,8 @@ Pascal version by Jean Debord for use with DMath.
 		\code{
 			procedure SetFunction(FuncName : String; Wrapper : TWrapper);}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Defines a new function. \code{FuncName} is its name; \code{wrapper} is a function of \hyperref[utypes-TWrapper]{TWrapper} which will be actually called. Paramters of \code{FuncName} in the expression are copied into the vector of parameters for \code{Wrapper}. 
 \end{itemize}
 \subsubsection{Eval}
 \label{ueval-Eval}
@@ -6075,6 +6092,18 @@ Pascal version by Jean Debord for use with DMath.
 		\code{
 			function Eval(ExpressionString : String) : Float;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Actually evaluates expression in \code{ExpressionString} and returns result.
+\end{itemize}
+\subsubsection{DoneEval} \lmath{-6pt}
+\label{ueval-DoneEval}
+\index{InitEval}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{procedure DoneEval;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Removes functions and variables. Call it after the end of session to free memory.
 \end{itemize}
 \subsection{Variables}
 \subsubsection{ParsingError}\lmath{-24pt}
@@ -6086,6 +6115,7 @@ Pascal version by Jean Debord for use with DMath.
 \end{flushleft}
 \item[\descriptiontitle{Description}] Returns true if an error of expression parsing occurred, which means invalid expression. In LMath the variable was made public.
 \end{itemize}
+
 \section{Unit ulinminq}
 \label{ulinminq}
 \index{ulinminq}

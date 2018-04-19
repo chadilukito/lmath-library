@@ -217,4 +217,5 @@ begin
        Evaluate(S);
     WriteInfo('Type expression to evaluate. "q" to exit, "?" for help.');
   until false;
+  DoneEval;
 end.
