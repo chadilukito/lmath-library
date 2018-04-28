@@ -1065,7 +1065,7 @@ begin
   InitMT(Trunc(Random * 1.0E+8));
 
   Functions := New(PEvalFunction, Init('InvKhi2',@StandardSEEFunctions));
-  Variables := New(PEvalVariable, Init('Last',0.0));
+  Variables := New(PEvalVariable, Init('_Last',0.0));
 
   { Initialize the built-in functions }
 
