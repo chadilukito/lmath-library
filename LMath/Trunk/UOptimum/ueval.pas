@@ -22,7 +22,7 @@ unit ueval;
 interface
 
 uses
-  Classes, SysUtils, utypes, uErrors, uminmax, umath, utrigo, uhyper, uranmt, ufact, ubinom,
+  Objects, SysUtils, utypes, uErrors, uminmax, umath, utrigo, uhyper, uranmt, ufact, ubinom,
   ugamma, uigamma, ubeta, uibeta, ulambert, upoidist, uexpdist, lmSearchTrees,
   unormal, ugamdist, uibtdist, uigmdist, uinvnorm, uinvgam, uinvbeta; 
 
@@ -49,14 +49,16 @@ const
   TAB     = ^I;   { Tab character }
 
 type
-  TEvalVariable = class(TStringTreeNode)
+  PEvalVariable = ^TEvalVariable;
+  TEvalVariable = object(TStringTreeNode)
     Value : Float;
-    constructor Create(AName:string; AValue: Float);
+    constructor Init(AName:string; AValue: Float);
   end;
 
-  TEvalFunction = class(TStringTreeNode)
+  PEvalFunction = ^TEvalFunction;
+  TEvalFunction = object(TStringTreeNode)
     Wrapper : TWrapper;
-    constructor Create(AName:string; AWrapper: TWrapper);
+    constructor Init(AName:string; AWrapper: TWrapper);
   end;
 
 { ---------------------------------------------------
@@ -68,8 +70,8 @@ const
   RadToDeg = 180.0 / Pi;
 
 var
-  Variables : TEvalVariable;
-  Functions : TEvalFunction;
+  Variables : PEvalVariable;
+  Functions : PEvalFunction;
 
   NFunc, e        : Integer;
   Position        : Integer;
@@ -78,34 +80,34 @@ var
   ErrorTag        : String;
   Look            : Char;
 
-constructor TEvalVariable.Create(AName:string; AValue: Float);
+constructor TEvalVariable.Init(AName:string; AValue: Float);
 begin
-  inherited Create(UpperCase(AName));
+  inherited Init(UpperCase(AName));
   Value := AValue;
 end;
 
-constructor TEvalFunction.Create(AName:string; AWrapper:TWrapper);
+constructor TEvalFunction.Init(AName:string; AWrapper:TWrapper);
 begin
-  inherited Create(UpperCase(AName));
+  inherited Init(UpperCase(AName));
   Wrapper := AWrapper;
 end;
 
 procedure SetVariable(VarName : string; Value : Float);
 var
-  Variable:TEvalVariable;
+  Variable:PEvalVariable;
   Comp:integer;
 begin
-  Variable := Variables.Find(UpperCase(VarName),Comp) as TEvalVariable;
+  Variable := PEvalVariable(Variables^.Find(UpperCase(VarName),Comp));
   case Comp of
-    -1: Variable.Left := TEvalVariable.Create(VarName,Value);
-     0: Variable.Value := Value;
-     1: Variable.Right := TEvalVariable.Create(VarName,Value);
+    -1: Variable^.Left := New(PEvalVariable, Init(VarName,Value));
+     0: Variable^.Value := Value;
+     1: Variable^.Right := New(PEvalVariable, Init(VarName,Value));
   end;
 end;
 
 function GetVariable(VarName : string) : Float;
 var
-  Variable : TEvalVariable;
+  Variable : PEvalVariable;
   Comp : integer;
 begin
   if ParsingError then
@@ -113,9 +115,9 @@ begin
     GetVariable := 0.0;
     Exit;
   end;
-  Variable := Variables.Find(UpperCase(VarName),Comp) as TEvalVariable;
+  Variable := PEvalVariable(Variables^.Find(UpperCase(VarName),Comp));
   if Comp = 0 then
-    Result := Variable.Value
+    Result := Variable^.Value
   else begin
     e := 3;
     ErrorTag := VarName;
@@ -128,19 +130,19 @@ end;
 procedure SetFunction(FuncName : String; Wrapper : TWrapper);
 var
   UName:string;
-  Eve: TEvalFunction;
+  Eve: PEvalFunction;
   Comp: integer;
 begin
   UName := UpperCase(FuncName);
-  Eve := Functions.Find(UName,Comp) as TEvalFunction;
+  Eve := PEvalFunction(Functions^.Find(UName,Comp));
   case Comp of
-     -1: Eve.Left := TEvalFunction.Create(UName,Wrapper);
+     -1: Eve^.Left := New(PEvalFunction, Init(UName,Wrapper));
       0: begin
         e := 255;
         ErrorTag := FuncName;
         Exit;
       end;
-      1: Eve.Right := TEvalFunction.Create(UName,Wrapper);
+      1: Eve^.Right := New(PEvalFunction, Init(UName,Wrapper));
   end;
   inc(NFunc);
 end;
@@ -149,7 +151,7 @@ function GetFunction(FuncName : String; ArgC : Integer; ArgV : TVector; StartPos
 var
   I : Integer;
   UName:string;
-  Eve:TEvalFunction;
+  Eve:PEvalFunction;
 begin
   if ParsingError then
   begin
@@ -157,11 +159,11 @@ begin
     Exit;
   end;
   UName := UpperCase(FuncName);
-  Eve := Functions.Find(UName,I) as TEvalFunction;
+  Eve := PEvalFunction(Functions^.Find(UName,I));
   if I = 0 then
   begin
     CurrentFunction := UName;
-    GetFunction := Eve.Wrapper(ArgC, ArgV);
+    GetFunction := Eve^.Wrapper(ArgC, ArgV);
     CurrentFunction := '';
   end else
   begin
@@ -1062,8 +1064,8 @@ begin
   Randomize;
   InitMT(Trunc(Random * 1.0E+8));
 
-  Functions := TEvalFunction.Create('InvKhi2',@StandardSEEFunctions);
-  Variables := TEvalVariable.Create('Last',0.0);
+  Functions := New(PEvalFunction, Init('InvKhi2',@StandardSEEFunctions));
+  Variables := New(PEvalVariable, Init('Last',0.0));
 
   { Initialize the built-in functions }
 
@@ -1144,8 +1146,8 @@ end;
 
 procedure DoneEval;
 begin
-  FreeAndNil(Functions);
-  FreeAndNil(Variables);
+  Dispose(Functions, Done);
+  Dispose(Variables, Done);
 end;
 
 end.
