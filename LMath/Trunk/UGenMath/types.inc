@@ -1,13 +1,15 @@
 {  Floating point type (Default = Double) }
 
+type
+PFloat = ^Float;
 {$IFDEF SINGLEREAL}
-  type Float = Single;
+  Float = Single;
 {$ELSE}
 {$IFDEF EXTENDEDREAL}
-  type Float = Extended;
+  Float = Extended;
 {$ELSE}
   {$DEFINE DOUBLEREAL}
-  type Float = Double;
+  Float = Double;
 {$ENDIF}
 {$ENDIF}
 

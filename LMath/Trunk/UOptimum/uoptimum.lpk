@@ -11,6 +11,16 @@
         <OtherUnitFiles Value="units"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <CodeGeneration>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
     <Files Count="12">
       <Item1>
@@ -62,22 +72,25 @@
         <UnitName Value="usimplex"/>
       </Item12>
     </Files>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="uMathStat"/>
+        <PackageName Value="uMathUtil"/>
       </Item1>
       <Item2>
-        <PackageName Value="urandoms"/>
+        <PackageName Value="uMathStat"/>
       </Item2>
       <Item3>
-        <PackageName Value="uLineAlgebra"/>
+        <PackageName Value="urandoms"/>
       </Item3>
       <Item4>
-        <PackageName Value="uGenMath"/>
+        <PackageName Value="uLineAlgebra"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
+        <PackageName Value="uGenMath"/>
       </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
