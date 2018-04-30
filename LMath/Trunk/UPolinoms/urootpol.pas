@@ -63,6 +63,7 @@ begin
   if Deg < 1 then
     begin
       SetErrCode(FDomain);
+      Result := 0;
       Exit;
     end;
       

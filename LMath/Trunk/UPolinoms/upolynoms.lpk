@@ -11,7 +11,18 @@
         <OtherUnitFiles Value="units"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <CodeGeneration>
+        <Optimizations>
+          <OptimizationLevel Value="4"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
+    <Version Minor="4"/>
     <Files Count="8">
       <Item1>
         <Filename Value="upolutil.pas"/>

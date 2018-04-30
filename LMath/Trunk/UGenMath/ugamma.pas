@@ -102,15 +102,15 @@ implementation
     P : Float;
   begin
     if IsZero(X1) then
-      begin
-        GamSmall := DefaultVal(FSing, MaxNum);
-        Exit;
-      end;
+    begin
+      GamSmall := DefaultVal(FSing, MaxNum);
+      Exit;
+    end;
     if X1 < 0.0 then
-      begin
-        X1 := - X1;
-        P := PolEvl(X1, SN, 8);
-      end
+    begin
+      X1 := - X1;
+      P := PolEvl(X1, SN, 8);
+    end
     else
       P := PolEvl(X1, S, 8);
     GamSmall := Z / (X1 * P);

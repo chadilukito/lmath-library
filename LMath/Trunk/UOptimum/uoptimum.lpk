@@ -12,6 +12,8 @@
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
         <Optimizations>
           <OptimizationLevel Value="4"/>
         </Optimizations>
@@ -23,6 +25,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
+    <Version Minor="4"/>
     <Files Count="12">
       <Item1>
         <Filename Value="ubfgs.pas"/>

@@ -83,13 +83,13 @@ var
     I : Integer;
   begin
     for I := 0 to MaxPower do
+    begin
+      if (PowerOfTwo and (1 shl I)) <> 0 then
       begin
-        if (PowerOfTwo and (1 shl I)) <> 0 then
-          begin
-            NumberOfBitsNeeded := I;
-            Exit;
-          end;
+        NumberOfBitsNeeded := I;
+        Exit;
       end;
+    end;
   end;
 
   function ReverseBits(Index, NumBits : Integer) : Integer;

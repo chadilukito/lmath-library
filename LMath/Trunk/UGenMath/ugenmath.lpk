@@ -14,7 +14,7 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <Optimizations>
-          <OptimizationLevel Value="3"/>
+          <OptimizationLevel Value="4"/>
         </Optimizations>
       </CodeGeneration>
       <Linking>
@@ -28,6 +28,7 @@
         </OtherDefines>
       </Other>
     </CompilerOptions>
+    <Version Minor="4"/>
     <Files Count="21">
       <Item1>
         <AddToUsesPkgSection Value="False"/>
