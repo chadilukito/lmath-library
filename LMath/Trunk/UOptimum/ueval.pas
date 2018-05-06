@@ -98,11 +98,11 @@ var
   Comp:integer;
 begin
   Variable := PEvalVariable(Variables^.Find(UpperCase(VarName),Comp));
-  case Comp of
-    -1: Variable^.Left := New(PEvalVariable, Init(VarName,Value));
-     0: Variable^.Value := Value;
-     1: Variable^.Right := New(PEvalVariable, Init(VarName,Value));
-  end;
+  if Comp < 0 then
+    Variable^.Left := New(PEvalVariable, Init(VarName,Value))
+  else if Comp = 0 then
+    Variable^.Value := Value
+  else Variable^.Right := New(PEvalVariable, Init(VarName,Value));
 end;
 
 function GetVariable(VarName : string) : Float;
@@ -135,15 +135,15 @@ var
 begin
   UName := UpperCase(FuncName);
   Eve := PEvalFunction(Functions^.Find(UName,Comp));
-  case Comp of
-     -1: Eve^.Left := New(PEvalFunction, Init(UName,Wrapper));
-      0: begin
-        e := 255;
-        ErrorTag := FuncName;
-        Exit;
-      end;
-      1: Eve^.Right := New(PEvalFunction, Init(UName,Wrapper));
-  end;
+  if Comp < 0 then
+    Eve^.Left := New(PEvalFunction, Init(UName,Wrapper))
+  else if Comp = 0 then
+  begin
+    e := 255;
+    ErrorTag := FuncName;
+    Exit;
+  end else
+    Eve^.Right := New(PEvalFunction, Init(UName,Wrapper));
   inc(NFunc);
 end;
 
