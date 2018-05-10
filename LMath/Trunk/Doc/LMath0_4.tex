@@ -41,7 +41,8 @@
 
 \begin{document}
 \title{LMath: mathematical library for Free Pascal --- Lazarus\\
-{\large Adapted and extended from DMath library by Jean Debord}}
+{\large Adapted and extended from DMath library by Jean Debord\\
+Version 0.4}}
 
 \author{Edited by Viatcheslav V. Nesterov}
 \maketitle
@@ -8407,6 +8408,40 @@ where $x$ is pH, $y$ is some property (e.g. absorbance) which depends on the rat
 \chapter{Package uMathUtil: Various Utilities Useful for Mathematical and Scientific Programming}\label{package-umathutil}\index{LAMath}
 \section{Description}
 Package uMathUtil includes several units which do notbelong \textit{sensu stricto} to the field of numeric analysis, but can be useful for scientific programming. Unit lmUnitsFormat allows to output values with units in conveniently formatted form using prefixes as pico-, nano- and so on. Unit lmSorting implements several sorting algorithms for arrays of Float and of TRealPoint; the latter ones may be sorted both for X and for Y; units uStrings and uWinStr define several handy functions over strings.   
+\section{Unit lmSearchTrees}\lmath{-24pt}
+\label{lmsearchtrees}
+\index{lmsearchtrees}
+\subsection{Description}
+This unit defines object type TStringTreeNode as a named element of a binary search tree and implements a procedure of a search within it. Old-type object is used instead of time to save space. I don't want to use a huge \code{classes} unit in LMath.
+\subsection{Types and objects}
+\subsubsection{TStringTreeNode}
+\paragraph{Declaration\\}
+\begin{verbatim}
+TStringTreeNode = object
+  Name : string; {Name of the object. Function Finds searches for it}
+  Left : PStringTreeNode; {Link to left (lesser) element}
+  Right: PStringTreeNode; {Link to right (greater) element}
+  constructor Init(AName:string);
+  destructor Done;
+  function Find(AName:string; out Comparison:integer):PStringTreeNode;
+end;
+\end{verbatim}
+\paragraph{Methods\\}
+\subparagraph{Init}
+\begin{itemize}
+\item[\declarationitem{Declaration}\hfill]constructor Init(AName:TString)
+\item[\descriptiontitle{Description}]Creates the object, initializes \code{Name} field with \code{AName}, \code{Left} and \code{Right} with \code{nil}.
+\end{itemize}
+\subparagraph{Done}
+\begin{itemize}
+\item[\declarationitem{Declaration}\hfill] destructor Done;
+\item[\descriptiontitle{Description}]Disposes the item and all its children. To dispose a whole tree beginning with \code{TreeRoot:TStringTreeNode}, call \code{dispose(TreeRoot, done)} for its root.
+\end{itemize}
+\subparagraph{Find}
+\begin{itemize}
+	\item[\declarationitem{Declaration}]\code{function Find(AName:string;\\{}\hspace*{2cm} out Comparison:integer):PStringTreeNode;}
+	\item[\descriptiontitle{Description}] Searches self and children for a member with \code{Name = AName}. returns either found item (\code{Comparison = 0} in this case) or, if the tree does not contain an item which meets condition, then returns an item where a new item with \code{AName} must be inserted. If \code{AName < Name} and, consequently, the new Item must be inserted as \code{Find.Left}, then \code{Comparison < 0}, if \code{AName > Name}, then \code{Comparison > 0}.  
+\end{itemize}
 \section{Unit lmunitsformat}\lmath{-24pt}
 \label{lmunitsformat}
 \index{lmunitsformat}
