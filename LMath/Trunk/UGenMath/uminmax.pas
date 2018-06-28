@@ -24,8 +24,12 @@ function Max(X, Y : Integer) : Integer; overload;
 { Sign (returns 1 if X = 0) }
 function Sgn(X : Float) : Integer; overload;
 
+function Sgn(X : integer) : integer; overload;
+
 { Sign (returns 0 if X = 0) }
-function Sgn0(X : Float) : Integer;
+function Sgn0(X : Float) : Integer; overload;
+
+function Sgn0(X : integer) : integer; overload;
 
 { Sgn(B) * |A| }
 function DSgn(A, B : Float) : Float;
@@ -66,11 +70,26 @@ implementation
     if X >= 0.0 then Sgn := 1 else Sgn := - 1;
   end;
 
+  function Sgn(X : integer) : Integer;
+  begin
+    if X >= 0 then Sgn := 1 else Sgn := - 1;
+  end;
+
   function Sgn0(X : Float) : Integer;
   begin
     if X > 0.0 then
       Sgn0 := 1
     else if IsZero(X) then
+      Sgn0 := 0
+    else
+      Sgn0 := - 1;
+  end;
+
+  function Sgn0(X : Integer) : Integer;
+  begin
+    if X > 0 then
+      Sgn0 := 1
+    else if X = 0 then
       Sgn0 := 0
     else
       Sgn0 := - 1;
