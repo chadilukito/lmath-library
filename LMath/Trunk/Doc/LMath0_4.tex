@@ -58,15 +58,15 @@ For few years I was using the brilliant DMath library from Jean Debord. In the c
 
 DMath stands for Delphi Math, and is a continuation of an earlier work which was named TPMath, for Turbo Pascal Math. Continuing this tradition, I named this work LMath: Lazarus Math.
 
-My initial intent was to integrate LMath into Free Pascal system and make use of built-in Math unit. However, after close look at the code of both, I found that DMath had very thoughtful and consistent error handling mechanism which would be broken by such integration and abandoned this idea. Besides that, I was not sure how well handling of different float types in DMath and in Math would fit each other. After these considerations, I preferred to implement some functions from Math unit and leave LMath self-contained.
+My initial intent was to integrate LMath into Free Pascal system and make use of built-in Math unit. However, after close look at the code of both, I found that DMath had very thoughtful and consistent error handling mechanism which would be broken by such integration and abandoned this idea. Besides that, I was not sure how well handling of different float types in DMath and in Math would fit each other. After these considerations, I preferred to implement some functions from Math unit and to leave LMath self-contained.
 \section*{Changes in LMath Compared to DMath}
 \subsection*{Modifications of Existing Code}  
 These are not numerous. 
 \begin{enumerate}
-\item In many cases, I have changed \code{var} descriptor to \code{out} for output parameters in function call (I do not like to get tons of unmeaningful warnings). So, now a user must take seriously compiler complaints on possibly uninitialized variable. However, I do not promice that I did it everywhere.
-\item Instead of many various \code{Dim*Vector} and \code{Dim*Matrix} defined overloaded \hyperref[utypes-DimVector]{DimVector} and \hyperref[utypes-DimMatrix]{DimMatrix} procedures for all types of vectors and matrices.
+\item In many cases, I have changed \code{var} descriptor to \code{out} for output parameters in function calls, to avoid getting tons of unmeaningful warnings. So, now a user must take seriously compiler complaints on possibly uninitialized variables. However, I do not guarantee that I did it everywhere.
+\item Instead of many various \code{Dim*Vector} and \code{Dim*Matrix}, overloaded \hyperref[utypes-DimVector]{DimVector} and \hyperref[utypes-DimMatrix]{DimMatrix} procedures for all types of vectors and matrices were defined.
 \item Similarly, changed \code{FSwap} and \code{ISwap} to universal \hyperref[uminmax-Swap]{Swap}; \hyperref[uminmax-Min]{Min} and \hyperref[uminmax-Min]{Max} are overloaded as well.
-\item In \hyperref[ueval]{uEval} unit, \hyperref[ueval-parsingerror]{ParsingError} variable was made public, to enable a calling program to react adequately if an invalid expression was passed for evaluation. Besides, names of the variables longer then one letter were made invalid. In DMath, a variable name could have arbitrary length, but only first letter was meaningful, which could easily lead to errors.
+\item In \hyperref[ueval]{uEval} unit, \hyperref[ueval-parsingerror]{ParsingError} variable was made public, to enable a calling program to react adequately if an invalid expression was passed for evaluation. Names of the variables may be of any length and, unlike DMath, the whole name is meaningful. Previously, only first letter was meaningful for expression parser.
 \item Converted into Lazarus and recompiled all GUI demo programs.
 \end{enumerate}
 But in general, I did not modify existing algorithms, since Jean Debord did really very good job and they function nicely.
@@ -89,11 +89,11 @@ But in general, I did not modify existing algorithms, since Jean Debord did real
 \item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
 \end{enumerate}
 \section*{About the documentation} 
-DMath comes with very nice \href{DMath.pdf}{manual} which describes not only the library itself, but a lot of underlying theory. This document, written by Jean debord, is included with LMath library. Practically everything what you find in this manual remains true for LMath as well, however, new code is, of course, not covered by DMath manual. 
+DMath comes with very nice \href{DMath.pdf}{manual} which describes not only the library itself, but a lot of underlying theory. This document, written by Jean Debord, is included with LMath library. Practically everything what you find in this manual remains true for LMath as well. However, new code is, of course, not covered by DMath manual. 
 
 Therefore, I created the document which you are reading now. It was generated using \href{https://sourceforge.net/projects/pasdoc/}{PasDoc} program from the comments contained in the source files and later manually edited and extended. It contains rather formal and terse description of every routine, variable or constant found in the library and may serve as a brief reference. It covers both old and new procedures. Each chapter describes one package so you can easily find where needed function is located. I suggest that DMath.pdf is used to study the most of the library, and this document for the aquaintance with new possibilities and for quick reference.
 
-All elements added or modified in LMath library are labeled as here. If this symbol is related to a unit identifier, it means that the entire unit is new. \lmath{-28pt} 
+All elements added or modified in LMath library are labeled in the margins, as shown here. If this symbol is related to a unit identifier, it means that the entire unit is new. \lmath{-28pt} 
 \chapter{Structure of the Library}
 I find that huge packages with hundreds of units are inconvenient, therefore I organized the library into 12 relatively small packages:
 \begin{enumerate}
@@ -102,10 +102,10 @@ I find that huge packages with hundreds of units are inconvenient, therefore I o
 	\item{\hyperref[package-upolynoms]{uPolynoms}.} Evaluation of polynomials, polynomial roots finding, polynomial critical points finding. Depends on uGenMath and uLineAlgebra.
 	\item{\hyperref[package-uintegrals]{uIntegrals}.} Numeric integrating and solving differential equations. Depends on uGenMath.
 	\item{\hyperref[package-urandoms]{uRandoms}.} Generation of random numbers. Depends on uGenMath.
-	\item{\hyperref[package]{uMathStat}} Descriptive statistics, hypothesis testing, collection of various distributions. Depends on uGenMath and uLineAlgebra.
+	\item{\hyperref[package-umathstat]{uMathStat}} Descriptive statistics, hypothesis testing, collection of various distributions. Depends on uGenMath and uLineAlgebra.
 	\item{\hyperref[package-uoptimum]{uOptimum}.} Algorithms of function minimization. Somewhat artificially, unit uEval for evaluation of an expression, is included into this package. Depends on uGenMath, uLineAlgebra, uRandoms, uMathStat.
 	\item{\hyperref[package-unonlineq]{uNonLinEq}.} Finding of roots of non-linear equations. Depends on uGenMath, uLineAlgebra, uOptimum.
-	\item{\hyperref[package-uregression]{uRegression}.} Algorithms for linear and non-linear regression, curve fitting. Collection of common models. Depends on uLineAlgebra, uPolynoms, uOptimum, uMathUtil.
+	\item{\hyperref[package-uregression]{uRegression}.} Algorithms for linear and non-linear regression, curve fitting. Collection of common models. Unit uFFT for fast Fourier Transform is located also here.  Depends on uLineAlgebra, uPolynoms, uOptimum, uMathUtil.
 	\item{\hyperref[package-uspecregress]{uSpecRegress}.} Collection of field-specific models for data fitting. Depends on uGenMath and uRegression.
 	\item{\hyperref[package-umathutil]{uMathUtil}.} Several sorting and formatting routines. Depends on uGenMath.
 	\item{\hyperref[package-uplotter]{uPlotter}.} Routines for data and functions plotting. Depends on uGenMath, uMathUtil and LCL.
@@ -155,8 +155,8 @@ Represents point on a cartesian plane. Unit \hyperref[uRealPoints]{uRealPoints} 
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{verbatim}
 	Complex = record
-	X: Float;
-	Y: Float;
+	  X: Float;
+	  Y: Float;
 	end;
 	\end{verbatim}
 	\item[\descriptiontitle{Description}]
@@ -1544,7 +1544,7 @@ Compares to zero using epsilon. If Epsilon is {-}1, default value as set with pr
 			'Initial parameter equal to zero'
 			);}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Array of messages corresponding to standard error codes, defines in this unit. Elements of this array are returned by \hyperref[uErrors-MathErrMessage]{MathErrMessage} function.	
+\item[\descriptiontitle{Description}] Array of messages corresponding to standard error codes defined in this unit. Elements of this array are returned by \hyperref[uErrors-MathErrMessage]{MathErrMessage} function.	
 \end{itemize}
 \subsection{Functions and Procedures}
 \subsubsection{SetErrCode}\lmath{-24pt}
@@ -1675,7 +1675,7 @@ Minimum, maximum, sign and exchange.
 	
 	\par
 	\item[\descriptiontitle{Description}]
-	compatibility with Math unit
+	Compatibility with Math unit. Same as \code{Sgn0}. 
 	
 \end{itemize}
 \subsubsection{Swap}\lmath{-24pt}
@@ -2933,7 +2933,7 @@ This unit defines type TInterval which represents an interval on a real numbers 
 \item[\declarationitem{Declaration}]
 \begin{flushleft}
 \code{\\
-	TInterval = record
+	TInterval = record \\
 		\hspace{1cm}Lo:Float;\\
 		\hspace{1cm}Hi:Float;\\
 		\hspace{1cm}function Length:float\\
@@ -4919,7 +4919,7 @@ Density of standard normal distribution.
 			function DGaussian(X, Mean, Sigma: float) : float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Density of gaussian distribution with orbitrary math. expectation Mean and standard deviation sigma.
+	Density of gaussian distribution with orbitrary math. expectation Mean and standard deviation Sigma.
 \end{itemize}
 \section{Unit uinvnorm}
 \label{uinvnorm}
@@ -7379,7 +7379,7 @@ Modified from Don Cross: \href{http://groovit.disjunkt.com/analog/time-domain/ff
 \end{itemize}
 \chapter{Package uSpecRegress: Specialized Regression Models}\label{package-uspecregress}
 \section{Description}
-This package contains collection of some regression models, specific for paricular fields of knowledge. Currently it includes equation of enzyme kinetics (Michaelis-Menten equation, Hill equation), chamistry (acid-base titration curve), electrophysiology (Goldman-Hodgkin-Katz Equation for current), and some statistic distributions.
+This package contains collection of some regression models, specific for paricular fields of knowledge. Currently it includes equation of enzyme kinetics (Michaelis-Menten equation, Hill equation), chemistry (acid-base titration curve), electrophysiology (Goldman-Hodgkin-Katz Equation for current), and some statistic distributions.
 \section{Unit uDistribs}\lmath{-24pt}
 \label{udistribs}
 \index{udistribs}
@@ -8407,12 +8407,12 @@ where $x$ is pH, $y$ is some property (e.g. absorbance) which depends on the rat
 
 \chapter{Package uMathUtil: Various Utilities Useful for Mathematical and Scientific Programming}\label{package-umathutil}\index{LAMath}
 \section{Description}
-Package uMathUtil includes several units which do notbelong \textit{sensu stricto} to the field of numeric analysis, but can be useful for scientific programming. Unit lmUnitsFormat allows to output values with units in conveniently formatted form using prefixes as pico-, nano- and so on. Unit lmSorting implements several sorting algorithms for arrays of Float and of TRealPoint; the latter ones may be sorted both for X and for Y; units uStrings and uWinStr define several handy functions over strings.   
+Package uMathUtil includes several units which do not belong \textit{sensu stricto} to the field of numeric analysis, but can be useful for scientific programming. Unit lmUnitsFormat allows to output values with units in conveniently formatted form using prefixes as pico-, nano- and so on. Unit lmSorting implements several sorting algorithms for arrays of Float and of TRealPoint; the latter ones may be sorted both for X and for Y; units uStrings and uWinStr define several handy functions over strings.   
 \section{Unit lmSearchTrees}\lmath{-24pt}
 \label{lmsearchtrees}
 \index{lmsearchtrees}
 \subsection{Description}
-This unit defines object type TStringTreeNode as a named element of a binary search tree and implements a procedure of a search within it. Old-type object is used instead of time to save space. I don't want to use a huge \code{classes} unit in LMath.
+This unit defines object type TStringTreeNode as a named element of a binary search tree and implements a procedure of a search within it. Old-type object is used instead of class to save space. I don't want to use a huge \code{classes} unit in LMath.
 \subsection{Types and objects}
 \subsubsection{TStringTreeNode}
 \paragraph{Declaration\\}
