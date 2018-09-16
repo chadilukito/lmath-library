@@ -4,9 +4,11 @@ unit lmnumericedits;
 interface
 
 uses
-  Classes, Controls, SysUtils, StdCtrls, uTypes;
+  Classes, Controls, SysUtils, StdCtrls, StrUtils, Clipbrd, uTypes;
 
 type
+
+  { TFloatEdit }
 
   TFloatEdit = class(TEdit)
   private
@@ -21,6 +23,7 @@ type
     procedure KeyPress(var Key: char); override;
   public
     constructor Create(TheOwner: TComponent); override;
+    procedure PasteFromClipboard; override;
     function ValueToStr(const AValue: Float): String; virtual;
   published
     property DecimalPlaces: Integer read FDecimals write SetDecimals default 2;
@@ -51,10 +54,18 @@ end;
 
 procedure TFloatEdit.KeyPress(var Key: char);
 begin
-  inherited KeyPress(Key);
-  if (Key in ['.',',']) then Key := DefaultFormatSettings.Decimalseparator;
+  if (Key in ['.',',']) then
+  begin
+    Key := DefaultFormatSettings.Decimalseparator;
+    if Pos(Key,Text) <> 0 then
+      Key := #0;
+  end;
   if not (Key in ['0'..'9','E','e',DefaultFormatSettings.DecimalSeparator,'+','-',#8,#9,^C,^X,^V,^Z]) then Key := #0;
+  if (Key in ['+','-']) and not ((SelStart = 0) or (Text[SelStart] in ['e','E'])) then Key := #0;
+  if (Key = 'e') then Key := 'E';
+  if (Key = 'E') and ((SelStart = 0) or ((SelStart = 1) and (Text[1] in ['-','+'])) or (Pos('E',Text) <> 0)) then Key := #0;
   if (Key = DefaultFormatSettings.DecimalSeparator) and (FDecimals = 0) then Key := #0;
+  inherited KeyPress(Key);
 end;
 
 procedure TFloatEdit.SetValue(const AValue: Float);
@@ -75,6 +86,25 @@ begin
   inherited Create(TheOwner);
   FValue := 0;
   FDecimals := 3;
+end;
+
+procedure TFloatEdit.PasteFromClipboard;
+var
+  NewText:string;
+  NewVal:float;
+  ErrCode:integer;
+begin
+  if Text <> '' then
+    NewText := StuffString(Text,SelStart+1,SelLength,Trim(Clipboard.AsText))
+  else
+    NewText := Clipboard.AsText;
+  Val(NewText,NewVal,ErrCode);
+  if ErrCode = 0 then
+  begin
+    FValue := NewVal;
+    Text := NewText;
+    FValueEmpty := false;
+  end;
 end;
 
 function TFloatEdit.ValueToStr(const AValue: Float): String;
