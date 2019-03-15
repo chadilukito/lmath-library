@@ -40,37 +40,37 @@ function SameValue(A,B:Float):boolean; overload;
 procedure SetAutoInit(AutoInit : Boolean);
 
 { Creates floating point vector V[0..Ub] }
-procedure DimVector(var V : TVector; Ub : Integer); overload;
+procedure DimVector(out V : TVector; Ub : Integer); overload;
 
 { Creates integer vector V[0..Ub] }
-procedure DimVector(var V : TIntVector; Ub : Integer); overload;
+procedure DimVector(out V : TIntVector; Ub : Integer); overload;
 
 { Creates complex vector V[0..Ub] }
-procedure DimVector(var V : TCompVector; Ub : Integer); overload;
+procedure DimVector(out V : TCompVector; Ub : Integer); overload;
 
 { Creates vector V[0..Ub] of TRealPoint}
-procedure DimVector(var V: TRealPointVector; Ub: Integer); overload;
+procedure DimVector(out V: TRealPointVector; Ub: Integer); overload;
 
 { Creates boolean vector V[0..Ub] }
-procedure DimVector(var V : TBoolVector; Ub : Integer); overload;
+procedure DimVector(out V : TBoolVector; Ub : Integer); overload;
 
 { Creates string vector V[0..Ub] }
-procedure DimVector(var V : TStrVector; Ub : Integer); overload;
+procedure DimVector(out V : TStrVector; Ub : Integer); overload;
 
 { Creates floating point matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(var A : TMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(out A : TMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates integer matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(var A : TIntMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(out A : TIntMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates complex matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(var A : TCompMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(out A : TCompMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates boolean matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(var A : TBoolMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(out A : TBoolMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates string matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(var A : TStrMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(out A : TStrMatrix; Ub1, Ub2 : Integer); overload;
 
 {Sets default epsilon for SameValue }
 procedure SetEpsilon(AEpsilon: float);
@@ -169,7 +169,7 @@ begin
   gAutoInit := AutoInit;
 end;
 
-procedure DimVector(var V : TVector; Ub : Integer); 
+procedure DimVector(out V : TVector; Ub : Integer);
 var
   I : Integer;
 begin
@@ -190,7 +190,7 @@ begin
       V[I] := 0.0;
 end;
 
-procedure DimVector(var V : TIntVector; Ub : Integer);
+procedure DimVector(out V : TIntVector; Ub : Integer);
 var
   I : Integer;
 begin
@@ -211,7 +211,7 @@ begin
       V[I] := 0;
 end;
 
-procedure DimVector(var V : TCompVector; Ub : Integer);
+procedure DimVector(out V : TCompVector; Ub : Integer);
 var
   I : Integer;
 begin
@@ -235,7 +235,7 @@ begin
       end;
 end;
 
-procedure DimVector(var V: TRealPointVector; Ub: Integer);
+procedure DimVector(out V: TRealPointVector; Ub: Integer);
 var
   I:integer;
 begin
@@ -256,7 +256,7 @@ begin
   end;
 end;
 
-procedure DimVector(var V : TBoolVector; Ub : Integer);
+procedure DimVector(out V : TBoolVector; Ub : Integer);
 var
   I : Integer;
 begin
@@ -277,7 +277,7 @@ begin
       V[I] := False;
 end;
 
-procedure DimVector(var V : TStrVector; Ub : Integer);
+procedure DimVector(out V : TStrVector; Ub : Integer);
 var
   I : Integer;
 begin
@@ -298,7 +298,7 @@ begin
       V[I] := '';
 end;
 
-procedure DimMatrix(var A : TMatrix; Ub1, Ub2 : Integer); 
+procedure DimMatrix(out A : TMatrix; Ub1, Ub2 : Integer);
 var
   I, J : Integer;
 begin
@@ -319,7 +319,7 @@ begin
         A[I,J] := 0.0;
 end;
 
-procedure DimMatrix(var A : TIntMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(out A : TIntMatrix; Ub1, Ub2 : Integer);
 var
   I, J : Integer;
 begin
@@ -341,7 +341,7 @@ begin
         A[I,J] := 0;
 end;
 
-procedure DimMatrix(var A : TCompMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(out A : TCompMatrix; Ub1, Ub2 : Integer);
 var
   I, J : Integer;
 begin
@@ -366,7 +366,7 @@ begin
         end;              
 end;
 
-procedure DimMatrix(var A : TBoolMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(out A : TBoolMatrix; Ub1, Ub2 : Integer);
 var
   I, J : Integer;
 begin
@@ -388,7 +388,7 @@ begin
         A[I,J] := False;
 end;
 
-procedure DimMatrix(var A : TStrMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(out A : TStrMatrix; Ub1, Ub2 : Integer);
 var
   I, J : Integer;
 begin

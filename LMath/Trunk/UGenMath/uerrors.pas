@@ -7,6 +7,8 @@ unit uErrors;
 interface
 uses uTypes;
 const
+  MaxErrIndex = 17;
+
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
   FOk        = 0;  {< No error }
@@ -30,8 +32,10 @@ const
 //  Error codes for nonlinear regression
   NLMaxPar  = 14;  {< Max. number of parameters exceeded }
   NLNullPar = 15;  {< Initial parameter equal to zero }
-
-  ErrorMessage : array[0..15] of String =
+//  Error codes for Cobyla algorithm
+  cobMaxFunc = 16;
+  cobRoundErrors = 17;
+  ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
      'Function singularity',
@@ -47,10 +51,11 @@ const
      'Quasi-singular hessian matrix',
      'Too high Marquardt parameter',
      'Max. number of parameters exceeded',
-     'Initial parameter equal to zero'
+     'Initial parameter equal to zero',
+     'Return from subroutine Cobyla because the maxfun limit has been reached',
+     'Return from procedure Cobyla because rounding errors are becoming damaging.'
     );
-  { Sets the error code. Optional argument ErrAddr allows to set user-supplied variable to store it.
-    This *must* be used in multi-threaded application. The same address must be used in MathErr}
+  { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');
 
 { Sets error code and default function value }
@@ -70,7 +75,7 @@ var
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');
 begin
    gErrCode := ErrCode;
-   if (EMessage = '') and (ErrCode in [0..15]) then
+   if (EMessage = '') and (ErrCode in [0..MaxErrIndex]) then
      gEMessage := ErrorMessage[ErrCode]
    else
      gEMessage := EMessage;
