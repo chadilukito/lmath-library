@@ -1,12 +1,16 @@
 Program testcobyla;
-Uses uTypes, uMath, TestFunc, uCobyla;
+Uses uTypes, uMath, uErrors, SysUtils, TestFunc, uCobyla;
+const
+   OutputFmt = 'NFVALS = %6.4d F = %13.6g  MaxCV = %13.6g';
+
 var
   X: TVector;
   XOPT: array [1..10] of float;
   N, M, I : integer;
-  ICase, IPrint, MaxFun: integer;
+  ICase, MaxFun: integer;
   Temp, TempA, TempB, TempC, TempD : float;
   RhoBeg, RhoEnd : Float;
+  F, MaxCV: Float; // value of function after minimization
 begin
   DimVector(X, 10);
   for NPROB := 1 to 10 do    // NProb is defined in TestFunc unit
@@ -75,6 +79,7 @@ begin
     9:  begin
           writeln( 'Output from test problem 9 (Hock and Schittkowski 100)');
           M := 4;
+          N := 7;
           XOPT[1] := 2.330499;      //   This problem is taken from page 111 of Hock and Schittkowski's
           XOPT[2] := 1.951372;      //   book Test Examples for Nonlinear Programming Codes. It is their
           XOPT[3] := -0.4775414;    //   test problem Number 100.
@@ -98,9 +103,19 @@ begin
         1: RHOEND := 0.001;
         2: RHOEND := 0.0001;
       end;
-      IPRINT := 1;
       MAXFUN := 2000;
-      COBYLA(N,M,X,RHOBEG,RHOEND,IPRINT,MAXFUN,@CalcFC);
+      COBYLA(N,M,X,F,MaxCV,RHOBEG,RHOEND,MAXFUN,@CalcFC);
+
+      if MathErr = optOK then
+        writeln('normal return from subroutine cobyla')
+      else
+        writeln(MathErrMessage);
+
+      writeln(Format(OutputFmt,[MaxFun,F,MaxCV]));
+      writeln('X:');
+      for I := 1 to N do
+         writeln(X[i]);
+
       IF NPROB = 10 THEN
       BEGIN
          TEMPA := X[1]+X[3]+X[5]+X[7];
@@ -121,5 +136,6 @@ begin
     End; //Do
    writeln('----------------------------------------------');
   End; //Do
+  writeln('Press [Enter] to terminate...');
   readln;
 END. // program TestCOBYLA
