@@ -4,11 +4,13 @@
 
 unit uLineAlgebra;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubalance, ubalbak, ucholesk, ucompvec, ueigsym, ueigval, ueigvec, uelmhes, ueltran, ugausjor, uhqr, uhqr2, ujacobi, 
-  ulineq, ulu, uqr, usvd, LazarusPackageIntf;
+  ubalance, ubalbak, ucholesk, ucompvec, ueigsym, ueigval, ueigvec, uelmhes, 
+  ueltran, ugausjor, uhqr, uhqr2, ujacobi, ulineq, ulu, uqr, usvd, uMatrix, 
+  LazarusPackageIntf;
 
 implementation
 
