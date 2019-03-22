@@ -7,7 +7,7 @@ unit uErrors;
 interface
 uses uTypes;
 const
-  MaxErrIndex = 17;
+  MaxErrIndex = 18;
 
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
@@ -22,7 +22,7 @@ const
   MatOk      = 0;  {< No error }
   MatNonConv = 7;  {< Non-convergence }
   MatSing    = 8;  {< Quasi-singular matrix }
-  MatErrDim  = 9;  {< Non-compatible dimensions }
+  MatErrDim  = 9;  {< Incompatible dimensions }
   MatNotPD   = 10; {< Matrix not positive definite }
 //  Error codes for optimization and nonlinear equations
   OptOk        = 0;  {< No error }
@@ -35,6 +35,7 @@ const
 //  Error codes for Cobyla algorithm
   cobMaxFunc = 16;
   cobRoundErrors = 17;
+  cobDegenerate = 18;
   ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
@@ -45,7 +46,7 @@ const
      'Partial loss of precision',
      'Non-convergence',
      'Quasi-singular matrix',
-     'Non-compatible dimensions',
+     'Incompatible matrix dimensions',
      'Matrix not positive definite',
      'Non-convergence',
      'Quasi-singular hessian matrix',
@@ -53,7 +54,8 @@ const
      'Max. number of parameters exceeded',
      'Initial parameter equal to zero',
      'Return from subroutine Cobyla because the maxfun limit has been reached',
-     'Return from procedure Cobyla because rounding errors are becoming damaging.'
+     'Return from procedure Cobyla because rounding errors are becoming damaging.',
+     'Degenerate gradient'
     );
   { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');

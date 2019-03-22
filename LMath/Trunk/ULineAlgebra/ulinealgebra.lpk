@@ -25,7 +25,7 @@
       </Linking>
     </CompilerOptions>
     <Version Minor="4"/>
-    <Files Count="17">
+    <Files Count="18">
       <Item1>
         <Filename Value="ubalance.pas"/>
         <UnitName Value="ubalance"/>
@@ -94,6 +94,10 @@
         <Filename Value="usvd.pas"/>
         <UnitName Value="usvd"/>
       </Item17>
+      <Item18>
+        <Filename Value="umatrix.pas"/>
+        <UnitName Value="umatrix"/>
+      </Item18>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

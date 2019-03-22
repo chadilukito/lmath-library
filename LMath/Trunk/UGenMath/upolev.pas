@@ -23,13 +23,13 @@ type
     The function P1Evl() assumes that Coef[N] = 1.0 and is
     omitted from the array. Its calling arguments are
     otherwise the same as PolEvl(). }
-function PolEvl(var X : Float; Coef : TabCoef; N : Integer) : Float;
+function PolEvl(X : Float; Coef : TabCoef; N : Integer) : Float;
 
-function P1Evl(var X : Float; Coef : TabCoef; N : Integer) : Float;
+function P1Evl(X : Float; Coef : TabCoef; N : Integer) : Float;
 
 implementation
 
-  function PolEvl(var X : Float; Coef : TabCoef; N : Integer) : Float;
+  function PolEvl(X : Float; Coef : TabCoef; N : Integer) : Float;
 
   var
     Ans : Float;
@@ -41,7 +41,7 @@ implementation
     PolEvl := Ans;
   end;
 
-  function P1Evl(var X : Float; Coef : TabCoef; N : Integer) : Float;
+  function P1Evl(X : Float; Coef : TabCoef; N : Integer) : Float;
 { ------------------------------------------------------------------
   Evaluate polynomial when coefficient of X is 1.0.
   Otherwise same as PolEvl.

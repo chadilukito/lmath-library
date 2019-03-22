@@ -191,58 +191,56 @@ implementation
     if A > 13.0 then
       begin
         if X < 0.0 then
-          begin
-            N := Trunc(A);
-            Z := A - N;
-            if Z > 0.5 then
-              begin
-                N := N + 1;
-                Z := A - N;
-              end;
-            Z := Abs(A * Sin(Pi * Z)) * Stirling(A);
-            if Z <= Pi / MaxNum then
-              begin
-                Gamma := DefaultVal(FOverflow, SgnGam * MaxNum);
-                Exit;
-              end;
-            Z := PI / Z;
-          end
-        else
+        begin
+          N := Trunc(A);
+          Z := A - N;
+          if Z > 0.5 then
+            begin
+              N := N + 1;
+              Z := A - N;
+            end;
+          Z := Abs(A * Sin(Pi * Z)) * Stirling(A);
+          if Z <= Pi / MaxNum then
+            begin
+              Gamma := DefaultVal(FOverflow, SgnGam * MaxNum);
+              Exit;
+            end;
+          Z := PI / Z;
+        end else
           Z := Stirling(X);
         Gamma := SgnGam * Z;
       end
-    else
+    else begin
+      Z := 1.0;
+      X1 := X;
+      while X1 >= 3.0 do
+        begin
+          X1 := X1 - 1.0;
+          Z := Z * X1;
+        end;
+      while X1 < - 0.03125 do
+        begin
+          Z := Z / X1;
+          X1 := X1 + 1.0;
+        end;
+      if X1 <= 0.03125 then
+        Gamma := GamSmall(X1, Z)
+      else
       begin
-        Z := 1.0;
-        X1 := X;
-        while X1 >= 3.0 do
-          begin
-            X1 := X1 - 1.0;
-            Z := Z * X1;
-          end;
-        while X1 < - 0.03125 do
-          begin
-            Z := Z / X1;
-            X1 := X1 + 1.0;
-          end;
-        if X1 <= 0.03125 then
-          Gamma := GamSmall(X1, Z)
+        while X1 < 2.0 do
+        begin
+          Z := Z / X1;
+          X1 := X1 + 1.0;
+        end;
+        if (X1 = 2.0) or (X1 = 3.0) then
+          Gamma := Z
         else
-          begin
-            while X1 < 2.0 do
-              begin
-                Z := Z / X1;
-                X1 := X1 + 1.0;
-              end;
-            if (X1 = 2.0) or (X1 = 3.0) then
-              Gamma := Z
-            else
-              begin
-                X1 := X1 - 2.0;
-                Gamma := Z * PolEvl(X1, P, 7) / PolEvl(X1, Q, 8);
-              end;
-          end;
+        begin
+          X1 := X1 - 2.0;
+          Gamma := Z * PolEvl(X1, P, 7) / PolEvl(X1, Q, 8);
+        end;
       end;
+    end;
   end;
 
   function LnGamma(X : Float) : Float;

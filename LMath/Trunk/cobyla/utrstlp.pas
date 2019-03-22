@@ -1,5 +1,5 @@
 {
- This subroutine calculates an N-component vector DX by applying the
+ This procedure calculates an N-component vector DX by applying the
 following two stages. In the first stage DX is set to the shortest
 vector that minimizes the greatest violation of the constraints
   A[1,K]*DX[1]+A[2,K]*DX[2]+...+A[N,K]*DX[N] >= B[K], K := 2,3,...,M,
@@ -10,9 +10,9 @@ minimize the objective function
 subject to no increase in any greatest constraint violation. This
 notation allows the gradient of the objective function to be regarded as
 the gradient of a constraint. Therefore the two stages are distinguished
-by MCON = M and MCON > M respectively. It is possile that a
+by MCON = M and MCON > M respectively. It is possible that a
 degeneracy may prevent DX from attaining the target length RHO. Then the
-value IFULL := 0 would be set, but usually IFULL := 1 on return.
+value IFULL = 0 would be set, but usually IFULL = 1 on return.
 
 In general NACT is the number of constraints in the active set and
 IACT[1],...,IACT[NACT] are their indices, while the remainder of IACT
@@ -38,18 +38,50 @@ procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVe
 
 
 implementation
-
-procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
-
 var
-  mcon, nact, I, K, J, ICon , icount, nactx, kk, kp, iout, kw, isave, kl: integer;
-  resmax, temp, tempa, vsave, dd, resold, sum: float;
-  optold, optnew, tot, sp, spabs, acca, accb, alpha, beta, ratio, zdotv, zdvabs, sd, ss, stpful, step, zdotw,
-        zdwabs, sumabs: float;
   IAct : TIntVector;
   Z : TMatrix;
   ZDota, VMultc, SDirn, DXNew, VMultd : TVector;
 
+procedure InitTrsTlp(M: integer; N: integer);
+var
+  i, j: Integer;
+begin
+  DimVector(IAct,m+1);
+  DimMatrix(Z, N,N);
+  DimVector(ZDota,N);
+  DimVector(VMultC,M+1);
+  DimVector(SDirn,N);
+  DimVector(DXNew, N);
+  DimVector(VMultD, M+1);
+  for i := 1 to n do
+  begin
+    for j := 1 to n do
+      z[i,j] := 0.0;
+    z[i,i] := 1.0;
+    dx[i] := 0.0;
+  end;
+end;
+
+procedure FinTrsTlp(var IFULL: integer);
+begin
+  ifull := 0;
+  Finalize(IAct);
+  Finalize(Z);
+  Finalize(ZDota);
+  Finalize(VMultC);
+  Finalize(SDirn);
+  Finalize(DXNew);
+  Finalize(VMultD);
+end;
+
+procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
+
+var
+  mcon, nact, I, K, J, ICon , icount, nactx, kk, kp, kw, isave, kl: integer;
+  resmax, temp, tempa, vsave, dd, resold, sum: float;
+  optold, optnew, tot, sp, spabs, acca, accb, alpha, beta, ratio, zdotv, zdvabs, sd, ss, stpful, step, zdotw,
+        zdwabs, sumabs: float;
 
 label
   60, 70, 130, 210, 260, 320, 340, 390, 480, 490;
@@ -65,37 +97,22 @@ begin
       mcon := m;
       nact := 0;
       resmax := 0.0;
-
-      DimVector(IAct,m+1);
-      DimMatrix(Z, N,N);
-      DimVector(ZDota,N);
-      DimVector(VMultC,M+1);
-      DimVector(SDirn,N);
-      DimVector(DXNew, N);
-      DimVector(VMultD, M+1);
-
-      for i := 1 to n do
-      begin
-        for j := 1 to n do
-          z[i,j] := 0.0;
-        z[i,i] := 1.0;
-        dx[i] := 0.0;
-      end;
+      InitTrsTlp(M, N);
       if m >= 1 then
       begin
         for k := 1 to m do
         if b[k] > resmax then
         begin
-            resmax := b[k];
-            icon := k;
+            resmax := b[k];  // resmax set to maximal constraint violation
+            icon := k;       // icon is index maximally violated constraint
         end;
         for k := 1 to m do
         begin
-          iact[k] := k;
+          iact[k] := k;      // for now, constraints are in initial order
           vmultc[k] := resmax-b[k];
         end;
       end;
-      if resmax = 0.0 then goto 480;
+      if resmax = 0.0 then goto 480; // no violations. first stage over
       for i := 1 to n do
         sdirn[i] := 0.0;
 //
@@ -107,27 +124,26 @@ begin
 //
 60:   optold := 0.0;
       icount := 0;
-70:   if mcon = m then
+70:   if mcon = m then     // first stage, there are violated constraints
         optnew := resmax
       else begin
-        optnew := 0.0;
+        optnew := 0.0;    // second stage, constraints are OK
         for i := 1 to n do
-          optnew := optnew-dx[i]*a[i,mcon];
+          optnew := optnew-dx[i]*A[i,mcon];
       end;
       if (icount = 0) or (optnew < optold) then
       begin
-          optold := optnew;
-          nactx := nact;
-          icount := 3;
+        optold := optnew;
+        nactx := nact;
+        icount := 3;
       end else if nact > nactx then
       begin
-          nactx := nact;
-          icount := 3;
+        nactx := nact;
+        icount := 3;
       end else
       begin
         icount := icount-1;
-        if (icount = 0) then
-          goto 490;
+        if icount = 0 then goto 490;
       end;
 //
 //     If ICON exceeds NACT, then we add the constraint with index IACT[ICON] to
@@ -136,11 +152,10 @@ begin
 //     product being set to zero if its nonzero value could be due to computer
 //     rounding errors. The array DXNEW is used for working space.
 //
-      if icon <= nact then
-        goto 260;
+      if icon <= nact then goto 260;
       kk := iact[icon];
       for i := 1 to n do
-        dxnew[i] := a[i,kk];
+        dxnew[i] := A[i,kk];
       tot := 0.0;
       k := n;
       while k > nact do
@@ -157,7 +172,7 @@ begin
         accb := spabs+0.2*abs(sp);
         if (spabs >= acca) or (acca >= accb) then
            sp := 0.0;
-        if (tot = 0.0) then
+        if tot = 0.0 then
           tot := sp
         else begin
           kp := k+1;
@@ -178,7 +193,7 @@ begin
 //     Add the new constraint if this can be done without a deletion from the
 //     active set.
 //
-      if (tot <> 0.0) then
+      if tot <> 0.0 then
       begin
         nact := nact+1;
         zdota[nact] := tot;
@@ -191,8 +206,7 @@ begin
 //     active set in order to make room for the new active constraint, because
 //     the new constraint gradient is a linear combination of the gradients of
 //     the old active constraints. Set the components of vmultc to the multipliers
-//     of the linear combination. Further, set IOUT to the index of the
-//     constraint to be deleted, but branch if no suitable index can be found.
+//     of the linear combination. Further, branch if no suitable index can be found.
 //
       ratio := -1.0;
       k := nact;
@@ -213,16 +227,13 @@ begin
         begin
           tempa := vmultc[k]/temp;
           if (ratio < 0.0) or (tempa < ratio) then
-          begin
             ratio := tempa;
-            iout := k;
-          end;
         end;
         if (k >= 2) then
         begin
           kw := iact[k];
           for i := 1 to n do
-            dxnew[i] := dxnew[i]-temp*a[i,kw];
+            dxnew[i] := dxnew[i]-temp*A[i,kw];
         end;
         vmultd[k] := temp;
       end else
@@ -249,7 +260,7 @@ begin
           kw := iact[kp];
           sp := 0.0;
           for i := 1 to n do
-            sp := sp+z[i,k]*a[i,kw];
+            sp := sp+z[i,k]*A[i,kw];
           temp := sqrt(sp*sp+zdota[kp]**2);
           alpha := zdota[kp]/temp;
           beta := sp/temp;
@@ -270,7 +281,7 @@ begin
       end;
       temp := 0.0;
       for i := 1 to n do
-        temp := temp+z[i,nact]*a[i,kk];
+        temp := temp+z[i,nact]*A[i,kk];
       if temp = 0.0 then
         goto 490;
       zdota[nact] := temp;
@@ -287,7 +298,7 @@ begin
         k := nact-1;
         sp := 0.0;
         for i := 1 to n do
-          sp := sp+z[i,k]*a[i,kk];
+          sp := sp+z[i,k]*A[i,kk];
         temp := sqrt(sp*sp+zdota[nact]**2);
         alpha := zdota[nact]/temp;
         beta := sp/temp;
@@ -309,19 +320,18 @@ begin
 //     If stage one is in progress, then set SDIRN to the direction of the next
 //     cha>=to the current vector of varia<=.
 //
-      if mcon > m then
-         goto 320;
+      if mcon > m then goto 320;
       kk := iact[nact];
       temp := 0.0;
       for i := 1 to n do
-        temp := temp+sdirn[i]*a[i,kk];
+        temp := temp+sdirn[i]*A[i,kk];
       temp := temp-1.0;
       temp := temp/zdota[nact];
       for i := 1 to n do
         sdirn[i] := sdirn[i]-temp*z[i,nact];
       goto 340;
 //
-//     D<=e the constraint that has the index IACT[ICON] from the active set.
+//     Delete the constraint that has the index IACT[ICON] from the active set.
 //
 260:  if icon < nact then
       begin
@@ -333,7 +343,7 @@ begin
           kk := iact[kp];
           sp := 0.0;
           for i := 1 to n do
-            sp := sp+z[i,k]*a[i,kk];
+            sp := sp+z[i,k]*A[i,kk];
           temp := sqrt(sp*sp+zdota[kp]**2);
           alpha := zdota[kp]/temp;
           beta := sp/temp;
@@ -354,11 +364,10 @@ begin
       end;
       nact := nact-1;
 //
-//     If st>=one is in progress, then set SDIRN to the direction of the next
-//     cha>=to the current vector of varia<=.
+//     If stage one is in progress, then set SDIRN to the direction of the next
+//     change to the current vector of varia<=.
 //
-      if mcon > m then
-        goto 320;
+      if mcon > m then goto 320;
       temp := 0.0;
       for i := 1 to n do
         temp := temp+sdirn[i]*z[i,nact+1];
@@ -388,8 +397,7 @@ begin
         sd := sd+dx[i]*sdirn[i];
         ss := ss+sdirn[i]**2;
       end;
-      if dd <= 0.0 then
-        goto 490;
+      if dd <= 0.0 then goto 490;
       temp := sqrt(ss*dd);
       if abs(sd) >= 1.0e-6*temp then
          temp := sqrt(ss*dd+sd*sd);
@@ -399,8 +407,7 @@ begin
       begin
         acca := step+0.1*resmax;
         accb := step+0.2*resmax;
-        if (step >= acca) or (acca >= accb) then
-           goto 480;
+        if (step >= acca) or (acca >= accb) then goto 480;
         step := Min(step,resmax);
       end;
 //
@@ -420,7 +427,7 @@ begin
           kk := iact[k];
           temp := b[kk];
           for i := 1 to n do
-            temp := temp-a[i,kk]*dxnew[i];
+            temp := temp-A[i,kk]*dxnew[i];
           resmax := Max(resmax,temp);
         end;
       end;
@@ -448,7 +455,7 @@ begin
       begin
           kk := iact[k];
           for i := 1 to n do
-            dxnew[i] := dxnew[i]-vmultd[k]*a[i,kk];
+            dxnew[i] := dxnew[i]-vmultd[k]*A[i,kk];
           k := k-1;
           goto 390;
       end;
@@ -469,7 +476,7 @@ begin
           sumabs := resmax+abs(b[kk]);
           for i := 1 to n do
           begin
-            temp := a[i,kk]*dxnew[i];
+            temp := A[i,kk]*dxnew[i];
             sum := sum+temp;
             sumabs := sumabs+abs(temp);
           end;
@@ -506,31 +513,22 @@ begin
       if mcon = m then
         resmax := resold+ratio*(resmax-resold);
 //
-//     If the full step is not accepta<=then begin another iteration.
-//     Otherwise switch to st>=two or end the calculation.
+//     If the full step is not acceptable then begin another iteration.
+//     Otherwise switch to stage two or end the calculation.
 //
-      if icon > 0 then
-        goto 70;
-      if step = stpful then
-        exit;
+      if icon > 0 then goto 70;
+      if step = stpful then exit;
   480: mcon := m+1;
       icon := mcon;
       iact[mcon] := mcon;
       vmultc[mcon] := 0.0;
       goto 60;
 //
-//     We employ any freedom that may be availa<=to reduce the objective
-//     function before returning a DX whose<> is<=s than RHO.
+//     We employ any freedom that may be available to reduce the objective
+//     function before returning a DX whose length is less than RHO.
 //
   490: if mcon = m then goto 480;
-      ifull := 0;
-      Finalize(IAct);
-      Finalize(Z);
-      Finalize(ZDota);
-      Finalize(VMultC);
-      Finalize(SDirn);
-      Finalize(DXNew);
-      Finalize(VMultD);
+      FinTrsTlp(IFULL);
 end;
 
 end.

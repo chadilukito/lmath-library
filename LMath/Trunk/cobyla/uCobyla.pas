@@ -18,40 +18,33 @@
      from the phrase Constrained Optimization BY Linear Approximations.
 
      The user must set the values of N, M, RHOBEG and RHOEND, and must
-     provide an initial vector of variables in X. Further, the value of
-     IPRINT should be set to 0, 1, 2 or 3, which controls the amount of
-     printing during the calculation. Specifically, there is no output if
-     IPRINT=0 and there is output only at the end of the calculation if
-     IPRINT=1. Otherwise each new value of RHO and SIGMA is printed.
-     Further, the vector of variables and some function information are
-     given either when RHO is reduced or when each new value of F(X) is
-     computed in the cases IPRINT=2 or IPRINT=3 respectively. Here SIGMA
-     is a penalty parameter, it being assumed that a change to X is an
+     provide an initial vector of variables in X.
+
+     SIGMA is a penalty parameter, it being assumed that a change to X is an
      improvement if it reduces the merit function
                 F(X)+SIGMA*MAX(0.0,-C1(X),-C2(X),...,-CM(X)),
      where C1,C2,...,CM denote the constraint functions that should become
-     nonnegative eventually, at least to the precision of RHOEND. In the
-     printed output the displayed term that is multiplied by SIGMA is
-     called MAXCV, which stands for 'MAXimum Constraint Violation'. The
-     argument MAXFUN is an integer variable that must be set by the user to a
-     limit on the number of calls of CALCFC, the purpose of this routine being
-     given below. The value of MAXFUN will be altered to the number of calls
-     of CALCFC that are made. The arguments W and IACT provide real and
-     integer arrays that are used as working space. Their lengths must be at
-     least N*(3*N+2*M+11)+4*M+6 and M+1 respectively.
+     nonnegative eventually, at least to the precision of RHOEND. This term
+     multiplied by SIGMA is returned by the function and is called MAXCV, which
+     stands for 'MAXimum Constraint Violation'. The argument MAXFUN is an integer
+     variable that must be set by the user to a limit on the number of calls of
+     CALCFC, the purpose of this routine being given below.
+     The value of MAXFUN will be altered to the number of calls
+     of CALCFC that are made.
+     In order to define the objective and constraint functions, we pass a procedure
+     of the form:
 
-     In order to define the objective and constraint functions, we require
-     a subroutine that has the name and arguments
-                SUBROUTINE CALCFC (N,M,X,F,CON)
-                DIMENSION X(*),CON(*)  .
+                procedure CALCFC(N, M : integer; const X : TVector;
+                                out F:Float; var CON: TVector);
+
+     It is defined as TCobylaObjectProc in uTypes unit, package uGenMath.
+
      The values of N and M are fixed and have been defined already, while
-     X is now the current vector of variables. The subroutine should return
-     the objective and constraint functions at X in F and CON(1),CON(2),
-     ...,CON(M). Note that we are trying to adjust X so that F(X) is as
+     X is now the current vector of variables. The procedure should return
+     the objective and constraint functions at X in F and CON[1],CON[2],
+     ...,CON[M]. Note that we are trying to adjust X so that F(X) is as
      small as possible subject to the constraint functions being nonnegative.
-
-     Partition the working space array W to provide the storage that is needed
-     for the main calculation.    }
+              }
 
 {$goto ON}
 
@@ -113,7 +106,6 @@ procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: fl
 
 var
   IFull:integer; // 1 means succcessful return from trstlp; 0 means degenerate gradient and fail
-  iptem, iptemp:integer;
   NFVals : integer; // number of function evaluations so far
   NP: integer; // N+1
   MP: integer; // M+1
@@ -138,8 +130,6 @@ begin
    first N columns of SIM.}
     InitCobyla(M,N);
     SetErrCode(OptOK);
-    iptem := min(n,5);
-    iptemp := iptem+1;
     np := n+1;
     mp := m+1;
     alpha := 0.25;
@@ -164,7 +154,7 @@ begin
     jdrop := np;
     ibrnch := 0;
 
-  { Make the next call of the user-supplied subroutine CALCFC. These
+  { Make the next call of the user-supplied procedure CALCFC. These
    instructions are also used for calling CALCFC during the iterations of
    the algorithm. }
 
@@ -583,6 +573,7 @@ begin
       end;
       goto 140;
     end;
+
     if IFull = 0 then
     begin
       SetErrCode(cobDegenerate);

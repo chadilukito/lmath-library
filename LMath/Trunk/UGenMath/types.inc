@@ -206,12 +206,15 @@ type
   TMintVar = (Var_T, Var_S, Var_E);
 
 type
-  {The values of N and M are fixed and have been defined already, while
-  X is now the current vector of variables. The subroutine should return
-  the objective and constraint functions at X in F and CON(1),CON(2),
-  ...,CON(M). Note that we are trying to adjust X so that F(X) is as
-  small as possible subject to the constraint functions being nonnegative.
-  Importantly, constraints can be violated during the calculation!}
+  {User function supplied to COBYLA minimization algorythm.
+  N is number of arguments to be adjusted;
+  M is number of constraints;
+  TVector X[N] is the current vector of variables.
+  TVector Con[M+2] is vector of constraint values. The subroutine should return
+  the objective and constraint functions at X in F and CON[1],CON[2],
+  ...,CON[M]. Con[M+1] and Con[M+2] are used internally. Note that we are trying to
+  adjust X so that F(X) is as small as possible subject to the constraint functions
+  being nonnegative. Importantly, constraints can be violated during the calculation!}
   TCobylaObjectProc = procedure (N, M : integer; const X : TVector;
                                 out F:Float; var CON: TVector);
 
