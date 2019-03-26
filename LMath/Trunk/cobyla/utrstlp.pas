@@ -32,7 +32,7 @@ shift RESMAX that makes the lest residual zero. }
 
 unit uTrsTlp;
 interface
-uses uTypes, uMinMax, uMath;
+uses uTypes, uMinMax, uMath, uMatrix;
 
 procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
 
@@ -43,9 +43,9 @@ var
   Z : TMatrix;
   ZDota, VMultc, SDirn, DXNew, VMultd : TVector;
 
-procedure InitTrsTlp(M: integer; N: integer);
+procedure InitTrsTlp(M: integer; N: integer; var DX : TVector);
 var
-  i, j: Integer;
+  i: Integer;
 begin
   DimVector(IAct,m+1);
   DimMatrix(Z, N,N);
@@ -56,10 +56,8 @@ begin
   DimVector(VMultD, M+1);
   for i := 1 to n do
   begin
-    for j := 1 to n do
-      z[i,j] := 0.0;
     z[i,i] := 1.0;
-    dx[i] := 0.0;
+    DX[i] := 0.0;
   end;
 end;
 
@@ -97,7 +95,7 @@ begin
       mcon := m;
       nact := 0;
       resmax := 0.0;
-      InitTrsTlp(M, N);
+      InitTrsTlp(M, N, DX);
       if m >= 1 then
       begin
         for k := 1 to m do
@@ -327,6 +325,7 @@ begin
         temp := temp+sdirn[i]*A[i,kk];
       temp := temp-1.0;
       temp := temp/zdota[nact];
+
       for i := 1 to n do
         sdirn[i] := sdirn[i]-temp*z[i,nact];
       goto 340;
@@ -464,8 +463,7 @@ begin
 //
 //     Complete vmultc by finding the new constraint residuals.
 //
-      for i := 1 to n do
-        dxnew[i] := dx[i]+step*sdirn[i];
+      dxnew := dx + sdirn * step;
       if mcon > nact then
       begin
           kl := nact+1;
