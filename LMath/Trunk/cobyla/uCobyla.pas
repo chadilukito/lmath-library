@@ -393,7 +393,7 @@ begin
     begin
       temp := 0.0;
       for i := 1 to N do
-        temp := temp+dx[i]**2;
+        temp := temp+dx[i]**2; // so this is dot product with itself, ie length
       if (temp < 0.25*rho*rho) then
       begin
         ibrnch := 1;
