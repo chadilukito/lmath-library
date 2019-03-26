@@ -36,9 +36,6 @@ function SameValue(A,B:Float):boolean; overload;
 { ------------------------------------------------------------------
   Dynamic arrays
   ------------------------------------------------------------------ }
-{ Sets the auto-initialization of arrays }
-procedure SetAutoInit(AutoInit : Boolean);
-
 { Creates floating point vector V[0..Ub] }
 procedure DimVector(out V : TVector; Ub : Integer); overload;
 
@@ -82,7 +79,6 @@ procedure SetZeroEpsilon(AZeroEpsilon: Float);
 implementation
 
 var
-  gAutoInit : Boolean = False;
   DefaultZeroEpsilon: Float = MachEp / 8;
   DefaultEpsilon: Float = MachEp;
 
@@ -164,35 +160,19 @@ begin
   Result := D < C*DefaultEpsilon;
 end;
 
-procedure SetAutoInit(AutoInit : Boolean);
-begin
-  gAutoInit := AutoInit;
-end;
-
 procedure DimVector(out V : TVector; Ub : Integer);
-var
-  I : Integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
-    begin
-      V := nil;
-      Exit;
-    end;
-
+  begin
+    V := nil;
+    Exit;
+  end;
   { Allocate vector }
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-
-  { Initialize vector }
-  if gAutoInit then
-    for I := 0 to Ub do
-      V[I] := 0.0;
 end;
 
 procedure DimVector(out V : TIntVector; Ub : Integer);
-var
-  I : Integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -203,17 +183,9 @@ begin
 
   { Allocate vector }
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-
-  { Initialize vector }
-  if gAutoInit then
-    for I := 0 to Ub do
-      V[I] := 0;
 end;
 
 procedure DimVector(out V : TCompVector; Ub : Integer);
-var
-  I : Integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -224,20 +196,9 @@ begin
 
   { Allocate vector }
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-
-  { Initialize vector }
-  if gAutoInit then
-    for I := 0 to Ub do
-      begin
-        V[I].X := 0.0;
-        V[I].Y := 0.0;
-      end;
 end;
 
 procedure DimVector(out V: TRealPointVector; Ub: Integer);
-var
-  I:integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -246,19 +207,9 @@ begin
     Exit;
   end;
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-  { Initialize vector }
-  if gAutoInit then
-  for I := 0 to Ub do
-  begin
-    V[I].X := 0.0;
-    V[I].Y := 0.0;
-  end;
 end;
 
 procedure DimVector(out V : TBoolVector; Ub : Integer);
-var
-  I : Integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -266,20 +217,10 @@ begin
       V := nil;
       Exit;
     end;
-
-  { Allocate vector }
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-
-  { Initialize vector }
-  if gAutoInit then
-    for I := 0 to Ub do
-      V[I] := False;
 end;
 
 procedure DimVector(out V : TStrVector; Ub : Integer);
-var
-  I : Integer;
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -287,63 +228,32 @@ begin
       V := nil;
       Exit;
     end;
-
-  { Allocate vector }
   SetLength(V, Ub + 1);
-  if V = nil then Exit;
-
-  { Initialize vector }
-  if gAutoInit then
-    for I := 0 to Ub do
-      V[I] := '';
 end;
 
 procedure DimMatrix(out A : TMatrix; Ub1, Ub2 : Integer);
-var
-  I, J : Integer;
 begin
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
     begin
       A := nil;
       Exit;
     end;
-
-  { Allocate matrix }
   SetLength(A, Ub1 + 1, Ub2 + 1);
-  if A = nil then Exit;
-
-  { Initialize matrix }
-  if gAutoInit then
-    for I := 0 to Ub1 do
-      for J := 0 to Ub2 do
-        A[I,J] := 0.0;
 end;
 
 procedure DimMatrix(out A : TIntMatrix; Ub1, Ub2 : Integer);
-var
-  I, J : Integer;
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
-    begin
-      A := nil;
-      Exit;
-    end;
-
+  begin
+    A := nil;
+    Exit;
+  end;
   { Allocate matrix }
   SetLength(A, Ub1 + 1, Ub2 + 1);
-  if A = nil then Exit;
-
-  { Initialize matrix }
-  if gAutoInit then
-    for I := 0 to Ub1 do
-      for J := 0 to Ub2 do
-        A[I,J] := 0;
 end;
 
 procedure DimMatrix(out A : TCompMatrix; Ub1, Ub2 : Integer);
-var
-  I, J : Integer;
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -351,24 +261,11 @@ begin
        A := nil;
        Exit;
      end;
-
   { Allocate matrix }
   SetLength(A, Ub1 + 1, Ub2 + 1);
-  if A = nil then Exit;
-
-  { Initialize matrix }
-  if gAutoInit then
-    for I := 0 to Ub1 do
-      for J := 0 to Ub2 do
-        begin      
-          A[I,J].X := 0.0;
-          A[I,J].Y := 0.0;
-        end;              
 end;
 
 procedure DimMatrix(out A : TBoolMatrix; Ub1, Ub2 : Integer);
-var
-  I, J : Integer;
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -376,21 +273,11 @@ begin
       A := nil;
       Exit;
     end;
-
   { Allocate matrix }
   SetLength(A, Ub1 + 1, Ub2 + 1);
-  if A = nil then Exit;
-
-  { Initialize matrix }
-  if gAutoInit then
-    for I := 0 to Ub1 do
-      for J := 0 to Ub2 do
-        A[I,J] := False;
 end;
 
 procedure DimMatrix(out A : TStrMatrix; Ub1, Ub2 : Integer);
-var
-  I, J : Integer;
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -398,16 +285,8 @@ begin
       A := nil;
       Exit;
     end;
-
   { Allocate matrix }
   SetLength(A, Ub1 + 1, Ub2 + 1);
-  if A = nil then Exit;
-
-  { Initialize matrix }
-  if gAutoInit then
-    for I := 0 to Ub1 do
-      for J := 0 to Ub2 do
-        A[I,J] := '';
 end;
 
 procedure SetEpsilon(AEpsilon: float);

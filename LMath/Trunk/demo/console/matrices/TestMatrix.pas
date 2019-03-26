@@ -144,17 +144,18 @@ begin
   write('Press [Enter] to terminate...');
   readln;
 
-  writeln('/2');
-  ResV2 := ResV/2;
+  writeln('/8');
+  ResV2 := ResV/8;
   printvector(ResV2);
   writeln;
-  Res := M1/2;
+  Res := M1/8;
   printmatrix(Res);
   Finalize(Res);
   write('Press [Enter] to continue...');
   readln;
 
   writeln('Elemental operations with vectors');
+  resv := resv/9.5;
   printVector(ResV);
   writeln('and');
   printvector(ResV2);
