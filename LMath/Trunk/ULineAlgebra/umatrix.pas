@@ -21,7 +21,7 @@ operator + (V1:TVector; V2:TVector) Res : TVector; // element-wise
 operator - (V1:TVector; V2:TVector) Res : TVector;
 operator * (V1:TVector; V2:TVector) Res : Float; // dot product
 
-operator * (M:TMatrix; V:TVector;) Res : TVector;
+operator * (M:TMatrix; V:TVector) Res : TVector;
 
 operator * (M1, M2 : TMatrix) Res : TMatrix;
 
@@ -31,7 +31,7 @@ function  matGetLowBound:integer;
 
 procedure VecFloatAdd(V:TVector; R:Float; Res : TVector);
 procedure VecFloatSubstr(V:TVector; R:Float; Res : TVector);
-procedure VecFloatDiv(V:TVector; R:Float Res; Res : TVector);
+procedure VecFloatDiv(V:TVector; R:Float; Res : TVector);
 procedure VecFloatMul(V:TVector; R:Float; Res : TVector);
 
 procedure MatFloatAdd(M:TMatrix; R:Float; Res : TMatrix);
@@ -44,11 +44,11 @@ procedure VecElemSubstr(V1,V2:TVector; Res : TVector);
 procedure ElementalMultiplyVectors(V1,V2:TVector; Res : TVector);
 procedure DivVectors(V1,V2:TVector; Res : TVector);
 function VecDot(V1,V2:TVector) : float;
-procedure MatVecMul(M:TMatrix; V:TVector; Res :TVector);
+procedure MatVecMul(M:TMatrix; V:TVector; Res: TVector; LB: integer = -1);
 
 procedure MatMul(A, B, Res: TMatrix; LB : integer = -1);
 
-procedure matTranspose(M, Res:TMatrix);
+procedure matTranspose(M, Res:TMatrix; LB: integer = -1);
 
 
 implementation
@@ -57,6 +57,246 @@ type
   PBigArray = ^TBigArray;
 
 var LBound: integer = 0;
+
+operator + (V: TVector; R: Float) Res : TVector;
+begin
+  DimVector(Res, High(V));
+  VecFloatAdd(V,R,Res);
+end;
+
+operator - (V: TVector; R: Float) Res : TVector;
+begin
+  DimVector(Res, High(V));
+  VecFloatSubstr(V,R,Res);
+end;
+
+operator / (V: TVector; R: Float) Res : TVector;
+begin
+  DimVector(Res, High(V));
+  VecFloatDiv(V,R,Res);
+end;
+
+operator * (V: TVector; R: Float) Res : TVector;
+begin
+  DimVector(Res, High(V));
+  VecFloatMul(V,R,Res);
+end;
+
+operator + (M: TMatrix; R: Float) Res : TMatrix;
+begin
+  DimMatrix(Res, High(M), High(M[0]));
+  MatFloatAdd(M, R, Res);
+end;
+
+operator - (M: TMatrix; R: Float) Res : TMatrix;
+begin
+  DimMatrix(Res, High(M), High(M[0]));
+  MatFloatSubstr(M, R, Res);
+end;
+
+operator / (M: TMatrix; R: Float) Res : TMatrix;
+begin
+  DimMatrix(Res, High(M), High(M[0]));
+  MatFloatDiv(M, R, Res);
+end;
+
+operator * (M: TMatrix; R: Float) Res : TMatrix;
+begin
+  DimMatrix(Res, High(M), High(M[0]));
+  MatFloatMul(M, R, Res);
+end;
+
+operator + (V1: TVector; V2: TVector) Res : TVector;
+begin
+  DimVector(Res, High(V1));
+  AddVectors(V1, V2, Res);
+end;
+
+operator - (V1: TVector; V2: TVector) Res : TVector;
+begin
+  DimVector(Res, High(V1));
+  VecElemSubstr(V1, V2, Res);
+end;
+
+operator * (V1: TVector; V2: TVector) Res : Float;
+begin
+  Res := VecDot(V1,V2);
+end;
+
+operator * (M: TMatrix; V: TVector) Res : TVector;
+begin
+  DimVector(Res, High(V));
+  MatVecMul(M,V,Res,LBound);
+end;
+
+operator * (M1, M2: TMatrix) Res : TMatrix;
+begin
+  DimMatrix(Res, High(M1), High(M1[0]));
+  MatMul(M1,M2,Res);
+end;
+
+procedure matSetLowBound(LB: integer);
+begin
+  LBound := LB;
+end;
+
+function matGetLowBound: integer;
+begin
+  Result := LBound;
+end;
+
+procedure VecFloatAdd(V:TVector; R:Float; Res : TVector);
+var
+  I:Integer;
+begin
+  for I := 0 to High(V) do
+    Res[I] := V[I]+R;
+end;
+
+procedure VecFloatSubstr(V:TVector; R:Float; Res : TVector);
+var
+  I:Integer;
+begin
+  for I := 0 to High(V) do
+    Res[I] := V[I]-R;
+end;
+
+procedure VecFloatDiv(V:TVector; R:Float; Res : TVector);
+var
+  I:Integer;
+begin
+  for I := 0 to High(V) do
+    Res[I] := V[I]/R;
+end;
+
+procedure VecFloatMul(V:TVector; R:Float; Res : TVector);
+var
+  I:Integer;
+begin
+  for I := 0 to High(V) do
+    Res[I] := V[I]*R;
+end;
+
+procedure MatFloatAdd(M:TMatrix; R:Float; Res : TMatrix);
+var
+  I, J:Integer;
+begin
+  for I := 0 to High(M) do
+    for J := 0 to High(M[0]) do
+      Res[I,J] := M[I,J]+R;
+end;
+
+procedure MatFloatSubstr(M:TMatrix; R:Float; Res : TMatrix);
+var
+  I, J:Integer;
+begin
+  for I := 0 to High(M) do
+    for J := 0 to High(M[0]) do
+      Res[I,J] := M[I,J]-R;
+end;
+
+procedure MatFloatDiv(M:TMatrix; R:Float; Res : TMatrix);
+var
+  I, J:Integer;
+begin
+  for I := 0 to High(M) do
+    for J := 0 to High(M[0]) do
+      Res[I,J] := M[I,J]/R;
+end;
+
+procedure MatFloatMul(M:TMatrix; R:Float; Res : TMatrix);
+var
+  I, J:Integer;
+begin
+  for I := 0 to High(M) do
+    for J := 0 to High(M[0]) do
+      Res[I,J] := M[I,J]*R;
+end;
+
+procedure AddVectors(V1,V2:TVector; Res : TVector);
+var
+  I,H:Integer;
+begin
+  H := High(V1);
+  if (High(V2) = H) and (High(Res) = H) then
+    for I := 0 to H do
+      Res[I] := V1[I] + V2[I]
+  else
+    SetErrCode(MatErrDim);
+end;
+
+procedure VecElemSubstr(V1,V2:TVector; Res : TVector);
+var
+  I,H:Integer;
+begin
+  H := High(V1);
+  if (High(V2) = H) and (High(Res) = H) then
+    for I := 0 to H do
+      Res[I] := V1[I] - V2[I]
+  else
+    SetErrCode(MatErrDim);
+end;
+
+procedure ElementalMultiplyVectors(V1,V2:TVector; Res : TVector);
+var
+  I,H:Integer;
+begin
+  H := High(V1);
+  if (High(V2) = H) and (High(Res) = H) then
+    for I := 0 to H do
+      Res[I] := V1[I] * V2[I]
+  else
+    SetErrCode(MatErrDim);
+end;
+
+procedure DivVectors(V1,V2:TVector; Res : TVector);
+var
+  I,H:Integer;
+begin
+  H := High(V1);
+  if (High(V2) = H) and (High(Res) = H) then
+    for I := 0 to H do
+      Res[I] := V1[I] / V2[I]
+  else
+    SetErrCode(MatErrDim);
+end;
+
+function VecDot(V1, V2: TVector): float;
+var
+  I,H:Integer;
+begin
+  H := High(V1);
+  if High(V2) = H then
+  begin
+    Result := 0;
+    for I := 0 to H do
+      Result := Result + V1[I] * V2[I];
+  end else
+    Result := DefaultVal(MatErrDim,0);
+end;
+
+procedure MatVecMul(M:TMatrix; V:TVector; Res: TVector; LB: integer = -1);
+var
+  HighRow, HighCol : integer;
+  I,J:integer;
+  R:float;
+begin
+  if LB = -1 then
+    LB := LBound;
+  HighRow := High(M);
+  HighCol := High(M[0]);
+  if (HighCol = High(V)) and (HighRow = High(Res)) then
+  begin
+    for I := LB to HighRow do
+    begin
+      R := 0.0;
+      for J := LB to HighCol do
+        R := R + V[J]*M[I,J];
+      Res[I] := R;
+    end;
+  end else
+    SetErrCode(MatErrDim);
+end;
 
 procedure MatMul(A, B, Res: TMatrix; LB : integer = -1);
 var
@@ -93,231 +333,17 @@ begin
   end;
 end;
 
-operator + (V: TVector; R: Float) Res : TVector;
-begin
-  DimVector(Res, High(V));
-  VecFloatAdd(V,R,Res);
-end;
-
-operator - (V: TVector; R: Float) Res : TVector;
-begin
-  DimVector(Res, High(V));
-  VecFloatSubstr(V,R,Res);
-end;
-
-operator / (V: TVector; R: Float): Res TVector;
-begin
-  DimVector(Res, High(V));
-  VecFloatDiv(V,R,Res);
-end;
-
-operator * (V: TVector; R: Float) Res : TVector;
-begin
-  DimVector(Res, High(V));
-  VecFloatAdd(V,R,Res);
-end;
-
-operator + (M: TMatrix; R: Float) Res : TMatrix;
-begin
-  DimMatrix(Res, High(M), High(M[0]);
-  MatFloatAdd(M, R, Res);
-end;
-
-operator - (M: TMatrix; R: Float) Res : TMatrix;
-begin
-  DimMatrix(Res, High(M), High(M[0]);
-  MatFloatSubstr(M, R, Res);
-end;
-
-operator / (M: TMatrix; R: Float) Res : TMatrix;
-begin
-  DimMatrix(Res, High(M), High(M[0]);
-  MatFloatDiv(M, R, Res);
-end;
-
-operator * (M: TMatrix; R: Float) Res : TMatrix;
-begin
-  DimMatrix(Res, High(M), High(M[0]);
-  MatFloatMul(M, R, Res);
-end;
-
-operator + (V1: TVector; V2: TVector) Res : TVector;
-begin
-  DimVector(Res, High(V1));
-  AddVectors(V1, V2, Res);
-end;
-
-operator - (V1: TVector; V2: TVector) Res : TVector;
-begin
-  DimVector(Res, High(V1));
-  SubstrVectors(V1, V2, Res);
-end;
-
-operator * (V1: TVector; V2: TVector) Res : Float;
-begin
-  Res := VecDot(V1,V2);
-end;
-
-operator * (M: TMatrix; V: TVector) Res : TVector;
-begin
-
-end;
-
-operator * (M1, M2: TMatrix) R : TMatrix;
-begin
-  DimMatrix(R,High(M1),High(M1[0]);
-  MatMul(M1,M2,R);
-  Result := R;
-end;
-
-procedure matSetLowBound(LB: integer);
-begin
-  LBound := LB;
-end;
-
-function matGetLowBound: integer;
-begin
-  Result := LBound;
-end;
-
-procedure VecFloatAdd(V:TVector; R:Float; Res : TVector);
+procedure matTranspose(M, Res:TMatrix; LB: integer = -1);
 var
-  I:Integer;
+ I,J,H,W:integer;
 begin
-  for I := 0 to High(V) do
-    Res[I] := V[I]+R;
-end;
-
-procedure VecFloatSubstr(V:TVector; R:Float; Res : TVector);
-var
-  I:Integer;
-begin
-  for I := 0 to High(V) do
-    Res[I] := V[I]-R;
-end;
-
-procedure VecFloatDiv(V:TVector; R:Float Res; Res : TVector);
-var
-  I:Integer;
-begin
-  for I := 0 to High(V) do
-    Res[I] := V[I]/R;
-end;
-
-procedure VecFloatMul(V:TVector; R:Float; Res : TVector);
-var
-  I:Integer;
-begin
-  for I := 0 to High(V) do
-    Res[I] := V[I]*R;
-end;
-
-procedure MatFloatAdd(M:TMatrix; R:Float; Res : TMatrix);
-var
-  I, J:Integer;
-begin
-  for I := 0 to High(V) do
-    for J := 0 to High(V[0]) do
-      Res[I,J] := M[I,J]+R;
-end;
-
-procedure MatFloatSubstr(M:TMatrix; R:Float; Res : TMatrix);
-var
-  I, J:Integer;
-begin
-  for I := 0 to High(V) do
-    for J := 0 to High(V[0]) do
-      Res[I,J] := M[I,J]-R;
-end;
-
-procedure MatFloatDiv(M:TMatrix; R:Float; Res : TMatrix);
-var
-  I, J:Integer;
-begin
-  for I := 0 to High(V) do
-    for J := 0 to High(V[0]) do
-      Res[I,J] := M[I,J]/R;
-end;
-
-procedure MatFloatMul(M:TMatrix; R:Float; Res : TMatrix);
-var
-  I, J:Integer;
-begin
-  for I := 0 to High(V) do
-    for J := 0 to High(V[0]) do
-      Res[I,J] := M[I,J]*R;
-end;
-
-procedure AddVectors(V1,V2:TVector; Res : TVector);
-var
-  I,H:Integer;
-begin
-  H := High(V1);
-  if (High(V2) = H) and (High(Res) = H) then
-    for I := 0 to H do
-      Result[I] := V1[I] + V2[I];
-  else
-    SetErrCode(MatErrDim);
-end;
-
-procedure SubstractVectors(V1,V2:TVector; Res : TVector);
-var
-  I,H:Integer;
-begin
-  H := High(V1);
-  if (High(V2) = H) and (High(Res) = H) then
-    for I := 0 to H do
-      Result[I] := V1[I] - V2[I];
-  else
-    SetErrCode(MatErrDim);
-end;
-
-procedure ElementalMultiplyVectors(V1,V2:TVector; Res : TVector);
-var
-  I,H:Integer;
-begin
-  H := High(V1);
-  if (High(V2) = H) and (High(Res) = H) then
-    for I := 0 to H do
-      Result[I] := V1[I] * V2[I];
-  else
-    SetErrCode(MatErrDim);
-end;
-
-procedure DivVectors(V1,V2:TVector; Res : TVector);
-var
-  I,H:Integer;
-begin
-  H := High(V1);
-  if (High(V2) = H) and (High(Res) = H) then
-    for I := 0 to H do
-      Result[I] := V1[I] / V2[I];
-  else
-    SetErrCode(MatErrDim);
-end;
-
-function VecDot(V1, V2: TVector): float;
-var
-  I,H:Integer;
-begin
-  H := High(V1);
-  if High(V2) = H then
-  begin
-    Result := 0;
-    for I := 0 to H do
-      Result := Result + V1[I] * V2[I];
-  end else
-    Result := DefaultVal(MatErrDim,0);
-end;
-
-function MatVecMul(M: TMatrix; V: TVector): TVector;
-begin
-
-end;
-
-procedure matTranspose(M, Res:TMatrix);
-begin
-
+  H := High(M);
+  W := High(M[0]);
+  if LB = -1 then LB := LBound;
+  if (High(Res) = W) and (High(Res[0]) = H) then
+    for I := LB to H do
+      for J := LB to W do
+        Res[J,I] := M[I,J];
 end;
 
 end.
