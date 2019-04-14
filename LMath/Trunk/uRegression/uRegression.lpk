@@ -25,7 +25,7 @@
       </Linking>
     </CompilerOptions>
     <Version Minor="4"/>
-    <Files Count="16">
+    <Files Count="17">
       <Item1>
         <Filename Value="uevalfit.pas"/>
         <UnitName Value="uevalfit"/>
@@ -90,6 +90,10 @@
         <Filename Value="uregtest.pas"/>
         <UnitName Value="uregtest"/>
       </Item16>
+      <Item17>
+        <Filename Value="constrnlfit.pas"/>
+        <UnitName Value="constrnlfit"/>
+      </Item17>
     </Files>
     <RequiredPkgs Count="5">
       <Item1>

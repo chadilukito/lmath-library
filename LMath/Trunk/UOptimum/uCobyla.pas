@@ -42,7 +42,7 @@
      The values of N and M are fixed and have been defined already, while
      X is now the current vector of variables. The procedure should return
      the objective and constraint functions at X in F and CON[1],CON[2],
-     ...,CON[M]. Note that we are trying to adjust X so that F(X) is as
+     ...,CON[M]. Note that we are trying to adjust X so that F[X] is as
      small as possible subject to the constraint functions being nonnegative.
               }
 
@@ -50,22 +50,23 @@
 
 unit uCobyla;
 interface
-uses uTypes, uErrors, uMinMax, uMath, uTrsTlp;
+uses uTypes, uErrors, uMinMax, uMath, uMatrix, uTrsTlp;
 
 procedure COBYLA(
-    N     : integer; // Number of variables to optimize, residing in X(N) array
+    N     : integer; // Number of variables to optimize, residing in X[N] array
     M     : integer; // Number of inequality constrains
     X     : TVector; // Array of variables to be optimized. Guess values before call, optimized after.
 out F     : float;   // Function value upon minimization
 out MaxCV : float;   // maximal constraint violation
     RHOBEG: float;   // Initial size of simplex. Must be set by user, but how?
     RHOEND: float;   // End size of simplex: desired precision of objective function and constrain satisfaction
-var MAXFUN: integer; // limit on the number of calls of CALCFC user-supplied function, at the end number of actual calls
+var MaxIter: integer;// limit on the number of calls of CALCFC user-supplied function, at the end number of actual calls
     CalcFC: TCobylaObjectProc
 );
 
 implementation
 var
+  OldLowBound : integer;
   MPP : integer; // M + 2
 
   {working space}
@@ -74,6 +75,8 @@ var
 
 procedure InitCobyla(M,N: integer);
 begin
+    OldLowBound := matGetLowBound;
+    matSetLowBound(1); // sets low bound for vector and matrix operations defined in uMatrix
     mpp := m+2;
     DimVector(W,N);
     DimVector(Con,Mpp); // calcfc returns constraint functions here. Must be non-negative
@@ -87,7 +90,7 @@ begin
     DimVector(DX,N);
 end;
 
-procedure FinCobyla;
+procedure FinCobyla(ErrCode:integer);
 begin
     Finalize(W);
     Finalize(Con);
@@ -99,10 +102,12 @@ begin
     Finalize(Veta);
     Finalize(SigBar);
     Finalize(DX);
+    matSetLowBound(OldLowBound);
+    SetErrCode(ErrCode);
 end;
 
 procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: float; RHOBEG: float; RHOEND: float;
-    var MAXFUN: integer; CalcFC: TCobylaObjectProc);
+    var MaxIter: integer; CalcFC: TCobylaObjectProc);
 
 var
   IFull:integer; // 1 means succcessful return from trstlp; 0 means degenerate gradient and fail
@@ -121,6 +126,26 @@ var
   I,J, k, jdrop, ibrnch, nbest, iflag, L:integer;
   parmu, phimin, parsig, pareta, phi, vmold, vmnew, trured, edgmax, cmin, cmax: float;
   tempa, wsig, weta, cvmaxp, cvmaxm, sum, dxsign, resnew, barmu, prerec, prerem, ratio, denom: float;
+
+  // takes N number of params, M number of constrains, X[N] params
+  // returns F value of object function and Con[M] values of constraint functions
+  procedure CalcObjectFunc;
+  var
+    k:integer;
+  begin
+    if (nfvals >= MaxIter) and (nfvals > 0) then
+    begin
+      FinCobyla(cobMaxFunc);
+      Exit;
+    end;
+    inc(nfvals);
+    CalcFC(N,M,X,F,Con);
+    resmax := 0.0;
+    for k := 1 to M do // Con is array of constrains; at the end must be non-negative
+       resmax := max(ResMax,-Con[k]); // here largest violation is calculated
+    Con[mp] := F; // objective function value
+    Con[mpp] := ResMax; // largest violation
+  end;
 
 begin
    {Set the initial values of some parameters. The last column of SIM holds
@@ -158,18 +183,7 @@ begin
    instructions are also used for calling CALCFC during the iterations of
    the algorithm. }
 
- 40:if (nfvals >= maxfun) and (nfvals > 0) then
-    begin
-      SetErrCode(cobMaxFunc);
-      Exit;
-    end;
-    inc(nfvals);
-    CalcFC(N,M,X,F,Con);
-    resmax := 0.0;
-    for k := 1 to M do // Con is array of constrains; at the end must be non-negative
-       resmax := max(ResMax,-Con[k]); // here largest violation is calculated
-    Con[mp] := F;
-    Con[mpp] := ResMax;
+ 40:CalcObjectFunc;
     if ibrnch = 1 then goto 440;
 
    {Set the recently calculated function values in a column of DATMAT. This
@@ -389,16 +403,10 @@ begin
 //    Calculate DX := x[*]-x[0]. Branch if the length of DX is less than 0.5*RHO.
 
 370: trstlp(N,M,A,Con,Rho,dx,ifull);
-    if ifull = 0 then
+    if (ifull = 0) and (vecEucLength(DX,1) < 0.25*sqr(Rho)) then
     begin
-      temp := 0.0;
-      for i := 1 to N do
-        temp := temp+dx[i]**2; // so this is dot product with itself, ie length
-      if (temp < 0.25*rho*rho) then
-      begin
-        ibrnch := 1;
-        goto 550;
-      end;
+      ibrnch := 1;
+      goto 550;
     end;
 
    {Predict the change to F and the new maximum constraint violation if the
@@ -582,8 +590,8 @@ begin
     end;
     F := datmat[mp,np];
     MaxCV := datmat[mpp,np];
-    maxfun := nfvals;
-    FinCobyla;
+    MaxIter := nfvals;
+    FinCobyla(optOK);
 end;
 
 end.

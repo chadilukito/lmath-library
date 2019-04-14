@@ -7,7 +7,7 @@ unit unlfit;
 interface
 
 uses
-  SysUtils, utypes, uErrors, ugausjor, umarq, ubfgs, usimplex,
+  utypes, uErrors, ugausjor, umarq, ubfgs, usimplex,
   usimann, ugenalg, umcmc, ustrings;
 
 { Sets the optimization algorithm according to Algo, which must be
@@ -27,7 +27,7 @@ function GetMaxParam : Byte;
 procedure SetParamBounds(I : Byte; ParamMin, ParamMax : Float);
 
 { Returns the bounds on the I-th regression parameter }
-procedure GetParamBounds(I : Byte; var ParamMin, ParamMax : Float);
+procedure GetParamBounds(I : Byte; out ParamMin, ParamMax : Float);
 
 { Checks if a regression parameter is equal to zero }
 function NullParam(B : TVector; Lb, Ub : Integer) : Boolean;
@@ -134,10 +134,8 @@ var
   procedure SetMaxParam(N : Byte);
   begin
     if N < MaxParam then Exit;
-
     DimVector(gBmin, N);
     DimVector(gBmax, N);
-
     MaxParam := N;
   end;
 
@@ -150,20 +148,16 @@ var
   begin
     if gBmin = nil then
       DimVector(gBmin, MaxParam);
-
     if gBmax = nil then
       DimVector(gBmax, MaxParam);
-
     if (I > MaxParam) or (ParamMin >= ParamMax) then Exit;
-
     gBmin[I] := ParamMin;
     gBmax[I] := ParamMax;
   end;
 
-  procedure GetParamBounds(I : Byte; var ParamMin, ParamMax : Float);
+  procedure GetParamBounds(I : Byte; out ParamMin, ParamMax : Float);
   begin
     if I > MaxParam then Exit;
-
     ParamMin := gBmin[I];
     ParamMax := gBmax[I];
   end;
@@ -196,27 +190,24 @@ var
 
   begin
     if LastPar > MaxParam then
-      begin
-        SetErrCode(NLMaxPar);
-        Exit;
-      end;
-
+    begin
+      SetErrCode(NLMaxPar);
+      Exit;
+    end;
     Npts := Ub - Lb + 1;             { Number of points }
     Npar := LastPar - FirstPar + 1;  { Number of parameters }
-
     if Npts <= Npar then
-      begin
-        SetErrCode(MatErrDim);
-        Exit;
-      end;
-
+    begin
+      SetErrCode(MatErrDim);
+      Exit;
+    end;
     if Mode = WLS then
       for I := Lb to Ub do
         if S[I] <= 0.0 then
-          begin
-            SetErrCode(MatSing);
-            Exit;
-          end;
+        begin
+          SetErrCode(MatSing);
+          Exit;
+        end;
           
     DimVector(gX,Ub);
     DimVector(gY,Ub);
@@ -242,10 +233,10 @@ var
 
     for I := FirstPar to LastPar do
       if gBmin[I] >= gBmax[I] then
-        begin
-          gBmin[I] := - MAX_BOUND;
-          gBmax[I] :=   MAX_BOUND;
-        end;
+      begin
+        gBmin[I] := - MAX_BOUND;
+        gBmax[I] :=   MAX_BOUND;
+      end;
 
     DimVector(gD, LastPar);
 
@@ -282,21 +273,18 @@ var
     S : Float;
   begin
     if OutOfBounds(B) then
-      begin
-        OLS_ObjFunc := MAX_FUNC;
-        Exit;
-      end;
-
+    begin
+      OLS_ObjFunc := MAX_FUNC;
+      Exit;
+    end;
     S := 0.0;
     K := gLb;
-
     repeat
       gYcalc[K] := gRegFunc(gX[K], B);
       gR[K] := gY[K] - gYcalc[K];
       S := S + Sqr(gR[K]);
       Inc(K);
     until (K > gUb) or (S > MAX_FUNC);
-
     if S > MAX_FUNC then S := MAX_FUNC;
     OLS_ObjFunc := S;
   end;
@@ -312,11 +300,11 @@ var
 
     { Compute Gradient }
     for K := gLb to gUb do
-      begin
-        gDerivProc(gX[K], gYcalc[K], B, gD);
-        for I := gFirstPar to gLastPar do
-          G[I] := G[I] - gD[I] * gR[K];
-      end;
+    begin
+      gDerivProc(gX[K], gYcalc[K], B, gD);
+      for I := gFirstPar to gLastPar do
+        G[I] := G[I] - gD[I] * gR[K];
+    end;
 
     for I := gFirstPar to gLastPar do
       G[I] := 2.0 * G[I];
@@ -472,17 +460,17 @@ var
           end;
 
     if Mode = OLS then
-      begin
-        ObjFunc  := @OLS_ObjFunc;
-        GradProc := @OLS_Gradient;
-        HessProc := @OLS_HessGrad;
-      end
+    begin
+      ObjFunc  := @OLS_ObjFunc;
+      GradProc := @OLS_Gradient;
+      HessProc := @OLS_HessGrad;
+    end
     else
-      begin
-        ObjFunc  := @WLS_ObjFunc;
-        GradProc := @WLS_Gradient;
-        HessProc := @WLS_HessGrad;
-      end;
+    begin
+      ObjFunc  := @WLS_ObjFunc;
+      GradProc := @WLS_Gradient;
+      HessProc := @WLS_HessGrad;
+    end;
 
     DimVector(G, LastPar);
 

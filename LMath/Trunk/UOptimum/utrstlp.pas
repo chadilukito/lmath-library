@@ -76,7 +76,7 @@ end;
 procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
 
 var
-  mcon, nact, I, K, J, ICon , icount, nactx, kk, kp, kw, isave, kl: integer;
+  mcon, nact, I, K, ICon , icount, nactx, kk, kp, kw, isave, kl: integer;
   resmax, temp, tempa, vsave, dd, resold, sum: float;
   optold, optnew, tot, sp, spabs, acca, accb, alpha, beta, ratio, zdotv, zdvabs, sd, ss, stpful, step, zdotw,
         zdwabs, sumabs: float;
@@ -92,9 +92,9 @@ label
     constraint violations by one simultaneously.  }
 begin
       ifull := 1;
-      mcon := m;
+      mcon := m; // first stage, dealing with constraints
       nact := 0;
-      resmax := 0.0;
+      resmax := 0.0; // maximal violation
       InitTrsTlp(M, N, DX);
       if m >= 1 then
       begin

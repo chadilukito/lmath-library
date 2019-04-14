@@ -26,7 +26,7 @@
       </Linking>
     </CompilerOptions>
     <Version Minor="4"/>
-    <Files Count="12">
+    <Files Count="14">
       <Item1>
         <Filename Value="ubfgs.pas"/>
         <UnitName Value="ubfgs"/>
@@ -75,6 +75,14 @@
         <Filename Value="usimplex.pas"/>
         <UnitName Value="usimplex"/>
       </Item12>
+      <Item13>
+        <Filename Value="uCobyla.pas"/>
+        <UnitName Value="uCobyla"/>
+      </Item13>
+      <Item14>
+        <Filename Value="utrstlp.pas"/>
+        <UnitName Value="uTrsTlp"/>
+      </Item14>
     </Files>
     <RequiredPkgs Count="6">
       <Item1>

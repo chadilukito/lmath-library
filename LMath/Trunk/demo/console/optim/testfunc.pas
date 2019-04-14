@@ -5,11 +5,11 @@ var
   NProb: Integer;
 
   procedure CALCFC(N, M : integer; const X : TVector;
-                                out F:Float; var CON: TVector);
+                                out F:Float; CON: TVector);
 implementation
 
 procedure CALCFC(N, M : integer; const X : TVector;
-                              out F:Float; var CON: TVector);
+                              out F:Float; CON: TVector);
 begin     
   case NProb of
   1:       // Test problem 1 (Simple quadratic)

@@ -216,7 +216,7 @@ type
   adjust X so that F(X) is as small as possible subject to the constraint functions
   being nonnegative. Importantly, constraints can be violated during the calculation!}
   TCobylaObjectProc = procedure (N, M : integer; const X : TVector;
-                                out F:Float; var CON: TVector);
+                                out F:Float; CON: TVector);
 
 
 { ------------------------------------------------------------------

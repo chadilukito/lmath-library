@@ -4,11 +4,12 @@
 
 unit uOptimum;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubfgs, ueval, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, unewton, usimann, usimplex, 
-  LazarusPackageIntf;
+  ubfgs, ueval, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, unewton, usimann, usimplex, uCobyla, 
+  uTrsTlp, LazarusPackageIntf;
 
 implementation
 

@@ -1,7 +1,8 @@
 Program testcobyla;
+{$mode delphi}
 Uses uTypes, uMath, uErrors, SysUtils, TestFunc, uCobyla;
 const
-   OutputFmt = 'NFVALS = %6.4d F = %13.6g  MaxCV = %13.6g';
+ OutputFmt = 'NFVALS = %6.4d F = %13.6g  MaxCV = %13.6g';
 
 var
   X: TVector;
