@@ -9,7 +9,7 @@ interface
 
 uses
   uevalfit, uexlfit, uexpfit, ufft, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
-  usvdfit, uSpline, uregtest, ConstrNLFit, LazarusPackageIntf;
+  usvdfit, uSpline, uregtest, uConstrNLFit, LazarusPackageIntf;
 
 implementation
 

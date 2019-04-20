@@ -217,9 +217,7 @@ type
   being nonnegative. Importantly, constraints can be violated during the calculation!}
   TCobylaObjectProc = procedure (N, M : integer; const X : TVector;
                                 out F:Float; CON: TVector);
-
-
-{ ------------------------------------------------------------------
+  { ------------------------------------------------------------------
   Graphics
   ------------------------------------------------------------------ }
 

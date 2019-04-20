@@ -1,5 +1,5 @@
 { ******************************************************************
-  String routines for DELPHI
+  String routines for DELPHI and Lazarus
   ****************************************************************** }
 
 unit uwinstr;

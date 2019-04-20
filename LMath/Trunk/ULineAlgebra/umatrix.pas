@@ -7,15 +7,15 @@ interface
 uses
   uTypes, uErrors;
 
-operator + (V:TVector; R:Float) Res : TVector;
-operator - (V:TVector; R:Float) Res : TVector;
-operator / (V:TVector; R:Float) Res : TVector;
-operator * (V:TVector; R:Float) Res : TVector;
+operator + (V:TVector; R:Float) Res : TVector; //add float to every element         
+operator - (V:TVector; R:Float) Res : TVector; //substract float from every element 
+operator / (V:TVector; R:Float) Res : TVector; //divide every element by float      
+operator * (V:TVector; R:Float) Res : TVector; //multiply every element by float    
 
-operator + (M:TMatrix; R:Float) Res : TMatrix;
-operator - (M:TMatrix; R:Float) Res : TMatrix;
-operator / (M:TMatrix; R:Float) Res : TMatrix;
-operator * (M:TMatrix; R:Float) Res : TMatrix;
+operator + (M:TMatrix; R:Float) Res : TMatrix; //add float to every element        
+operator - (M:TMatrix; R:Float) Res : TMatrix; //substract float from every element
+operator / (M:TMatrix; R:Float) Res : TMatrix; //divide every element by float     
+operator * (M:TMatrix; R:Float) Res : TMatrix; //multiply every element by float   
 
 operator + (V1:TVector; V2:TVector) Res : TVector; // element-wise
 operator - (V1:TVector; V2:TVector) Res : TVector;
@@ -29,6 +29,9 @@ operator * (M1, M2 : TMatrix) Res : TMatrix;
 procedure matSetLowBound(LB:integer);
 function  matGetLowBound:integer;
 
+{These functions are used by operators. One important difference is that 
+operators _always allocate new array_ for result, while these functions 
+use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
 function VecFloatAdd(V:TVector; R:Float; Ziel : TVector = nil): TVector;
 function VecFloatSubstr(V:TVector; R:Float; Ziel : TVector = nil): TVector;
 function VecFloatDiv(V:TVector; R:Float; Ziel : TVector = nil): TVector;
@@ -41,6 +44,9 @@ function MatFloatMul(M:TMatrix; R:Float; Ziel : TMatrix = nil) : TMatrix;
 
 function AddVectors(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecElemSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;
+
+{This function multiplies elements of one vector by elenets of other. 
+There is no corresponding operator. Operator * is for dot product.}
 function ElementalMultiplyVectors(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function DivVectors(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDot(V1,V2:TVector) : float;

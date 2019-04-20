@@ -1,4 +1,13 @@
-{    This subroutine minimizes an objective function F(X) subject to M
+{   Pascal translation by V.V. Nesterov from FORTRAN 77 subroutine written
+    by Prof. M.Powell. Source code was taken from here:
+    http://mat.uc.pt/~zhang/software.html#cobyla
+
+    This is relatively crude translation with most of
+    GoTo statements. Matrices in the calculations are dealt with fortran
+    order "columns first". So, there is place for optimization. If somebody
+    endeavors this, please let me know.
+
+     This subroutine minimizes an objective function F(X) subject to M
      inequality constraints on X, where X is a vector of variables that has
      N components. The algorithm employs linear approximations to the
      objective and constraint functions, the approximations being formed by
@@ -44,10 +53,8 @@
      the objective and constraint functions at X in F and CON[1],CON[2],
      ...,CON[M]. Note that we are trying to adjust X so that F[X] is as
      small as possible subject to the constraint functions being nonnegative.
-              }
-
+            }
 {$goto ON}
-
 unit uCobyla;
 interface
 uses uTypes, uErrors, uMinMax, uMath, uMatrix, uTrsTlp;
@@ -60,7 +67,7 @@ out F     : float;   // Function value upon minimization
 out MaxCV : float;   // maximal constraint violation
     RHOBEG: float;   // Initial size of simplex. Must be set by user, but how?
     RHOEND: float;   // End size of simplex: desired precision of objective function and constrain satisfaction
-var MaxIter: integer;// limit on the number of calls of CALCFC user-supplied function, at the end number of actual calls
+var MaxFun: integer;// limit on the number of calls of CALCFC user-supplied function, at the end number of actual calls
     CalcFC: TCobylaObjectProc
 );
 
@@ -107,7 +114,7 @@ begin
 end;
 
 procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: float; RHOBEG: float; RHOEND: float;
-    var MaxIter: integer; CalcFC: TCobylaObjectProc);
+    var MaxFun: integer; CalcFC: TCobylaObjectProc);
 
 var
   IFull:integer; // 1 means succcessful return from trstlp; 0 means degenerate gradient and fail
@@ -133,11 +140,6 @@ var
   var
     k:integer;
   begin
-    if (nfvals >= MaxIter) and (nfvals > 0) then
-    begin
-      FinCobyla(cobMaxFunc);
-      Exit;
-    end;
     inc(nfvals);
     CalcFC(N,M,X,F,Con);
     resmax := 0.0;
@@ -183,7 +185,12 @@ begin
    instructions are also used for calling CALCFC during the iterations of
    the algorithm. }
 
- 40:CalcObjectFunc;
+ 40:if (nfvals >= MaxFun) and (nfvals > 0) then
+    begin
+      FinCobyla(cobMaxFunc);
+      Exit;
+    end;
+    CalcObjectFunc;
     if ibrnch = 1 then goto 440;
 
    {Set the recently calculated function values in a column of DATMAT. This
@@ -590,7 +597,7 @@ begin
     end;
     F := datmat[mp,np];
     MaxCV := datmat[mpp,np];
-    MaxIter := nfvals;
+    MaxFun := nfvals;
     FinCobyla(optOK);
 end;
 

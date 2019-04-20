@@ -31,7 +31,7 @@
       </Linking>
     </CompilerOptions>
     <Version Minor="4"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="lmsorting.pas"/>
         <UnitName Value="lmsorting"/>
@@ -56,6 +56,10 @@
         <Filename Value="lmsearchtrees.pas"/>
         <UnitName Value="lmsearchtrees"/>
       </Item6>
+      <Item7>
+        <Filename Value="uVectorHelper.pas"/>
+        <UnitName Value="lmVectorHelper"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

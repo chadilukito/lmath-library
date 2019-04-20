@@ -1,4 +1,9 @@
-{
+{   Pascal translation by V.V. Nesterov from FORTRAN 77 subroutine written
+    by Prof. M.Powell. This is relatively crude translation with most of 
+    GoTo statements. Matrices in the calculations are dealt with fortran
+    order "columns first". So, there is place for optimization. If somebody
+    endeavors this, please let me know.
+    
  This procedure calculates an N-component vector DX by applying the
 following two stages. In the first stage DX is set to the shortest
 vector that minimizes the greatest violation of the constraints

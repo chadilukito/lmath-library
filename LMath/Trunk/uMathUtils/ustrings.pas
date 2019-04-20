@@ -19,17 +19,17 @@ function RTrim(S : String) : String;
 function Trim(S : String) : String;
 
 //Returns a string made of character C repeated N times
-function StrChar(N : Byte; C : Char) : String;
+function StrChar(N : integer; C : Char) : String;
 
 //Completes string S with trailing blanks for a total length L
-function RFill(S : String; L : Byte) : String;
+function RFill(S : String; L : integer) : String;
 
 //Completes string S with leading blanks for a total length L
-function LFill(S : String; L : Byte) : String;
+function LFill(S : String; L : integer) : String;
 
 //  Completes string S with leading blanks
 //  to center the string on a total length L
-function CFill(S : String; L : Byte) : String;
+function CFill(S : String; L : integer) : String;
 
 //Replaces in string S all the occurences
 //of character C1 by character C2
@@ -40,21 +40,23 @@ function Replace(S : String; C1, C2 : Char) : String;
   fields (e.g. blank, comma or tabulation). Blanks immediately
   following Delim are ignored. Index is updated to the position of
   the next field. }
-function Extract(S : String; var Index : Byte; Delim : Char) : String;
+function Extract(S : String; var Index : integer; Delim : Char) : String;
 
 { Parses a string into its constitutive fields. Delim is the field
   separator. The number of fields is returned in N. The fields are
   returned in Field[0]..Field[N - 1]. Field must be dimensioned in
   the calling program.}
-procedure Parse(S : String; Delim : Char; Field : TStrVector; var N : Byte);
+procedure Parse(S : String; Delim : Char; Field : TStrVector; out N : integer);
 
 {Sets the numeric format
     NumLength  = Length of numeric field
     MaxDec     = Max. number of decimal places
     FloatPoint = True for floating point notation
-    NSZero     = True to write non significant zero's }
+    NSZero     = True to write non significant zero's
+    DecSep     = Decimal separator, '.' or ','}
 procedure SetFormat(NumLength, MaxDec  : Integer;
-                    FloatPoint, NSZero : Boolean);
+                    FloatPoint, NSZero : Boolean;
+                    DecSep : char = '.');
 
 // Converts a real to a string according to the numeric format
 function FloatStr(X : Float) : String;
@@ -72,26 +74,31 @@ var
   gMaxDec     : Integer =  4;
   gFloatPoint : Boolean = False;
   gNSZero     : Boolean = False;
+  gDecSep     : char    = '.';
 
   function LTrim(S : String) : String;
   begin
-    if S <> '' then
-      repeat
-        if S[1] = ' ' then Delete(S, 1, 1);
-      until S[1] <> ' ';
-    LTrim := S;
+    Result := S;
+    if Result <> '' then
+    begin
+      while Result[1] = ' ' do
+        Delete(Result, 1, 1);
+    end;
   end;
 
   function RTrim(S : String) : String;
   var
-    L1 : Byte;
+    L1 : integer;
   begin
-    if S <> '' then
-      repeat
-        L1 := Length(S);
-        if S[L1] = ' ' then Delete(S, L1, 1);
-      until S[L1] <> ' ';
-    RTrim := S;
+    Result := S;
+    if Result <> '' then
+      for L1 := Length(Result) downto 1 do
+      begin
+        if Result[L1] = ' ' then
+          Delete(Result, L1, 1)
+        else
+          Break;
+      end;
   end;
 
   function Trim(S : String) : String;
@@ -99,9 +106,9 @@ var
     Trim := LTrim(RTrim(S));
   end;
 
-  function StrChar(N : Byte; C : Char) : String;
+  function StrChar(N : integer; C : Char) : String;
   var
-    I : Byte;
+    I : integer;
     S : String;
   begin
     S := '';
@@ -110,9 +117,9 @@ var
     StrChar := S;
   end;
 
-  function RFill(S : String; L : Byte) : String;
+  function RFill(S : String; L : integer) : String;
   var
-    L1 : Byte;
+    L1 : integer;
   begin
     L1 := Length(S);
     if L1 >= L then
@@ -121,9 +128,9 @@ var
       RFill := S + StrChar(L - L1, ' ');
   end;
 
-  function LFill(S : String; L : Byte) : String;
+  function LFill(S : String; L : integer) : String;
   var
-    L1 : Byte;
+    L1 : integer;
   begin
     L1 := Length(S);
     if L1 >= L then
@@ -132,9 +139,9 @@ var
       LFill := StrChar(L - L1, ' ') + S;
   end;
 
-  function CFill(S : String; L : Byte) : String;
+  function CFill(S : String; L : integer) : String;
   var
-    L1 : Byte;
+    L1 : integer;
   begin
     L1 := Length(S);
     if L1 >= L then
@@ -146,7 +153,7 @@ var
   function Replace(S : String; C1, C2 : Char) : String;
   var
     S1 : String;
-    K : Byte;
+    K : integer;
   begin
     S1 := S;
     K := Pos(C1, S1);
@@ -158,9 +165,9 @@ var
     Replace := S1;
   end;
 
-  function Extract(S : String; var Index : Byte; Delim : Char) : String;
+  function Extract(S : String; var Index : integer; Delim : Char) : String;
   var
-    I, L : Byte;
+    I, L : integer;
   begin
     I := Index;
     L := Length(S);
@@ -184,9 +191,9 @@ var
     Index := I;
   end;
 
-  procedure Parse(S : String; Delim : Char; Field : TStrVector; var N : Byte);
+  procedure Parse(S : String; Delim : Char; Field : TStrVector; out N : integer);
   var
-    I, Index, L : Byte;
+    I, Index, L : integer;
   begin
     I := 0;
     Index := 1;
@@ -199,11 +206,12 @@ var
   end;
 
   procedure SetFormat(NumLength, MaxDec  : Integer;
-                      FloatPoint, NSZero : Boolean);
+                      FloatPoint, NSZero : Boolean;
+                      DecSep : char = '.');
   begin
     if (NumLength >= 1) and (NumLength <= 80) then gNumLength := NumLength;
     if (MaxDec    >= 0) and (MaxDec    <= 20) then gMaxDec    := MaxDec;
-
+    gDecSep := DecSep;
     gFloatPoint := FloatPoint;
     gNSZero     := NSZero;
   end;
@@ -214,7 +222,7 @@ var
     S1, S2 : String;
     C      : Char;
   begin
-    I := Pos('.', S);
+    I := Pos(gDecSep, S);
 
     if I = 0 then
       begin
@@ -239,7 +247,7 @@ var
     repeat
       I := Length(S1);
       C := S1[I];
-      if (C = '0') or (C = '.') then S1 := Copy(S1, 1, I - 1)
+      if (C = '0') or (C = gDecSep) then S1 := Copy(S1, 1, I - 1)
     until C <> '0';
 
     RemZero := S1 + S2
