@@ -1,4 +1,4 @@
-unit lmsearchtrees;
+unit usearchtrees;
 {$mode objfpc}{$H+}
 interface
 uses Objects, SysUtils;

@@ -1,4 +1,4 @@
-unit lmVectorHelper;
+unit uVectorHelper;
 {$mode objfpc}
 {$MODESWITCH TYPEHELPERS}
 interface
@@ -16,7 +16,7 @@ TVectorHelper = type helper for TVector
   procedure Swap(ind1,ind2:integer);
   procedure Fill(St, En : integer; Val:Float);
   procedure Sort(Descending:boolean);
-  procedure InsertFrom(Source:TVector; ind:integer);
+  procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
   //indices as well, ';' used as delimiter
@@ -58,7 +58,7 @@ procedure TVectorHelper.Fill(St, En: integer; Val: Float);
 var
   I: Integer;
 begin
-  for I := St to En - 1 do
+  for I := St to En do
     self[I] := Val;
 end;
 
@@ -68,15 +68,15 @@ begin
     HeapSort(self, 0, high(self), Descending);
 end;
 
-procedure TVectorHelper.InsertFrom(Source: TVector; ind: integer);
+procedure TVectorHelper.InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
 var
   I, C: Integer;
 begin
-  C := length(Self)+Length(Source);
-  SetLength(self, C);
+  C := Ub - Lb + 1;
+  SetLength(self, length(self)+C);
   for I := high(self) downto ind do
     self[I+length(source)] := self[I]; // moving existing values freeing place for newly inserted
-  for I := 0 to high(source) do
+  for I := Lb to Ub do
     self[ind+I] := source[I];
 end;
 
@@ -98,7 +98,7 @@ begin
   for I := First to Last do
   begin
     if Indices then
-      Buf := IntToStr(I)+Delimiter+' '
+      Buf := IntStr(I)+Delimiter+' '
     else
       Buf := '';
     Buf := Buf + ToString(I);

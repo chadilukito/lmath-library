@@ -8,7 +8,7 @@ unit uMathUtil;
 interface
 
 uses
-  lmsorting, lmunitsformat, ustrings, uwinstr, uqsort, lmsearchtrees, LazarusPackageIntf;
+  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, uunitsformat, LazarusPackageIntf;
 
 implementation
 

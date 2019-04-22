@@ -1,7 +1,7 @@
 { ******************************************************************
                         Pascal string routines
   ****************************************************************** }
-
+{$mode ObjFPC}{$H+}
 unit ustrings;
 
 interface
@@ -51,7 +51,7 @@ procedure Parse(S : String; Delim : Char; Field : TStrVector; out N : integer);
 {Sets the numeric format
     NumLength  = Length of numeric field
     MaxDec     = Max. number of decimal places
-    FloatPoint = True for floating point notation
+    FloatPoint = True for engineer notation (1E2)
     NSZero     = True to write non significant zero's
     DecSep     = Decimal separator, '.' or ','}
 procedure SetFormat(NumLength, MaxDec  : Integer;

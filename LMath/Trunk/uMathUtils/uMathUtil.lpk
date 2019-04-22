@@ -30,36 +30,40 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="4"/>
-    <Files Count="7">
+    <Version Minor="5"/>
+    <Files Count="8">
       <Item1>
-        <Filename Value="lmsorting.pas"/>
-        <UnitName Value="lmsorting"/>
-      </Item1>
-      <Item2>
-        <Filename Value="lmunitsformat.pas"/>
-        <UnitName Value="lmunitsformat"/>
-      </Item2>
-      <Item3>
         <Filename Value="ustrings.pas"/>
         <UnitName Value="ustrings"/>
-      </Item3>
-      <Item4>
+      </Item1>
+      <Item2>
         <Filename Value="uwinstr.pas"/>
         <UnitName Value="uwinstr"/>
-      </Item4>
-      <Item5>
+      </Item2>
+      <Item3>
         <Filename Value="uqsort.pas"/>
         <UnitName Value="uqsort"/>
+      </Item3>
+      <Item4>
+        <Filename Value="uVectorHelper.pas"/>
+        <UnitName Value="uVectorHelper"/>
+      </Item4>
+      <Item5>
+        <Filename Value="uVecUtils.pas"/>
+        <UnitName Value="uVecUtils"/>
       </Item5>
       <Item6>
-        <Filename Value="lmsearchtrees.pas"/>
-        <UnitName Value="lmsearchtrees"/>
+        <Filename Value="usearchtrees.pas"/>
+        <UnitName Value="usearchtrees"/>
       </Item6>
       <Item7>
-        <Filename Value="uVectorHelper.pas"/>
-        <UnitName Value="lmVectorHelper"/>
+        <Filename Value="usorting.pas"/>
+        <UnitName Value="usorting"/>
       </Item7>
+      <Item8>
+        <Filename Value="uunitsformat.pas"/>
+        <UnitName Value="uunitsformat"/>
+      </Item8>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

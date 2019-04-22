@@ -1,6 +1,6 @@
 {This unit formats a value with exponent prefixes (milli, pico etc) such that value in output is in the range 1..1000
 and adds provided string at the end. For example, FormatUnits(1.2E-12,S) will return "1.2 pS"}
-unit lmunitsformat;
+unit uunitsformat;
 {$mode objfpc}{$H+}
 
 interface

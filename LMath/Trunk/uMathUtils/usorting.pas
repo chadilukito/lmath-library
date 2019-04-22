@@ -1,7 +1,7 @@
 {Quicksort, InsertSort and HeapSort algorithms are implemented for sorting of arrays of float, of TRealPoint for X
 and for TRealPoint for Y
 }
-unit lmsorting;
+unit usorting;
 {$mode objfpc}{$H+}
 interface
 
