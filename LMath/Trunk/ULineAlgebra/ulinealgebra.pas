@@ -8,9 +8,8 @@ unit uLineAlgebra;
 interface
 
 uses
-  ubalance, ubalbak, ucholesk, ucompvec, ueigsym, ueigval, ueigvec, uelmhes, 
-  ueltran, ugausjor, uhqr, uhqr2, ujacobi, ulineq, ulu, uqr, usvd, uMatrix, 
-  LazarusPackageIntf;
+  ubalance, ubalbak, ucholesk, ueigsym, ueigval, ueigvec, uelmhes, ueltran, ugausjor, uhqr, uhqr2, ujacobi, ulineq, 
+  ulu, uqr, usvd, uMatrix, LazarusPackageIntf;
 
 implementation
 

@@ -24,8 +24,8 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="4"/>
-    <Files Count="18">
+    <Version Minor="5"/>
+    <Files Count="17">
       <Item1>
         <Filename Value="ubalance.pas"/>
         <UnitName Value="ubalance"/>
@@ -39,65 +39,61 @@
         <UnitName Value="ucholesk"/>
       </Item3>
       <Item4>
-        <Filename Value="ucompvec.pas"/>
-        <UnitName Value="ucompvec"/>
-      </Item4>
-      <Item5>
         <Filename Value="ueigsym.pas"/>
         <UnitName Value="ueigsym"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="ueigval.pas"/>
         <UnitName Value="ueigval"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="ueigvec.pas"/>
         <UnitName Value="ueigvec"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="uelmhes.pas"/>
         <UnitName Value="uelmhes"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="ueltran.pas"/>
         <UnitName Value="ueltran"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="ugausjor.pas"/>
         <UnitName Value="ugausjor"/>
-      </Item10>
-      <Item11>
+      </Item9>
+      <Item10>
         <Filename Value="uhqr.pas"/>
         <UnitName Value="uhqr"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="uhqr2.pas"/>
         <UnitName Value="uhqr2"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="ujacobi.pas"/>
         <UnitName Value="ujacobi"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="ulineq.pas"/>
         <UnitName Value="ulineq"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="ulu.pas"/>
         <UnitName Value="ulu"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="uqr.pas"/>
         <UnitName Value="uqr"/>
-      </Item16>
-      <Item17>
+      </Item15>
+      <Item16>
         <Filename Value="usvd.pas"/>
         <UnitName Value="usvd"/>
-      </Item17>
-      <Item18>
+      </Item16>
+      <Item17>
         <Filename Value="umatrix.pas"/>
-        <UnitName Value="umatrix"/>
-      </Item18>
+        <UnitName Value="uMatrix"/>
+      </Item17>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>
