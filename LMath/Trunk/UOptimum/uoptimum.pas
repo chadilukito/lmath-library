@@ -8,8 +8,8 @@ unit uOptimum;
 interface
 
 uses
-  ubfgs, ueval, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, unewton, usimann, usimplex, uCobyla, 
-  uTrsTlp, LazarusPackageIntf;
+  ubfgs, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, unewton, usimann, usimplex, uCobyla, uTrsTlp, 
+  ueval, LazarusPackageIntf;
 
 implementation
 

@@ -1,5 +1,4 @@
 { --------------------------------------------------
-
   Title   :  Simple Expression Evaluator
   Version :  1.1
   Author  :  Aleksandar Ruzicic (admin@krcko.net)  
@@ -8,10 +7,8 @@
   BIG thanks goes to Jack W. Crenshaw for his
   "LET'S BUILD A COMPILER!" text series
   (http://compilers.iecc.com/crenshaw/)
-
   You're free to use this in any way you find it
   useful, just "give credit where credit is due" :)
-
   --------------------------------------------------
   Pascal version by Jean Debord  for use with DMath
   Modified by Viatcheslav Nesterov for use with LMath
@@ -23,7 +20,7 @@ interface
 
 uses
   Objects, SysUtils, utypes, uErrors, uminmax, umath, utrigo, uhyper, uranmt, ufact, ubinom,
-  ugamma, uigamma, ubeta, uibeta, ulambert, upoidist, uexpdist, lmSearchTrees,
+  ugamma, uigamma, ubeta, uibeta, ulambert, upoidist, uexpdist, uSearchTrees,
   unormal, ugamdist, uibtdist, uigmdist, uinvnorm, uinvgam, uinvbeta; 
 
 function InitEval : Integer;

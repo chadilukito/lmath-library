@@ -57,7 +57,7 @@
 {$goto ON}
 unit uCobyla;
 interface
-uses uTypes, uErrors, uMinMax, uMath, uMatrix, uTrsTlp;
+uses uTypes, uErrors, uMinMax, uMath, uMatrix, uMeanSD, uTrsTlp;
 
 procedure COBYLA(
     N     : integer; // Number of variables to optimize, residing in X[N] array
@@ -132,7 +132,7 @@ label
 var
   I,J, k, jdrop, ibrnch, nbest, iflag, L:integer;
   parmu, phimin, parsig, pareta, phi, vmold, vmnew, trured, edgmax, cmin, cmax: float;
-  tempa, wsig, weta, cvmaxp, cvmaxm, sum, dxsign, resnew, barmu, prerec, prerem, ratio, denom: float;
+  tempa, wsig, weta, cvmaxp, cvmaxm, total, dxsign, resnew, barmu, prerec, prerem, ratio, denom: float;
 
   // takes N number of params, M number of constrains, X[N] params
   // returns F value of object function and Con[M] values of constraint functions
@@ -288,7 +288,7 @@ begin
         if i = j then
           temp := temp-1.0;
         for k := 1 to N do
-          temp := temp+simi[i,k]*sim[k,j];
+          temp := temp+simi[i,k]*sim[k,j]; //DOT_PRODUCT( simi(i,1:n), sim(1:n,j) )
         error := max(error,abs(temp));
       end;
     if error > 0.1 then
@@ -311,7 +311,7 @@ begin
       begin
         temp := 0.0;
         for j := 1 to N do
-          temp := temp+W[j]*simi[j,i];
+          temp := temp+W[j]*simi[j,i]; // DOT_PRODUCT( w(1:n), simi(1:n,i) )
         if k = MP then
           temp := -temp;
         A[i,k] := temp;
@@ -341,8 +341,8 @@ begin
 
    {If a new vertex is needed to improve acceptability, then decide which
    vertex to drop from the simplex.}
-
     if (ibrnch = 1) or (iflag = 1) then goto 370;
+
     jdrop := 0;
     temp := pareta;
     for j := 1 to N do
@@ -352,12 +352,12 @@ begin
       temp := veta[j];
     end;
     if jdrop = 0 then
-    for j := 1 to N do
-    if vsig[j] < temp then
-    begin
-      jdrop := j;
-      temp := vsig[j];
-    end;
+      for j := 1 to N do
+        if vsig[j] < temp then
+        begin
+          jdrop := j;
+          temp := vsig[j];
+        end;
 
    // Calculate the step to the new vertex and its sign.
 
@@ -368,18 +368,18 @@ begin
     cvmaxm := 0.0;
     for k := 1 to MP do
     begin
-      sum := 0.0;
-      for i := 1 to N do
-        sum := sum+a[i,k]*dx[i];
+      total := 0.0;
+      for i := 1 to N do  // total = DOT_PRODUCT( a(1:n,k), dx(1:n) )
+        total :=total+a[i,k]*dx[i];
       if k < mp then
       begin
         temp := datmat[k,np];
-        cvmaxp := max(cvmaxp,-sum-temp);
-        cvmaxm := max(cvmaxm,sum-temp);
+        cvmaxp := max(cvmaxp,-total-temp);
+        cvmaxm := max(cvmaxm, total-temp);
       end;
     end;
     dxsign := 1.0;
-    if parmu*(cvmaxp - cvmaxm) > 2*sum then
+    if parmu*(cvmaxp - cvmaxm) > total+total then
       dxsign := -1.0;
 
    // Update the elements of SIM and SIMI, and set the next X.
@@ -405,10 +405,11 @@ begin
       end;
       x[j] := sim[j,np]+dx[j];
     end;
+    // here ends calculation of new vertex started at line 340
     goto 40;
 
+// and here, to 370, we come if this update of vertex was not needed
 //    Calculate DX := x[*]-x[0]. Branch if the length of DX is less than 0.5*RHO.
-
 370: trstlp(N,M,A,Con,Rho,dx,ifull);
     if (ifull = 0) and (vecEucLength(DX,1) < 0.25*sqr(Rho)) then
     begin
@@ -420,14 +421,14 @@ begin
    variables are altered from x[0] to x[0]+DX.   }
 
     resnew := 0.0;
-    con[mp] := 0.0;
+    con[mp] := 0.0; // objective function value
     for k := 1 to MP do
     begin
-      sum := con[k];
-      for i := 1 to N do
-        sum := sum-a[i,k]*dx[i];
+      total := con[k]; // total is sum of constrain violations and objective function
+      for i := 1 to N do //total = con(k) - DOT_PRODUCT( a(1:n,k), dx(1:n) )
+        total := total-a[i,k]*dx[i];
       if (k < mp) then
-        resnew := max(resnew,sum);
+        resnew := max(resnew,total);
     end;
 
    {Increase PARMU if necessary and branch back if this change alters the
@@ -438,7 +439,7 @@ begin
     barmu := 0.0;
     prerec := datmat[mpp,np]-resnew;
     if prerec > 0.0 then
-       barmu := sum/prerec;
+       barmu := total/prerec;
     if parmu < 1.5*barmu then
     begin
       parmu := 2.0*barmu;
@@ -452,7 +453,7 @@ begin
              goto 140;
       end;
     end;
-    prerem := parmu*prerec-sum;
+    prerem := parmu*prerec-total;
 
   { Calculate the constraint and objective functions at x[*]. Then find the
    actual reduction in the merit function.   }

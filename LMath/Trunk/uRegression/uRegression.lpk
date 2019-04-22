@@ -19,7 +19,7 @@
         </Optimizations>
       </CodeGeneration>
     </CompilerOptions>
-    <Version Minor="4"/>
+    <Version Minor="5"/>
     <Files Count="17">
       <Item1>
         <Filename Value="uevalfit.pas"/>

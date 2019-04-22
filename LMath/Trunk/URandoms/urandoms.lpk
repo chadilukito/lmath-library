@@ -23,7 +23,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="4"/>
+    <Version Minor="5"/>
     <Files Count="6">
       <Item1>
         <Filename Value="urandom.pas"/>
