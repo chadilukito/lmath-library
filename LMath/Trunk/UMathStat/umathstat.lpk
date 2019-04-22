@@ -24,6 +24,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
+    <Version Minor="5"/>
     <Files Count="26">
       <Item1>
         <Filename Value="uanova1.pas"/>

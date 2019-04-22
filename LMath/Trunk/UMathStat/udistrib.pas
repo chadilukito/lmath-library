@@ -1,5 +1,7 @@
 { ******************************************************************
-  Statistical distribution
+  Statistical distribution (histogram)
+  Calling program must first call DimStatClassVector to allocate
+  the histogram, than supply it to Distrib. Array is used beginning from 1.
   ****************************************************************** }
 
 unit udistrib;
@@ -9,8 +11,11 @@ interface
 uses
   utypes;
 
-{ Allocates an array of statistical classes: C[0..Ub] }
-procedure DimStatClassVector(var C : TStatClassVector; Ub : Integer);
+{ Allocates an array of statistical classes (histogram bins).
+A is lower border of histogram; B is upper border; H is bin width.
+Function calculates number of bins and allocates them. Number of bins is returned.
+If allocation is impossible, nil is returned.}
+function DimStatClassVector(out C : TStatClassVector; A, B, H : float):integer;
 
 { Distributes the values of array X[Lb..Ub] into M classes with
   equal width H, according to the following scheme:
@@ -22,36 +27,23 @@ procedure DimStatClassVector(var C : TStatClassVector; Ub : Integer);
   such that B = A + M * H }
 procedure Distrib(X       : TVector;
                   Lb, Ub  : Integer;
-                  A, B, H : Float;
+                  A       : Float; // A:lower border of histogram. Upper one is found from length of C.
+                  H       : Float; // H is bin width. Number of bins is calculated
                   C       : TStatClassVector);
 
 implementation
 
-procedure DimStatClassVector(var C : TStatClassVector; Ub : Integer);
+function DimStatClassVector(out C : TStatClassVector; A, B, H : float):integer;
 var
-  I : Integer;
+  M : Integer;
 begin
+  M := Round((B - A) / H) + 1; // number of bins
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
-    begin
-      C := nil;
-      Exit;
-    end;
-
-  { Allocate vector }
-  SetLength(C, Ub + 1);
-  if C = nil then Exit;
-
-  { Initialize vector }
-  for I := 0 to Ub do
-    with C[I] do
-      begin
-        Inf := 0.0;
-        Sup := 0.0;
-        N   := 0;
-        F   := 0.0;
-        D   := 0.0;
-      end;
+  if (M < 0) or (M > MaxSize) then
+    C := nil
+  else
+    SetLength(C, M + 1);
+  Result := M;
 end;
 
 function NumCls(X, A, H : Float) : Integer;
@@ -70,24 +62,20 @@ end;
 
 procedure Distrib(X       : TVector;
                   Lb, Ub  : Integer;
-                  A, B, H : Float;
+                  A,    H : Float;
                   C       : TStatClassVector);
 var
   I, K, M, Nt : Integer;
 begin
-  M := Round((B - A) / H);
-
+  M := High(C); // number of bins
   for K := 1 to M do
     C[K].N := 0;
-
   for I := Lb to Ub do
     begin
       K := NumCls(X[I], A, H);
       Inc(C[K].N);
     end;
-
   Nt := Ub - Lb + 1;
-
   for K := 1 to M do
     with C[K] do
       begin

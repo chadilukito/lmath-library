@@ -15,6 +15,8 @@ function Min(X : TVector; Lb, Ub : Integer) : Float; overload;
 { Maximum of sample X }
 function Max(X : TVector; Lb, Ub : Integer) : Float; overload;
 
+function Sum(X:TVector; Lb, Ub : integer) : Float;
+
 { Mean of sample X }
 function Mean(X : TVector; Lb, Ub : Integer) : Float;
 
@@ -53,17 +55,23 @@ begin
   Max := Xmax;
 end;
 
+function Sum(X: TVector; Lb, Ub: integer): Float;
+var
+  I:Integer;
+begin
+  Result := 0;
+  for I := Lb to Ub do
+    Result := Result +X[I];
+end;
+
 function Mean(X : TVector; Lb, Ub : Integer) : Float;
 var
-  SX : Float;
   I  : Integer;
 begin
-  SX := 0.0;
-
+  Result := 0.0;
   for I := Lb to Ub do
-    SX := SX + X[I];
-
-  Mean := SX / (Ub - Lb + 1);
+    Result := Result + X[I];
+  Mean := Result / (Ub - Lb + 1);
 end;
 
 function StDev(X : TVector; Lb, Ub : Integer; M : Float) : Float;
