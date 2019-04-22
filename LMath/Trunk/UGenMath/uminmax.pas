@@ -31,11 +31,21 @@ function Sgn0(X : Float) : Integer; overload;
 
 function Sgn0(X : integer) : integer; overload;
 
-{ Sgn(B) * |A| }
+{ if b negative, result is -A otherwize result is A }
 function DSgn(A, B : Float) : Float;
 
 // compatibility with Math unit
 function Sign(X: Float):integer; inline;
+
+// returns true if X is negative ( < -DefaultZeroEpsilon )
+function IsNegative(X: float):boolean; overload;
+
+function IsNegative(X: Integer):boolean; overload;
+
+// returns true if X is positive ( > -DefaultZeroEpsilon )
+function IsPositive(X: float):boolean; overload;
+
+function IsPositive(X: Integer):boolean; overload;
 
 { Exchange 2 reals }
 procedure Swap(var X, Y : Float);   overload;
@@ -77,10 +87,10 @@ implementation
 
   function Sgn0(X : Float) : Integer;
   begin
-    if X > 0.0 then
+    if IsZero(X) then // which means that if -DefZeroEpsilon < X < defZeroEpsilon
+      Sgn0 := 0       // then 0 is returned and next is safe to compare to 0
+    else if X > 0.0 then  
       Sgn0 := 1
-    else if IsZero(X) then
-      Sgn0 := 0
     else
       Sgn0 := - 1;
   end;
@@ -95,32 +105,52 @@ implementation
       Sgn0 := - 1;
   end;
 
-  function DSgn(A, B : Float) : Float;
-  begin
-    if B < 0.0 then DSgn := - Abs(A) else DSgn := Abs(A)
-  end;
+  function DSgn(A, B : Float) : Float;                       
+  begin                                                      
+    if B < 0.0 then DSgn := - Abs(A) else DSgn := Abs(A)     
+  end;                                                       
 
   function Sign(X: Float): integer;
   begin
     Result := Sgn0(X);
   end;
 
-  procedure Swap(var X, Y : Float);
-  var
-    Temp : Float;
-  begin
-    Temp := X;
-    X := Y;
-    Y := Temp;
-  end;
+function IsNegative(X: float):boolean;
+begin
+  Result := X < -DefaultZeroEpsilon;
+end;
 
-  procedure Swap(var X, Y : Integer);
-  var
-    Temp : Integer;
-  begin
-    Temp := X;
-    X := Y;
-    Y := Temp;
-  end;
+function IsNegative(X: Integer):boolean;
+begin
+  Result := X < 0;
+end;
+
+function IsPositive(X: float):boolean;
+begin
+  Result := X > DefaultZeroEpsilon;
+end;
+
+function IsPositive(X: Integer):boolean;
+begin
+  Result := X > 0;
+end;
+
+procedure Swap(var X, Y : Float);
+var
+  Temp : Float;
+begin
+  Temp := X;
+  X := Y;
+  Y := Temp;
+end;
+
+procedure Swap(var X, Y : Integer);
+var
+  Temp : Integer;
+begin
+  Temp := X;
+  X := Y;
+  Y := Temp;
+end;
 
 end.

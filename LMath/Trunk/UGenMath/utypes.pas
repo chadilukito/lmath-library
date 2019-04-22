@@ -76,11 +76,11 @@ procedure SetEpsilon(AEpsilon: float);
 and to compare two numbers near zero.}
 procedure SetZeroEpsilon(AZeroEpsilon: Float);
 
-implementation
-
 var
   DefaultZeroEpsilon: Float = MachEp / 8;
   DefaultEpsilon: Float = MachEp;
+
+implementation
 
 function IsZero(F: Float; Epsilon: Float = -1): Boolean;
 begin

@@ -28,7 +28,7 @@
         </OtherDefines>
       </Other>
     </CompilerOptions>
-    <Version Minor="4"/>
+    <Version Minor="5"/>
     <Files Count="21">
       <Item1>
         <AddToUsesPkgSection Value="False"/>

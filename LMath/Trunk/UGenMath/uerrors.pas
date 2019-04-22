@@ -7,7 +7,7 @@ unit uErrors;
 interface
 uses uTypes;
 const
-  MaxErrIndex = 18;
+  MaxErrIndex = 21;
 
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
@@ -36,6 +36,9 @@ const
   cobMaxFunc = 16;
   cobRoundErrors = 17;
   cobDegenerate = 18;
+  lpBadConstraintCount = 19;
+  lpBadSimplexTableau = 20;
+  lpBadVariablesCount = 21;
   ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
@@ -55,7 +58,10 @@ const
      'Initial parameter equal to zero',
      'Return from subroutine Cobyla because the maxfun limit has been reached',
      'Return from procedure Cobyla because rounding errors are becoming damaging.',
-     'Degenerate gradient'
+     'Degenerate gradient',
+     'LinSimplex:bad input constraint counts',
+     'Bad input tableau in LinSimplex',
+     'LinSimplex: bad variables count'
     );
   { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');

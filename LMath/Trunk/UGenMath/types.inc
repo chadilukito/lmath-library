@@ -95,6 +95,11 @@ end;
 
 TRealPointVector =  array of TRealPoint;
 
+PIntegerPoint = ^TIntegerPoint;
+TIntegerPoint = record
+  X, Y : integer;
+end;
+
 const
   C_infinity : Complex = (X : MaxNum; Y : 0.0);
   C_zero     : Complex = (X : 0.0;    Y : 0.0);
@@ -157,7 +162,7 @@ type RNG_Type =
    RNG_MT,       {< Mersenne Twister }
    RNG_UVAG);    {< Universal Virtual Array Generator }
 
-{ Statistics }
+{ Statistics. Used by Distrib in uDistrib which essentially builds a histogram }
 type StatClass = record  {< Statistical class }
   Inf : Float;           {< Lower bound }
   Sup : Float;           {< Upper bound }
