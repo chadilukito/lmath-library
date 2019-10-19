@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 775
+  Left = 680
   Height = 570
-  Top = 131
+  Top = 125
   Width = 724
   Caption = 'Test constrained fit'
   ClientHeight = 570

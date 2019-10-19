@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="uNonLinEq"/>
+    <Name Value="lmpolynoms"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -12,8 +12,6 @@
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
-        <SmartLinkUnit Value="True"/>
-        <RelocatableUnit Value="True"/>
         <Optimizations>
           <OptimizationLevel Value="4"/>
         </Optimizations>
@@ -24,42 +22,48 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="4"/>
-    <Files Count="5">
+    <Version Minor="5"/>
+    <Files Count="8">
       <Item1>
-        <Filename Value="ubisect.pas"/>
-        <UnitName Value="ubisect"/>
+        <Filename Value="upolutil.pas"/>
+        <UnitName Value="upolutil"/>
       </Item1>
       <Item2>
-        <Filename Value="ubroyden.pas"/>
-        <UnitName Value="ubroyden"/>
+        <Filename Value="upolynom.pas"/>
+        <UnitName Value="upolynom"/>
       </Item2>
       <Item3>
-        <Filename Value="unewteq.pas"/>
-        <UnitName Value="unewteq"/>
+        <Filename Value="urootpol.pas"/>
+        <UnitName Value="urootpol"/>
       </Item3>
       <Item4>
-        <Filename Value="unewteqs.pas"/>
-        <UnitName Value="unewteqs"/>
+        <Filename Value="urtpol1.pas"/>
+        <UnitName Value="urtpol1"/>
       </Item4>
       <Item5>
-        <Filename Value="usecant.pas"/>
-        <UnitName Value="usecant"/>
+        <Filename Value="urtpol2.pas"/>
+        <UnitName Value="urtpol2"/>
       </Item5>
+      <Item6>
+        <Filename Value="urtpol3.pas"/>
+        <UnitName Value="urtpol3"/>
+      </Item6>
+      <Item7>
+        <Filename Value="urtpol4.pas"/>
+        <UnitName Value="urtpol4"/>
+      </Item7>
+      <Item8>
+        <Filename Value="ucrtptpol.pas"/>
+        <UnitName Value="ucrtptpol"/>
+      </Item8>
     </Files>
-    <RequiredPkgs Count="4">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="uOptimum"/>
+        <PackageName Value="lmlinealgebra"/>
       </Item1>
       <Item2>
-        <PackageName Value="uLineAlgebra"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="uGenMath"/>
-      </Item3>
-      <Item4>
         <PackageName Value="FCL"/>
-      </Item4>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

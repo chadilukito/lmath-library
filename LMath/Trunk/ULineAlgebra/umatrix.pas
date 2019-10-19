@@ -6,10 +6,21 @@ interface
 
 uses
   uTypes, uErrors;
+operator + (V:TVector; R:Float) Res : TVector;
+operator - (V:TVector; R:Float) Res : TVector;
+operator / (V:TVector; R:Float) Res : TVector;
+operator * (V:TVector; R:Float) Res : TVector;
 
-{These functions are used by operators. One important difference is that
-operators _always allocate new array_ for result, while these functions 
-use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
+operator + (M:TMatrix; R:Float) Res : TMatrix;
+operator - (M:TMatrix; R:Float) Res : TMatrix;
+operator / (M:TMatrix; R:Float) Res : TMatrix;
+operator * (M:TMatrix; R:Float) Res : TMatrix;
+
+operator + (V1:TVector; V2:TVector) Res : TVector; // element-wise
+operator - (V1:TVector; V2:TVector) Res : TVector;
+
+
+{These functions use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
 function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
 function VecFloatSubstr(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
 function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
@@ -23,12 +34,12 @@ function MatFloatMul(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix 
 function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;
 
-{This function multiplies elements of one vector by elenets of other. 
-There is no corresponding operator. Operator * is for dot product.}
-function VecElemProd(V1,V2:TVector; Ziel : TVector = nil): TVector;
+{This function multiplies elements of one vector by elenets of other.}
+function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;
 function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix;
+function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;
 function VecEucLength(V:TVector; LB, Ub : integer) : float;
 function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;
 
@@ -174,7 +185,7 @@ begin
   Result := Ziel;
 end;
 
-function VecElemProd(V1,V2:TVector; Ziel : TVector = nil): TVector;
+function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
 var
   I,H:Integer;
 begin
@@ -195,14 +206,18 @@ end;
 
 function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
 var
-  I,H:Integer;
+  I,L,H:Integer;
 begin
   H := High(V1);
   if Ziel = nil then
     DimVector(Ziel,H);
   if (High(V2) = H) and (High(Ziel) = H) then
   begin
-    for I := 0 to H do
+    if V2[0] = 0 then
+      L := 1
+    else
+      L := 0;
+    for I := L to H do
       Ziel[I] := V1[I] / V2[I];
     Result := Ziel;
   end
@@ -214,7 +229,7 @@ end;
 
 function VecDotProd(V1, V2: TVector; Lb, Ub : integer): float;
 var
-  I,H:Integer;
+  I:Integer;
 begin
   Result := 0;
   for I := Lb to Ub do
@@ -237,6 +252,19 @@ begin
   for I := Lb to Ub1 do
     Ziel[I] := VecFloatMul(V2,V1[I],Lb,Ub2,Ziel[I]);
   Result := Ziel;
+end;
+
+function VecCrossProd(V1, V2: TVector; Lb: integer; Ziel: TVector): TVector;
+var
+  Y,Z:integer;
+begin
+  Y:= Lb+1;
+  Z := Lb+2;
+  if Ziel = nil then
+    DimVector(Ziel,Z);
+  Ziel[Lb] := V1[Y]*V2[Z]  - V1[Z]*V2[Y];
+  Ziel[Y]  := V1[Z]*V2[Lb] - V1[Lb]*V2[Z];
+  Ziel[Z]  := V1[Lb]*V2[Y] - V1[Y]*V2[Lb];
 end;
 
 function VecEucLength(V:TVector; LB, Ub : integer): float;
@@ -311,7 +339,7 @@ begin
   Result := Ziel;
 end;
 
-function matTranspose(M, Ziel:TMatrix; LB: integer) : TMatrix;
+function MatTranspose(M, Ziel: TMatrix; LB: integer): TMatrix;
 var
  I,J,H,W:integer;
 begin
@@ -331,6 +359,147 @@ begin
     SetErrCode(MatErrDim);
   end;
 end;
+
+operator+(V: TVector; R: Float)Res: TVector;
+var
+  I,L:integer;
+  Ziel: TVector;
+begin
+  L := high(V);
+  DimVector(Ziel, L);
+  for I := 0 to L do
+    Ziel[I] := V[I]+R;
+  Result := Ziel;
+end;
+
+operator-(V: TVector; R: Float)Res: TVector;
+var
+  I,L:integer;
+  Ziel: TVector;
+begin
+  L := high(V);
+  DimVector(Ziel, L);
+  for I := 0 to L do
+    Ziel[I] := V[I]-R;
+  Result := Ziel;
+end;
+
+operator/(V: TVector; R: Float)Res: TVector;
+var
+  I,L:integer;
+  Ziel: TVector;
+begin
+  L := high(V);
+  DimVector(Ziel, L);
+  for I := 0 to L do
+    Ziel[I] := V[I]/R;
+  Result := Ziel;
+end;
+
+operator*(V: TVector; R: Float)Res: TVector;
+var
+  I,L:integer;
+  Ziel: TVector;
+begin
+  L := high(V);
+  DimVector(Ziel, L);
+  for I := 0 to L do
+    Ziel[I] := V[I]*R;
+  Result := Ziel;
+end;
+
+operator+(M: TMatrix; R: Float)Res: TMatrix;
+var
+  I,J,Ub1,Ub2:integer;
+  Ziel: TMatrix;
+begin
+  Ub1 := high(M);
+  Ub2 := high(M[0]);
+  DimMatrix(Ziel, Ub1, Ub2);
+  for I := 0 to Ub1 do
+    for J := 0 to Ub2 do
+      Ziel[I,J] := M[I,J]+R;
+  Result := Ziel;
+end;
+
+operator-(M: TMatrix; R: Float)Res: TMatrix;
+var
+  I,J,Ub1,Ub2:integer;
+  Ziel: TMatrix;
+begin
+  Ub1 := high(M);
+  Ub2 := high(M[0]);
+  DimMatrix(Ziel, Ub1, Ub2);
+  for I := 0 to Ub1 do
+    for J := 0 to Ub2 do
+      Ziel[I,J] := M[I,J] - R;
+  Result := Ziel;
+end;
+
+operator/(M: TMatrix; R: Float)Res: TMatrix;
+var
+  I,J,Ub1,Ub2:integer;
+  Ziel: TMatrix;
+begin
+  Ub1 := high(M);
+  Ub2 := high(M[0]);
+  DimMatrix(Ziel, Ub1, Ub2);
+  for I := 0 to Ub1 do
+    for J := 0 to Ub2 do
+      Ziel[I,J] := M[I,J] / R;
+  Result := Ziel;
+end;
+
+operator*(M: TMatrix; R: Float)Res: TMatrix;
+var
+  I,J,Ub1,Ub2:integer;
+  Ziel: TMatrix;
+begin
+  Ub1 := high(M);
+  Ub2 := high(M[0]);
+  DimMatrix(Ziel, Ub1, Ub2);
+  for I := 0 to Ub1 do
+    for J := 0 to Ub2 do
+      Ziel[I,J] := M[I,J] * R;
+  Result := Ziel;
+end;
+
+operator+(V1: TVector; V2: TVector)Res: TVector;
+var
+  I,L:integer;
+  Ziel:TVector;
+begin
+  L := high(V1);
+  DimVector(Ziel, L);
+  if L <> High(V2) then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
+  for I := 0 to L do
+    Ziel[I] := V1[I] + V2[I];
+  Result := Ziel;
+end;
+
+    operator-(V1: TVector; V2: TVector)Res: TVector;
+  var
+    I,L:integer;
+    Ziel:TVector;
+  begin
+    L := high(V1);
+    DimVector(Ziel, L);
+    if L <> High(V2) then
+    begin
+      SetErrCode(MatErrDim);
+      Result := nil;
+      Exit;
+    end;
+    for I := 0 to L do
+      Ziel[I] := V1[I] - V2[I];
+    Result := Ziel;
+end;
+
 
 end.
 

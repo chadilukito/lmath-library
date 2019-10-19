@@ -2,13 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit uMathUtil;
+unit lmpolynoms;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, uunitsformat, LazarusPackageIntf;
+  upolutil, upolynom, urootpol, urtpol1, urtpol2, urtpol3, urtpol4, ucrtptpol, LazarusPackageIntf;
 
 implementation
 
@@ -17,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uMathUtil', @Register);
+  RegisterPackage('lmpolynoms', @Register);
 end.

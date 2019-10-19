@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="uOptimum"/>
+    <Name Value="lmoptimum"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -21,7 +21,7 @@
       </CodeGeneration>
     </CompilerOptions>
     <Version Minor="5"/>
-    <Files Count="14">
+    <Files Count="15">
       <Item1>
         <Filename Value="ubfgs.pas"/>
         <UnitName Value="ubfgs"/>
@@ -78,26 +78,24 @@
         <Filename Value="ueval.pas"/>
         <UnitName Value="ueval"/>
       </Item14>
+      <Item15>
+        <Filename Value="uLinSimplex.pas"/>
+        <UnitName Value="uLinSimplex"/>
+      </Item15>
     </Files>
-    <RequiredPkgs Count="6">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="uMathUtil"/>
+        <PackageName Value="lmrandoms"/>
       </Item1>
       <Item2>
-        <PackageName Value="uMathStat"/>
+        <PackageName Value="lmmathstat"/>
       </Item2>
       <Item3>
-        <PackageName Value="urandoms"/>
+        <PackageName Value="lmMathUtil"/>
       </Item3>
       <Item4>
-        <PackageName Value="uLineAlgebra"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="uGenMath"/>
-      </Item5>
-      <Item6>
         <PackageName Value="FCL"/>
-      </Item6>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

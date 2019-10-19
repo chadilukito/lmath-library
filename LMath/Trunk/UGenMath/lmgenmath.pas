@@ -2,14 +2,14 @@
   This source is only used to compile and install the package.
  }
 
-unit uOptimum;
+unit lmgenmath;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubfgs, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, unewton, usimann, usimplex, uCobyla, uTrsTlp, 
-  ueval, LazarusPackageIntf;
+  ubeta, ucomplex, udigamma, ufact, ugamma, uhyper, uibeta, uigamma, uScaling, ulambert, umath, uminmax, upolev, 
+  uround, utrigo, utypes, uErrors, uIntervals, uRealPoints, uIntPoints, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uOptimum', @Register);
+  RegisterPackage('lmgenmath', @Register);
 end.

@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="urandoms"/>
+    <Name Value="lmrandoms"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -52,7 +52,7 @@
     </Files>
     <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="uGenMath"/>
+        <PackageName Value="lmgenmath"/>
       </Item1>
       <Item2>
         <PackageName Value="FCL"/>

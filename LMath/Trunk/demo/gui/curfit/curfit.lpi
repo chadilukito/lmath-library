@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -23,29 +23,27 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="uspecregress"/>
+        <PackageName Value="lmspecregress"/>
       </Item1>
       <Item2>
-        <PackageName Value="uRegression"/>
+        <PackageName Value="lmRegression"/>
       </Item2>
       <Item3>
-        <PackageName Value="uPlotter"/>
+        <PackageName Value="lmplotter"/>
       </Item3>
       <Item4>
-        <PackageName Value="uMathStat"/>
+        <PackageName Value="lmgenmath"/>
       </Item4>
       <Item5>
-        <PackageName Value="uGenMath"/>
-      </Item5>
-      <Item6>
         <PackageName Value="LCL"/>
-      </Item6>
+      </Item5>
     </RequiredPackages>
     <Units Count="8">
       <Unit0>

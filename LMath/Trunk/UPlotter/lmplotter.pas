@@ -2,12 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit urandoms;
+unit lmplotter;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  urandom, urangaus, uranmt, uranmult, uranmwc, uranuvag, LazarusPackageIntf;
+  uhsvrgb, uplot, utexplot, uwinplot, LazarusPackageIntf;
 
 implementation
 
@@ -16,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('urandoms', @Register);
+  RegisterPackage('lmplotter', @Register);
 end.

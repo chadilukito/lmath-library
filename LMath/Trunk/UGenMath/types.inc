@@ -110,11 +110,7 @@ const
 
 {  Vectors and matrices. }
 const                    { Max. array size }
-{$IFDEF FPC}
-  MaxSize = 32767;       {< 2^15 - 1 }
-{$ELSE}
   MaxSize = 2147483647;  {< 2^31 - 1 }
-{$ENDIF}
 
 type
   TVector     = array of Float;
@@ -128,42 +124,49 @@ type
   TCompMatrix = array of TCompVector;
   TBoolMatrix = array of TBoolVector;
   TStrMatrix  = array of TStrVector;
+  
+  // Types of comparisons, used in some comparators
+  TCompOperator = (LT,LE,EQ,GE,GT,NE);
 
 { ------------------------------------------------------------------
   Functional types
   ------------------------------------------------------------------ }
 
 { Function of one variable }
-type TFunc = function(X : Float) : Float;
+TFunc = function(X : Float) : Float;
 
 { Function of several variables }
-type TFuncNVar = function(X : TVector) : Float;
+TFuncNVar = function(X : TVector) : Float;
 
 { Nonlinear equation system }
-type TEquations = procedure(X, F : TVector);
+TEquations = procedure(X, F : TVector);
 
 { Differential equation system }
-type TDiffEqs = procedure(X : Float; Y, Yp : TVector);
+TDiffEqs = procedure(X : Float; Y, Yp : TVector);
 
 { Jacobian }
-type TJacobian = procedure(X : TVector; D : TMatrix);
+TJacobian = procedure(X : TVector; D : TMatrix);
 
 { Gradient }
-type TGradient = procedure(X, G : TVector);
+TGradient = procedure(X, G : TVector);
 
 { Hessian and Gradient }
-type THessGrad = procedure(X, G : TVector; H : TMatrix);
+THessGrad = procedure(X, G : TVector; H : TMatrix);
 
-type TParamFunc = function(X:Float; Params:Pointer):Float;
+TParamFunc = function(X:Float; Params:Pointer):Float;
+
+// type for general comparison functions
+TComparator = function(V1,V2:float):boolean;
+TIntComparator = function(V1,V2:integer):boolean;
 
 { Random number generators }
-type RNG_Type =
+RNG_Type =
   (RNG_MWC,      {< Multiply-With-Carry }
    RNG_MT,       {< Mersenne Twister }
    RNG_UVAG);    {< Universal Virtual Array Generator }
 
 { Statistics. Used by Distrib in uDistrib which essentially builds a histogram }
-type StatClass = record  {< Statistical class }
+StatClass = record  {< Statistical class }
   Inf : Float;           {< Lower bound }
   Sup : Float;           {< Upper bound }
   N   : Integer;         {< Number of values }
@@ -171,14 +174,11 @@ type StatClass = record  {< Statistical class }
   D   : Float;           {< Density }
 end;
 
-type
-  TStatClassVector = array of StatClass;
+ TStatClassVector = array of StatClass;
 
 { Curve fit }
-type
   TRegMode = (OLS, WLS);  {< Regression mode }
 
-type
   TRegTest = record      {< Test of regression }
     Vr       : Float;    {< Residual variance }
     R2       : Float;    {< Coefficient of determination }
@@ -188,7 +188,6 @@ type
   end;
 
 { Optimization algorithms for nonlinear regression }
-type
   TOptAlgo = (
     NL_MARQ,       {< Marquardt algorithm }
     NL_SIMP,       {< Simplex algorithm }
@@ -197,20 +196,16 @@ type
     NL_GA);        {< Genetic algorithm }
 
 { Regression function }
-type
   TRegFunc = function(X : Float; B : TVector) : Float;
 
 { Procedure to compute the derivatives of the regression function
   with respect to the regression parameters }
-type
   TDerivProc = procedure(X, Y : Float; B, D : TVector);
 
 { Variable of the integrated Michaelis equation:
   Time, Substrate conc., Enzyme conc. }
-type
   TMintVar = (Var_T, Var_S, Var_E);
 
-type
   {User function supplied to COBYLA minimization algorythm.
   N is number of arguments to be adjusted;
   M is number of constraints;
@@ -226,7 +221,6 @@ type
   Graphics
   ------------------------------------------------------------------ }
 
-type
   Str30  = String[30];
   TScale = (LinScale, LogScale);
   TGrid  = (NoGrid, HorizGrid, VertiGrid, BothGrid);
@@ -241,5 +235,4 @@ const
 type
   TArgC = 1..MaxArg;
 
-type
   TWrapper = function(ArgC : TArgC; ArgV : TVector) : Float;

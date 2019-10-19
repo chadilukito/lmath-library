@@ -7,7 +7,7 @@ unit unewteqs;
 interface
 
 uses
-  utypes, uErrors, ulineq, ulinminq, ucompvec;
+  utypes, uErrors, ulineq, ulinminq, uVecUtils;
 
 { Solves a system of nonlinear equations by Newton's method
   

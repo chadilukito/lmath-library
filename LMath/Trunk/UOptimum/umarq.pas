@@ -8,7 +8,7 @@ unit umarq;
 interface
 
 uses
-  utypes, uErrors, ugausjor, ulinmin, ucompvec;
+  utypes, uErrors, ugausjor, ulinmin, uVecUtils;
 
 {  Save Marquardt iterations in a file }
 procedure SaveMarquardt(FileName : string);

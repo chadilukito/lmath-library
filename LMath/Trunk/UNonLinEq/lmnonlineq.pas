@@ -2,12 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit uintegrals;
+unit lmnonlineq;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ugausleg, urkf, utrapint, LazarusPackageIntf;
+  ubisect, ubroyden, unewteq, unewteqs, usecant, LazarusPackageIntf;
 
 implementation
 
@@ -16,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uintegrals', @Register);
+  RegisterPackage('lmnonlineq', @Register);
 end.

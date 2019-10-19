@@ -8,7 +8,7 @@ unit ubfgs;
 interface
 
 uses
-  utypes, uErrors, ulinmin, ucompvec;
+  utypes, uErrors, ulinmin, uVecUtils;
 
 { Save BFGS iterations in a file }
 procedure SaveBFGS(FileName : string);

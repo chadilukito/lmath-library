@@ -1,5 +1,5 @@
 program testunitsformat;
-uses lmunitsformat, uTypes;
+uses uUnitsformat, uTypes;
 var
   Val:float;
 begin

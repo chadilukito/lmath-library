@@ -2,13 +2,14 @@
   This source is only used to compile and install the package.
  }
 
-unit upolynoms;
+unit lmlinealgebra;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  upolutil, upolynom, urootpol, urtpol1, urtpol2, urtpol3, urtpol4, ucrtptpol, LazarusPackageIntf;
+  ubalance, ubalbak, ucholesk, ueigsym, ueigval, ueigvec, uelmhes, ueltran, ugausjor, uhqr, uhqr2, ujacobi, ulineq, 
+  ulu, uqr, usvd, uMatrix, LazarusPackageIntf;
 
 implementation
 
@@ -17,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('upolynoms', @Register);
+  RegisterPackage('lmlinealgebra', @Register);
 end.

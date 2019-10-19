@@ -2,14 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit uRegression;
+unit lmspecregress;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  uevalfit, uexlfit, uexpfit, ufft, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
-  usvdfit, uSpline, uregtest, uConstrNLFit, LazarusPackageIntf;
+  ugoldman, umodels, udistribs, ugauss, ugaussf, usigmatable, uhillfit, umichfit, umintfit, upkfit, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uRegression', @Register);
+  RegisterPackage('lmspecregress', @Register);
 end.

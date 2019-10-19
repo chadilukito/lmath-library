@@ -7,7 +7,7 @@ unit ubroyden;
 interface
 
 uses
-  utypes, uErrors, ulinminq, ucompvec;
+  utypes, uErrors, ulinminq, uVecUtils;
 
 { Solves a system of nonlinear equations by Broyden's method
   

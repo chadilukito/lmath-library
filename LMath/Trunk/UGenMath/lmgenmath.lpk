@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="uGenMath"/>
+    <Name Value="lmgenmath"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -29,7 +29,7 @@
       </Other>
     </CompilerOptions>
     <Version Minor="5"/>
-    <Files Count="21">
+    <Files Count="22">
       <Item1>
         <AddToUsesPkgSection Value="False"/>
       </Item1>
@@ -113,6 +113,10 @@
         <Filename Value="urealpoints.pas"/>
         <UnitName Value="uRealPoints"/>
       </Item21>
+      <Item22>
+        <Filename Value="uintpoints.pas"/>
+        <UnitName Value="uIntPoints"/>
+      </Item22>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

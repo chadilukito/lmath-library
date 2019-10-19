@@ -2,14 +2,14 @@
   This source is only used to compile and install the package.
  }
 
-unit uLineAlgebra;
+unit lmRegression;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubalance, ubalbak, ucholesk, ueigsym, ueigval, ueigvec, uelmhes, ueltran, ugausjor, uhqr, uhqr2, ujacobi, ulineq, 
-  ulu, uqr, usvd, uMatrix, LazarusPackageIntf;
+  uevalfit, uexlfit, uexpfit, ufft, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
+  usvdfit, uSpline, uregtest, uConstrNLFit, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uLineAlgebra', @Register);
+  RegisterPackage('lmRegression', @Register);
 end.

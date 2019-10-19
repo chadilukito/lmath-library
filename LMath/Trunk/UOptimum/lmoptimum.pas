@@ -2,13 +2,15 @@
   This source is only used to compile and install the package.
  }
 
-unit uspecregress;
+unit lmoptimum;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ugoldman, umodels, udistribs, ugauss, ugaussf, usigmatable, uhillfit, umichfit, umintfit, upkfit, LazarusPackageIntf;
+  ubfgs, ugenalg, ugoldsrc, ulinmin, ulinminq, umarq, umcmc, uminbrak, 
+  unewton, usimann, usimplex, uCobyla, uTrsTlp, ueval, uLinSimplex, 
+  LazarusPackageIntf;
 
 implementation
 
@@ -17,5 +19,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uspecregress', @Register);
+  RegisterPackage('lmoptimum', @Register);
 end.

@@ -2,12 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit uNonLinEq;
+unit lmintegrals;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubisect, ubroyden, unewteq, unewteqs, usecant, LazarusPackageIntf;
+  ugausleg, urkf, utrapint, LazarusPackageIntf;
 
 implementation
 
@@ -16,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uNonLinEq', @Register);
+  RegisterPackage('lmintegrals', @Register);
 end.

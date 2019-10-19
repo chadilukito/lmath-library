@@ -53,7 +53,7 @@ begin
   PrintMatrix(M2);
   writeln('Vector:');
   printVector(M1[1]);
-  ResV := M2*M1[1];
+  ResV := MatVecMul(M2,M1[1],LB);
   writeln('result:');
   PrintVector(ResV);
 
@@ -61,10 +61,9 @@ begin
   printMatrix(M1);
   writeln('with:');
   printMatrix(M2);
-  Res := M1*M2;
+  Res := MatMul(M1,M2,nil,Lb);
   writeln('Result:');
   PrintMatrix(Res);
-  finalize(Res);
   {%endregion}
   {%region}
   writeln('Now timing.');
@@ -99,7 +98,7 @@ begin
   Rows1 := LB+1; Cols1 := LB+2;
   writeln('Test of transpose.');
   DimMatrix(Res, Cols1, Rows1);
-  matTranspose(M1,Res);
+  matTranspose(M1,Res,LB);
   writeln('initial:');
   Printmatrix(M1);
   writeln('Transposed:');
@@ -115,7 +114,7 @@ begin
   printmatrix(M1);
 
   writeln('+4');
-  ResV2 := ResV+4;
+  ResV2 := VecFloatAdd(ResV,4.0,Lb,High(ResV));
   printvector(ResV2);
   writeln;
   Res := M1+4;
@@ -140,9 +139,6 @@ begin
   printmatrix(Res);
   Finalize(Res);
   Finalize(ResV2);
-
-  write('Press [Enter] to terminate...');
-  readln;
 
   writeln('/8');
   ResV2 := ResV/8;
@@ -170,13 +166,21 @@ begin
   printvector(ResV3);
 
   writeln('multiply:');
-  ElementalMultiplyVectors(ResV,ResV2,ResV3);
+  VecElemMul(ResV,ResV2,ResV3);
   printvector(ResV3);
   finalize(ResV3);
 
-  writeln('Dot product:');
-  ResF := ResV*ResV2;
+  writeln('Dot product of:');
+  printVector(ResV);
+  writeln('and');
+  printvector(ResV2);
+  ResF := VecDotProd(ResV,Resv2,Lb, high(ResV));
   writeln(Format(FmtStr,[ResF]));
+
+  writeln('Now their outer product:');
+  M3 := VecOuterProd(ResV,ResV2,Lb,high(ResV),High(ResV2));
+  PrintMatrix(M3);
   write('Press [Enter] to terminate...');
+  readln;
 end.
 

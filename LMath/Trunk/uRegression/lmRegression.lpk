@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="uRegression"/>
+    <Name Value="lmRegression"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -90,22 +90,16 @@
         <UnitName Value="uConstrNLFit"/>
       </Item17>
     </Files>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="uMathUtil"/>
+        <PackageName Value="lmpolynoms"/>
       </Item1>
       <Item2>
-        <PackageName Value="upolynoms"/>
+        <PackageName Value="lmoptimum"/>
       </Item2>
       <Item3>
-        <PackageName Value="uOptimum"/>
-      </Item3>
-      <Item4>
-        <PackageName Value="uLineAlgebra"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
-      </Item5>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

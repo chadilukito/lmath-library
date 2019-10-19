@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -22,20 +22,24 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="uRegression"/>
+        <PackageName Value="lmoptimum"/>
       </Item1>
       <Item2>
-        <PackageName Value="urandoms"/>
+        <PackageName Value="lmrandoms"/>
       </Item2>
       <Item3>
-        <PackageName Value="uGenMath"/>
+        <PackageName Value="lmlinealgebra"/>
       </Item3>
+      <Item4>
+        <PackageName Value="lmgenmath"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>

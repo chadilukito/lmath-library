@@ -14,7 +14,7 @@ uses
 {$ENDIF}   
 
 const
-  N = 3000000;  { Generate N numbers }
+  N = 30000;  { Generate N numbers }
 
 var
   I, R : LongInt;

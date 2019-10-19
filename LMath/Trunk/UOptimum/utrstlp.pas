@@ -468,7 +468,7 @@ begin
 //
 //     Complete vmultc by finding the new constraint residuals.
 //
-      dxnew := dx + sdirn * step;
+      dxnew := VecAdd(dx, VecFloatMul(sdirn, step, 1, N, dxnew));
       if mcon > nact then
       begin
           kl := nact+1;

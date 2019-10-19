@@ -8,7 +8,7 @@ unit unewton;
 interface
 
 uses
-  utypes, uErrors, ulineq, ulinmin, ucompvec;
+  utypes, uErrors, ulineq, ulinmin, uVecUtils;
 
 { Save Newton-Raphson iterations in a file }
 procedure SaveNewton(FileName : string);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Spin, StdCtrls, Buttons,
-  uTypes, lmnumericedits, uConstrNLFit, lmVectorHelper, Globals;
+  uTypes, lmnumericedits, uConstrNLFit, uVectorHelper, Globals;
 
 type
 

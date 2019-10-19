@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 827
+  Left = 522
   Height = 682
-  Top = 124
+  Top = 85
   Width = 680
   Caption = 'Mandelbrot and Julia sets: z'' = z^p + c'
   ClientHeight = 682
@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnActivate = FormActivate
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '2.0.0.4'
   object Label1: TLabel
     Left = 8
     Height = 16

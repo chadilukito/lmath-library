@@ -28,10 +28,10 @@
     </RunParams>
     <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="uMathUtil"/>
+        <PackageName Value="lmrandoms"/>
       </Item1>
       <Item2>
-        <PackageName Value="urandoms"/>
+        <PackageName Value="lmMathUtil"/>
       </Item2>
       <Item3>
         <PackageName Value="rx"/>

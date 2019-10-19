@@ -73,7 +73,6 @@ var MaxFun: integer;// limit on the number of calls of CALCFC user-supplied func
 
 implementation
 var
-  OldLowBound : integer;
   MPP : integer; // M + 2
 
   {working space}
@@ -82,8 +81,6 @@ var
 
 procedure InitCobyla(M,N: integer);
 begin
-    OldLowBound := matGetLowBound;
-    matSetLowBound(1); // sets low bound for vector and matrix operations defined in uMatrix
     mpp := m+2;
     DimVector(W,N);
     DimVector(Con,Mpp); // calcfc returns constraint functions here. Must be non-negative
@@ -95,22 +92,6 @@ begin
     DimVector(Veta,N);
     DimVector(SigBar,N);
     DimVector(DX,N);
-end;
-
-procedure FinCobyla(ErrCode:integer);
-begin
-    Finalize(W);
-    Finalize(Con);
-    Finalize(Sim);
-    Finalize(Simi);
-    Finalize(DATMat);
-    Finalize(A);
-    Finalize(VSig);
-    Finalize(Veta);
-    Finalize(SigBar);
-    Finalize(DX);
-    matSetLowBound(OldLowBound);
-    SetErrCode(ErrCode);
 end;
 
 procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: float; RHOBEG: float; RHOEND: float;
@@ -187,7 +168,7 @@ begin
 
  40:if (nfvals >= MaxFun) and (nfvals > 0) then
     begin
-      FinCobyla(cobMaxFunc);
+      SetErrCode(cobMaxFunc);
       Exit;
     end;
     CalcObjectFunc;
@@ -411,7 +392,7 @@ begin
 // and here, to 370, we come if this update of vertex was not needed
 //    Calculate DX := x[*]-x[0]. Branch if the length of DX is less than 0.5*RHO.
 370: trstlp(N,M,A,Con,Rho,dx,ifull);
-    if (ifull = 0) and (vecEucLength(DX,1) < 0.25*sqr(Rho)) then
+    if (ifull = 0) and (vecEucLength(DX,1,N) < 0.25*sqr(Rho)) then
     begin
       ibrnch := 1;
       goto 550;
@@ -599,7 +580,7 @@ begin
     F := datmat[mp,np];
     MaxCV := datmat[mpp,np];
     MaxFun := nfvals;
-    FinCobyla(optOK);
+    SetErrCode(optOK);
 end;
 
 end.

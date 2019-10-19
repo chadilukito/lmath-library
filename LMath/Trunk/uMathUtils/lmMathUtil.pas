@@ -2,14 +2,14 @@
   This source is only used to compile and install the package.
  }
 
-unit uGenMath;
+unit lmMathUtil;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ubeta, ucomplex, udigamma, ufact, ugamma, uhyper, uibeta, uigamma, uScaling, ulambert, umath, uminmax, upolev, 
-  uround, utrigo, utypes, uErrors, uIntervals, uRealPoints, LazarusPackageIntf;
+  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, 
+  uunitsformat, uVecFunc, uVecMatPrn, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uGenMath', @Register);
+  RegisterPackage('lmMathUtil', @Register);
 end.

@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <PathDelim Value="\"/>
-    <Name Value="uMathStat"/>
+    <Name Value="lmmathstat"/>
     <Type Value="RunAndDesignTime"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -133,10 +133,10 @@
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="uLineAlgebra"/>
+        <PackageName Value="lmlinealgebra"/>
       </Item1>
       <Item2>
-        <PackageName Value="uGenMath"/>
+        <PackageName Value="lmgenmath"/>
       </Item2>
       <Item3>
         <PackageName Value="FCL"/>

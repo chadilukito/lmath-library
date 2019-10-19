@@ -92,10 +92,10 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="uLineAlgebra"/>
+        <PackageName Value="lmlinealgebra"/>
       </Item1>
       <Item2>
-        <PackageName Value="uGenMath"/>
+        <PackageName Value="lmgenmath"/>
       </Item2>
     </RequiredPackages>
     <Units Count="1">

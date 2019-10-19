@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit uMathStat;
+unit lmmathstat;
 
 {$warn 5023 off : no warning about unused units}
 interface
@@ -19,5 +19,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('uMathStat', @Register);
+  RegisterPackage('lmmathstat', @Register);
 end.
