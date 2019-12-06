@@ -16,7 +16,7 @@ unit nvbufstream;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes;
 
 Const
   DefaultBufferCapacity : Integer = 16; // Default buffer capacity in Kb.

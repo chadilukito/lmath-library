@@ -63,10 +63,10 @@ type
     any desired actions}
     procedure ParseLine; virtual;
      {If the flag is present in CommandFlags sets SelectedFlag on it and returns true}
-   function FindCommandFlag(const FlagText:string):boolean; virtual;
+    function FindCommandFlag(const FlagText:string):boolean; virtual;
     function GetFlagValue(const FlagText:string):double;
      {returns text value of Parameter # Index. '' if no such parameter present}
-   function GetParam(Index:integer):String;
+    function GetParam(Index:integer):String;
     function ValidCommandLine(MinParams,MaxParams:integer):boolean; virtual;
   end;
 

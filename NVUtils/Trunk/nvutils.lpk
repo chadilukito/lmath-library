@@ -14,8 +14,9 @@
       </SearchPaths>
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
         <Optimizations>
-          <OptimizationLevel Value="3"/>
+          <OptimizationLevel Value="4"/>
         </Optimizations>
       </CodeGeneration>
       <Linking>
@@ -24,8 +25,9 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
+    <Description Value="1.4: pair of PChar functions added"/>
     <License Value="LGPL 2.0"/>
-    <Version Major="1" Minor="3"/>
+    <Version Major="1" Minor="4"/>
     <Files Count="5">
       <Item1>
         <Filename Value="linepars.pas"/>

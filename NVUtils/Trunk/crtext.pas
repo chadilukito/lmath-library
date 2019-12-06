@@ -2,8 +2,7 @@ unit CRTExt;
 {$mode objfpc}{$H+}
 interface
 
-uses
-  SysUtils, Windows, CRT;
+uses Windows, CRT;
 
 function GetConsoleBackColor:byte;
 function GetConsoleTextColor:byte;
@@ -15,7 +14,7 @@ procedure NormalColors;
 implementation
 var
   ConsoleInfo: TConsoleScreenBufferinfo;
-  { CONSOLE_SCREEN_BUFFER_INFO = packed record
+  {< CONSOLE_SCREEN_BUFFER_INFO = packed record
        dwSize : COORD;
        dwCursorPosition : COORD;
        wAttributes : WORD;
@@ -32,7 +31,7 @@ begin
     Result := srWindow.Bottom - srWindow.Top + 1;
   end else
     Result := 25;
-end; { func. GetScreenHeight }
+end;
 
 function GetWinWidth : integer;
 begin
@@ -41,8 +40,8 @@ begin
   begin
     Result := srWindow.Right - srWindow.Left + 1;
   end else
-    Result := 25;
-end; { func. GetScreenHeight }
+    Result := 80;
+end;
 
 function GetConsoleTextColor:byte;
 begin

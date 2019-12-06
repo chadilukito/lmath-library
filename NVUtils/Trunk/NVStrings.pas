@@ -6,12 +6,16 @@ the package. *)
 unit NVStrings;
 
 interface
-uses SysUtils, Classes;
+uses SysUtils, Classes, Strings;
 
 function FileMatchesMask(FileName, Mask: string):boolean;
 function StringMatchesMask(Source, Mask: string):boolean;
 function LastPos(Ch:Char; const Source: string):integer;
 function FindLineByPos(Strings:TStrings;Pos:integer):integer;
+
+function StrChangeFileExt(Source, NewExt:PChar; out Dest:PChar):PChar;
+
+//function Pas2PChar(out Dest:PChar; const S:string):PChar;
 
 implementation
 
@@ -105,5 +109,29 @@ begin
   end;
   Result := Result;
 end;
+
+function StrChangeFileExt(Source, NewExt: PChar; out Dest : PChar): PChar;
+var
+  P:PChar;
+  L,LL:integer;
+begin
+  L := StrLen(Source);
+  P := Strrscan(Source,'.');
+  if P <> nil then
+    L :=  sizeuint(P) - sizeuint(Source);
+  LL := L + StrLen(NewExt);
+  Dest := StrAlloc(LL+1);
+  StrLCopy(Dest,Source,L);
+  StrCat(Dest,NewExt);
+  Result := Dest;
+end;
+
+function Pas2PChar(out Dest:PChar; const S: string): PChar;
+begin
+  Dest := StrAlloc(length(S)+1);
+  StrPCopy(Dest,S);
+  Result := Dest;
+end;
+
 
 end.
