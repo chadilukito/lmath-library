@@ -44,11 +44,11 @@ begin
   if MathErr <> 0 then Exit;
 
   { Sort eigenvalues and eigenvectors }
-  for I := Lb to Pred(Ub) do
+  for I := Lb to Ub - 1 do
     begin
       K := I;
       R := Lambda[I];
-      for J := Succ(I) to Ub do
+      for J := I + 1 to Ub do
         if Lambda[J] > R then
           begin
             K := J;

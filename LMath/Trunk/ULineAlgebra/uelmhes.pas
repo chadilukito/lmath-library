@@ -7,7 +7,7 @@ unit uelmhes;
 interface
 
 uses
-  utypes;
+  utypes, uMinMax;
 
 procedure ElmHes(A                    : TMatrix;
                  Lb, Ub, I_low, I_igh : Integer;
@@ -86,18 +86,10 @@ procedure ElmHes(A                    : TMatrix;
         if I <> M then
           begin
             for J := Mm1 to Ub do
-              begin
-                Y := A[I,J];
-                A[I,J] := A[M,J];
-                A[M,J] := Y;
-              end;
+              Swap(A[I,J],A[M,J]);
 
             for J := Lb to I_igh do
-              begin
-                Y := A[J,I];
-                A[J,I] := A[J,M];
-                A[J,M] := Y;
-              end;
+              Swap(A[J,I],A[J,M]);
           end;
 
         if X <> 0.0 then
@@ -107,14 +99,14 @@ procedure ElmHes(A                    : TMatrix;
               begin
                 Y := A[I,Mm1];
                 if Y <> 0.0 then
-                  begin
-                    Y := Y / X;
-                    A[I,Mm1] := Y;
-                    for J := M to Ub do
-                      A[I,J] := A[I,J] - Y * A[M,J];
-                    for J := Lb to I_igh do
-                      A[J,M] := A[J,M] + Y * A[J,I];
-                  end;
+                begin
+                  Y := Y / X;
+                  A[I,Mm1] := Y;
+                  for J := M to Ub do
+                    A[I,J] := A[I,J] - Y * A[M,J];
+                  for J := Lb to I_igh do
+                    A[J,M] := A[J,M] + Y * A[J,I];
+                end;
               end;
           end;
       end;

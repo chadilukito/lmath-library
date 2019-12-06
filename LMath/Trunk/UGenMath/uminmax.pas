@@ -48,10 +48,10 @@ function IsPositive(X: float):boolean; overload;
 function IsPositive(X: Integer):boolean; overload;
 
 { Exchange 2 reals }
-procedure Swap(var X, Y : Float);   overload;
+procedure Swap(var X, Y : Float);   overload; inline;
 
 { Exchange 2 integers }
-procedure Swap(var X, Y : Integer); overload;
+procedure Swap(var X, Y : Integer); overload; inline;
 
 implementation
 

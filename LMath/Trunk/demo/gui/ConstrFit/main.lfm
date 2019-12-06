@@ -1,13 +1,13 @@
 object MainForm: TMainForm
-  Left = 680
+  Left = 386
   Height = 570
-  Top = 125
+  Top = 111
   Width = 724
   Caption = 'Test constrained fit'
   ClientHeight = 570
   ClientWidth = 724
   OnCreate = FormCreate
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.2.0'
   object CoordSys: TCoordSys
     Left = 0
     Height = 528
@@ -22,8 +22,6 @@ object MainForm: TMainForm
     MinY = -1
     MaxX = 1
     MaxY = 20
-    XPos = 0
-    YPos = 0
     OutputPen.Color = clBlue
     GridPen.Color = clSilver
     GridPen.Style = psDot
@@ -75,8 +73,8 @@ object MainForm: TMainForm
   object StrHolder: TStrHolder
     Capacity = 256
     Macros = <>
-    left = 63
-    top = 512
+    Left = 63
+    Top = 512
     StrData = (
       ''
       '2d332e3937350930'

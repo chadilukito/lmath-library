@@ -23,13 +23,6 @@
           <OptimizationLevel Value="4"/>
         </Optimizations>
       </CodeGeneration>
-      <Other>
-        <CustomOptions Value="-CfAVX2
--CpCOREAVX2
--OoFASTMATH
--OoLOOPUNROLL
--OpCOREAVX2"/>
-      </Other>
     </CompilerOptions>
     <Version Minor="5"/>
     <Files Count="10">
@@ -67,7 +60,7 @@
       </Item8>
       <Item9>
         <Filename Value="uvecfunc.pas"/>
-        <UnitName Value="uvecfunc"/>
+        <UnitName Value="uVecFunc"/>
       </Item9>
       <Item10>
         <Filename Value="uvecmatprn.pas"/>

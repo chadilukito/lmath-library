@@ -1,29 +1,7 @@
 program TestMatrix;
-uses uTypes, uErrors, uMatrix, sysutils, dateutils;
+uses uTypes, uErrors, uMatrix, uVecUtils, uVecMatPrn, sysutils, dateutils;
 const
-  LB = 0;
-  FmtStr = '%8.3f';
-
-procedure PrintMatrix(A:TMatrix);
-var
-  I,J:integer;
-begin
-  for I := LB to High(A) do
-  begin
-    for J := LB to High(A[0]) do
-      write(Format(FmtStr,[A[i,j]]));
-    writeln;
-  end;
-end;
-
-procedure PrintVector(V:TVector);
-var
-  J:integer;
-begin
-    for J := LB to High(V) do
-      write(Format(FmtStr,[V[j]]));
-    writeln;
-end;
+  LB = 1;
 
 var
   M1, M2, M3, M4, Res : TMatrix;
@@ -68,7 +46,6 @@ begin
   {%region}
   writeln('Now timing.');
   writeln('First, multiply same matrices 1000000 times.');
-  writeln('For speed, we use direct call to the function and not operator.');
   time1 := time;
   DimMatrix(Res,Rows1,Cols2);
   for I := 1 to 1000000 do
@@ -77,7 +54,7 @@ begin
   time2 := time;
   writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
 
-  writeln('Now big matices, 1500x1500...');
+  writeln('Now big matrices, 1500x1500...');
   Rows1 := LB+1500; Cols1 := Rows1; Cols2 := Rows1;
   DimMatrix(M3, Rows1, Cols1);
   DimMatrix(M4, Cols1, Cols2);
@@ -175,10 +152,28 @@ begin
   writeln('and');
   printvector(ResV2);
   ResF := VecDotProd(ResV,Resv2,Lb, high(ResV));
-  writeln(Format(FmtStr,[ResF]));
+  writeln(Format(lmFmtStr,[ResF]));
 
-  writeln('Now their outer product:');
+  writeln('Now testing outer product.');
+  ResV := TVector.Create(0,2.0,3.0,4.0,5.0);
+  ResV2 := TVector.Create(0,3.0,4.0,5.0);
+  PrintVector(ResV);
+  writeln('by');
+  PrintVector(ResV2);
+  writeln('Result:');
   M3 := VecOuterProd(ResV,ResV2,Lb,high(ResV),High(ResV2));
+  PrintMatrix(M3);
+  writeln('Now opposite order');
+  M3 := VecOuterProd(ResV2,ResV,Lb,high(ResV2),High(ResV));
+  PrintMatrix(M3);
+  DimMatrix(M3,5,5);
+  for I := 0 to 5 do
+    Seq(0,5,I*10,1,M3[I]);
+  writeln('Test for transpose in place.');
+  writeln('Original matrix:');
+  PrintMatrix(M3);
+  MatTransposeInPlace(M3,0,High(M3));
+  writeln('Transposed matrix:');
   PrintMatrix(M3);
   write('Press [Enter] to terminate...');
   readln;

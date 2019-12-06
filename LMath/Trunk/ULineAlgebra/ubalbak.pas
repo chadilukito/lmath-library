@@ -7,7 +7,7 @@ unit ubalbak;
 interface
 
 uses
-  utypes;
+  utypes, uMinMax, uMatrix;
 
 {This procedure is a translation of the EISPACK subroutine Balbak
   This procedure forms the eigenvectors of a real general matrix
@@ -46,11 +46,9 @@ procedure BalBak(Z                    : TMatrix;
     if I_igh <> I_low then
       for I := I_low to I_igh do
         begin
-          S := Scale[I];
+          VecFloatMul(Z[I],Scale[I],Lb,M,Z[I]);
           { Left hand eigenvectors are back transformed if the
             foregoing statement is replaced by S := 1.0 / Scale[I] }
-          for J := Lb to M do
-            Z[I,J] := Z[I,J] * S;
         end;
 
     for I := (I_low - 1) downto Lb do
@@ -58,11 +56,7 @@ procedure BalBak(Z                    : TMatrix;
         K := Round(Scale[I]);
         if K <> I then
           for J := Lb to M do
-            begin
-              S := Z[I,J];
-              Z[I,J] := Z[K,J];
-              Z[K,J] := S;
-            end;
+            Swap(Z[I,J],Z[K,J]);
       end;
 
     for I := (I_igh + 1) to Ub do
@@ -70,11 +64,7 @@ procedure BalBak(Z                    : TMatrix;
         K := Round(Scale[I]);
         if K <> I then
           for J := Lb to M do
-            begin
-              S := Z[I,J];
-              Z[I,J] := Z[K,J];
-              Z[K,J] := S;
-            end;
+            Swap(Z[I,J],Z[K,J]);
       end;
   end;
 

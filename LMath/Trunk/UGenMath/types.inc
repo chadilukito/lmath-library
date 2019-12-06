@@ -134,6 +134,7 @@ type
 
 { Function of one variable }
 TFunc = function(X : Float) : Float;
+TIntFunc = function(X:integer) : integer;
 
 { Function of several variables }
 TFuncNVar = function(X : TVector) : Float;

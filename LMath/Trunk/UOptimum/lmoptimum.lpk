@@ -19,6 +19,13 @@
         </Optimizations>
         <SmallerCode Value="True"/>
       </CodeGeneration>
+      <Other>
+        <CustomOptions Value="-CfAVX2
+-CpCOREAVX2
+-OoFASTMATH
+-OoLOOPUNROLL
+-OpCOREAVX2"/>
+      </Other>
     </CompilerOptions>
     <Version Minor="5"/>
     <Files Count="15">

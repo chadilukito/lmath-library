@@ -57,7 +57,7 @@
 {$goto ON}
 unit uCobyla;
 interface
-uses uTypes, uErrors, uMinMax, uMath, uMatrix, uMeanSD, uTrsTlp;
+uses uTypes, uErrors, uMinMax, uMath, uMatrix, uMeanSD, uTrsTlp, uVectorHelper;
 
 procedure COBYLA(
     N     : integer; // Number of variables to optimize, residing in X[N] array
@@ -118,14 +118,10 @@ var
   // takes N number of params, M number of constrains, X[N] params
   // returns F value of object function and Con[M] values of constraint functions
   procedure CalcObjectFunc;
-  var
-    k:integer;
   begin
     inc(nfvals);
-    CalcFC(N,M,X,F,Con);
-    resmax := 0.0;
-    for k := 1 to M do // Con is array of constrains; at the end must be non-negative
-       resmax := max(ResMax,-Con[k]); // here largest violation is calculated
+    CalcFC(N,M,X,F,Con);       // Con is array of constrains; at the end must be non-negative
+    resmax := -Min(Con,1,M);   // here largest violation is calculated
     Con[mp] := F; // objective function value
     Con[mpp] := ResMax; // largest violation
   end;
@@ -151,11 +147,8 @@ begin
     for i := 1 to n do
     begin
       sim[i,np] := x[i]; // filling "optimal vertex" column with guess values for x
-      for j := 1 to n do // all other vertices "0"
-      begin
-        sim[i,j] := 0.0;
-        simi[i,j] := 0.0;
-      end;
+      sim[i].Fill(1,n,0); // all other vertices "0"
+      simi[i].Fill(1,n,0);
       sim[i,i] := rho; // diagonals
       simi[i,i] := temp;
     end;
@@ -238,22 +231,16 @@ begin
     if nbest <= n then
     begin
       for i := 1 to mpp do
-      begin
-        temp := datmat[i,np];
-        datmat[i,np] := datmat[i,nbest];
-        datmat[i,nbest] := temp;
-      end;
+        swap(datmat[i,np],datmat[i,nbest]);
       for i := 1 to N do
       begin
         temp := sim[i,nbest];
         sim[i,nbest] := 0.0;
         sim[i,np] := sim[i,np]+temp;
         tempa := 0.0;
+        VecFloatAdd(sim[i],-temp,1,N,sim[i]);
         for k := 1 to N do
-        begin
-          sim[i,k] := sim[i,k]-temp;
           tempa := tempa-simi[k,i];
-        end;
         simi[nbest,i] := tempa;
       end;
     end;

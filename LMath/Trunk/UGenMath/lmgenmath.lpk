@@ -23,6 +23,11 @@
         </Debugging>
       </Linking>
       <Other>
+        <CustomOptions Value="-CfAVX2
+-CpCOREAVX2
+-OoFASTMATH
+-OoLOOPUNROLL
+-OpCOREAVX2"/>
         <OtherDefines Count="1">
           <Define0 Value="EXTENDEDREAL"/>
         </OtherDefines>

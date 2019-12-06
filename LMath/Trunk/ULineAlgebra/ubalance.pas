@@ -7,7 +7,7 @@ unit ubalance;
 interface
 
 uses
-  utypes;
+  utypes, uMinMax, uMatrix, uVectorHelper;
 
 {    A contains the input matrix to be balanced.
     Lb, Ub are the lowest and highest indices of the elements of A.
@@ -83,20 +83,10 @@ procedure Balance(    A            : TMatrix;
     begin
       Scale[M] := J;
       if J = M then Exit;
-
       for I := Lb to I_igh do
-        begin
-          F := A[I,J];
-          A[I,J] := A[I,M];
-          A[I,M] := F;
-        end;
-
+        Swap(A[I,J],A[I,M]);
       for I := I_low to Ub do
-        begin
-          F := A[J,I];
-          A[J,I] := A[M,I];
-          A[M,I] := F;
-        end;
+        Swap(A[J,I],A[M,I]);
     end;
 
   begin
@@ -194,7 +184,7 @@ procedure Balance(    A            : TMatrix;
                   G := 1.0 / F;
                   Scale[I] := Scale[I] * F;
                   Conv := False;
-                  for J := I_low to Ub do A[I,J] := A[I,J] * G;
+                  VecFloatMul(A[I],G,I_low,Ub,A[I]);
                   for J := Lb to I_igh do A[J,I] := A[J,I] * F;
                 end;
             end;

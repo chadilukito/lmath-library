@@ -6,8 +6,6 @@ uses uTypes, uMinMax;
 type
   TTestFunc    = function(X:Float):boolean;
   TIntTestFunc = function(X:Integer):boolean;
-  TTransformFunc = function(X:float):float;
-  TIntTransformFunc = function(X:integer):integer;
 
   TMatCoords = record
     Row, Col :integer;
@@ -15,10 +13,10 @@ type
   
   function tmCoords(ARow,ACol:integer):TMatCoords;
 
-  procedure Apply(V:TVector; Lb, Ub: integer; Func:TTransformFunc); overload;
-  procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TTransformFunc); overload;
-  procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntTransformFunc); overload;
-  procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntTransformFunc); overload;
+  procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
+  procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
+  procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
+  procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
 
   { Checks if each component of vector X is within a fraction Tol of
   the corresponding component of the reference vector Xref. In this
@@ -82,7 +80,7 @@ begin
   Result.Col := ACol;
 end;
 
-procedure Apply(V: TVector; Lb, Ub: integer; Func: TTransformFunc);
+procedure Apply(V: TVector; Lb, Ub: integer; Func: TFunc);
 var
   I:integer;
 begin
@@ -91,7 +89,7 @@ begin
     V[I] := Func(V[I]);
 end;
 
-procedure Apply(M: TMatrix; LRow, URow, LCol, UCol: integer; Func: TTransformFunc);
+procedure Apply(M: TMatrix; LRow, URow, LCol, UCol: integer; Func: TFunc);
 var
   I,J:integer;
 begin
@@ -102,7 +100,7 @@ begin
       M[I,J] := Func(M[I,J]);
 end;
 
-procedure Apply(V: TIntVector; Lb, Ub: integer; Func: TIntTransformFunc);
+procedure Apply(V: TIntVector; Lb, Ub: integer; Func: TIntFunc);
 var
   I:integer;
 begin
@@ -112,7 +110,7 @@ begin
 end;
 
 procedure Apply(M: TIntMatrix; LRow, URow, LCol, UCol: integer;
-  Func: TIntTransformFunc);
+  Func: TIntFunc);
 var
   I,J:integer;
 begin

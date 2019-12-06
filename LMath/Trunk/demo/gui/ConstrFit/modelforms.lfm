@@ -1,13 +1,13 @@
 object ModelForm: TModelForm
-  Left = 1054
+  Left = 823
   Height = 230
-  Top = 288
+  Top = 431
   Width = 345
   Caption = 'Model Parameters'
   ClientHeight = 230
   ClientWidth = 345
   OnShow = FormShow
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.2.0'
   object VarsNumberText: TStaticText
     Left = 16
     Height = 17
@@ -50,7 +50,6 @@ object ModelForm: TModelForm
     TabOrder = 3
     Text = '0.000'
     DecimalPlaces = 3
-    Value = 0
   end
   object Label2: TLabel
     Left = 96
@@ -115,7 +114,6 @@ object ModelForm: TModelForm
     Width = 80
     TabOrder = 7
     DecimalPlaces = 7
-    Value = 0
     ValueEmpty = True
   end
   object MCV_text: TStaticText

@@ -5,7 +5,7 @@ unit uMatrix;
 interface
 
 uses
-  uTypes, uErrors;
+  uTypes, uMinMax, uErrors;
 operator + (V:TVector; R:Float) Res : TVector;
 operator - (V:TVector; R:Float) Res : TVector;
 operator / (V:TVector; R:Float) Res : TVector;
@@ -34,7 +34,7 @@ function MatFloatMul(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix 
 function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;
 
-{This function multiplies elements of one vector by elenets of other.}
+{This function multiplies elements of one vector by elements of other.}
 function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;
@@ -46,7 +46,7 @@ function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVec
 function MatMul(A, B, Ziel: TMatrix; LB : integer) : TMatrix;
 
 function MatTranspose(M, Ziel:TMatrix; LB: integer) : TMatrix;
-
+procedure MatTransposeInPlace(M:TMatrix; Lb, Ub : integer);
 
 implementation
 type
@@ -232,8 +232,11 @@ var
   I:Integer;
 begin
   Result := 0;
-  for I := Lb to Ub do
-    Result := Result + V1[I] * V2[I];
+  if (High(V1) >= Ub) and (High(V2) >= Ub) then
+    for I := Lb to Ub do
+      Result := Result + V1[I] * V2[I]
+  else
+      SetErrCode(MatErrDim);
 end;
 
 function VecOuterProd(V1, V2: TVector; Lb, Ub1, Ub2: integer; Ziel: TMatrix = nil): TMatrix;
@@ -241,9 +244,9 @@ var
   I:integer;
 begin
   if Ziel = nil then
-    DimMatrix(Ziel,Ub2,Ub1)
+    DimMatrix(Ziel,Ub1,Ub2)
   else begin
-    if (High(Ziel) < Ub2) or (High(Ziel[0]) < Ub1) then
+    if (High(Ziel) < Ub1) or (High(Ziel[0]) < Ub2) then
     begin
       SetErrCode(MatErrDim);
       Result := nil;
@@ -358,6 +361,18 @@ begin
     Result := nil;
     SetErrCode(MatErrDim);
   end;
+end;
+
+procedure MatTransposeInPlace(M:TMatrix; Lb, Ub : integer);
+var
+ I,J:integer;
+begin
+  if (High(M) < Ub) or (High(M[Lb]) < Ub) then
+    SetErrCode(MatErrDim)
+  else
+    for I := Lb to Ub do
+      for J := I + 1 to Ub do
+        Swap(M[I,J],M[J,I]);
 end;
 
 operator+(V: TVector; R: Float)Res: TVector;
@@ -482,7 +497,7 @@ begin
   Result := Ziel;
 end;
 
-    operator-(V1: TVector; V2: TVector)Res: TVector;
+  operator-(V1: TVector; V2: TVector)Res: TVector;
   var
     I,L:integer;
     Ziel:TVector;

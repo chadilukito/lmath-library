@@ -18,11 +18,13 @@
           <OptimizationLevel Value="4"/>
         </Optimizations>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="False"/>
-        </Debugging>
-      </Linking>
+      <Other>
+        <CustomOptions Value="-CfAVX2
+-CpCOREAVX2
+-OoFASTMATH
+-OoLOOPUNROLL
+-OpCOREAVX2"/>
+      </Other>
     </CompilerOptions>
     <Version Minor="5"/>
     <Files Count="17">
@@ -95,13 +97,16 @@
         <UnitName Value="uMatrix"/>
       </Item17>
     </Files>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="lmgenmath"/>
+        <PackageName Value="lmMathUtil"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
+        <PackageName Value="lmgenmath"/>
       </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

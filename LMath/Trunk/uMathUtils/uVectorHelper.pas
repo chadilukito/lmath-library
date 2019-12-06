@@ -4,12 +4,12 @@ unit uVectorHelper;
 interface
 
 uses
-  Classes, SysUtils, uTypes, uSorting, uStrings;
+  Classes, SysUtils, uTypes, uMinMax, uSorting, uStrings;
 
 type
 
 { TVectorHelper }
-
+     
 TVectorHelper = type helper for TVector
   procedure Insert(value:Float; index:integer);
   procedure Remove(index:integer);
@@ -19,7 +19,7 @@ TVectorHelper = type helper for TVector
   procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
-  //indices as well, ';' used as delimiter
+  //indices as well
   function ToStrings(Dest:TStrings; First, Last:integer;
             Indices:boolean; Delimiter: char):integer;
 end;
@@ -34,7 +34,7 @@ TIntVectorHelper = type helper for TIntVector
   procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
-  //indices as well, ';' used as delimiter
+  //indices as well
   function ToStrings(Dest:TStrings; First, Last:integer;
             Indices:boolean; Delimiter: char):integer;
 end;
@@ -57,8 +57,9 @@ procedure TIntVectorHelper.Remove(index: integer);
 var
   I: Integer;
 begin
-  for I := index to high(self)-2 do
+  for I := index to high(self)-1 do
     self[I] := self[I+1];
+  self[high(self)] := 0;
 end;
 
 procedure TIntVectorHelper.Swap(ind1, ind2: integer);
@@ -74,7 +75,7 @@ procedure TIntVectorHelper.Fill(St, En: integer; Val: integer);
 var
   I: Integer;
 begin
-  for I := St to En do
+  for I := St to max(En, high(self)) do
     self[I] := Val;
 end;
 

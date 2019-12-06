@@ -40,7 +40,7 @@ izrov[1..N] contains index i of a variable x[i] represented by column 1 to I.
 All these X are "0" in the solution. i > N is a slack variable.
 
 icase = 0: finite solution found; icase = 1: objective function is unbounded;
-icase = -1: so solution exists.
+icase = -1: no solution exists.
 
 For LinProgSolve, A and iCase is the same, but do not change sign of constrain coefficients!
 FuncVal is function value and SolVector is vector of X1...XN
