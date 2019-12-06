@@ -1,5 +1,5 @@
 //*******************************************************//
-// uRealOints introduces operations over TRealPoint as   //
+// uRealPoints introduces operations over TRealPoint as   //
 // over 2-dimentioanal vectors                           //
 //*******************************************************//
 unit uRealPoints;
@@ -42,6 +42,7 @@ operator * (P:TRealPoint;S:Float) R:TRealPoint; inline;
 
 operator * (S:Float; P:TRealPoint) R:TRealPoint; inline;
 
+// dot product
 operator * (P1, P2:TRealPoint) R:Float; inline;
 
 implementation

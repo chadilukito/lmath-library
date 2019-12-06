@@ -14,7 +14,7 @@ procedure ConstrNLFit(RegFunc : TRegFunc; // function to be fitted
                   ConstProc   : TConstrainsProc; // calculation of constrains
                   X, Y        : TVector; // data to be fitted
                   Lb, Ub      : Integer; // bounds of X and Y arrays
-                  var MaxFun  : Integer; // maximal number of calls to object function
+                  var MaxFun  : Integer; // maximal number of calls to objective function
                   var Tol     : Float;   // tolerance of fit (RhoEnd)
                   B           : TVector; // vector of parameters. Guesses in input, fitted values on output
                   LastPar     : Integer; // number of parameters in B. First parameter in b[1], last in B[LastParam]

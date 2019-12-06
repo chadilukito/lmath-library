@@ -1,7 +1,7 @@
 unit uVecUtils;
 
 interface
-uses uTypes, uMinMax, uRealPoints, uIntPoints;
+uses uTypes, uMinMax;
 
 type
   TTestFunc    = function(X:Float):boolean;
