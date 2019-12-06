@@ -85,23 +85,17 @@ Ver 2.7 IntervalQuery function added"/>
         <Type Value="LFM"/>
       </Item7>
     </Files>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="uRegression"/>
+        <PackageName Value="lmRegression"/>
       </Item1>
       <Item2>
-        <PackageName Value="uMathStat"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="uGenMath"/>
-      </Item3>
-      <Item4>
-        <PackageName Value="LCL"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item5>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

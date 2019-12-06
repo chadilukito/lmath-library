@@ -2,7 +2,7 @@ unit lmPointsVec;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, SysUtils, uTypes, lmSorting;
+  Classes, SysUtils, uTypes, uSorting;
 
 type
  { TPoints }
