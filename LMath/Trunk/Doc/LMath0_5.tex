@@ -53,9 +53,8 @@
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{1}
 \begin{document}
-\title{LMath: mathematical library for Free Pascal --- Lazarus\\
-{\large Adapted and extended from DMath library by Jean Debord\\
-Version 0.5}}
+\title{LMath 0.5: mathematical library for\\ Free Pascal --- Lazarus\\
+{\Large Reference Guide}}
 
 \author{Edited by Viatcheslav V. Nesterov}
 \maketitle
@@ -176,8 +175,8 @@ Represents point on a cartesian plane. Unit \hyperref[uRealPoints]{uRealPoints} 
 	\begin{verbatim}
 	PIntegerPoint = ^TIntegerPoint
 	TIntegerPoint = record
-	X: Integer;
-	Y: Integer;
+	  X: Integer;
+	  Y: Integer;
 	end;
 	\end{verbatim}
 	\item[\descriptiontitle{Description}]
@@ -1280,10 +1279,9 @@ Compares to zero using epsilon. If Epsilon is {-}1, DefaultEpsilon as set with p
 \end{itemize}
 
 \section{Unit uErrors}
-\label{uErrors}
 \index[unit]{uErrors}
 \subsection{Constants}
-Error constants are defined here.
+\label{uErrors}\hypertarget{genmath}{uerror}Error constants are defined here.
 
 Error codes for mathematical functions:
 \begin{description}
