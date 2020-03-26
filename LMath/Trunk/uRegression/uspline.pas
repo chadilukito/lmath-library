@@ -5,7 +5,7 @@ uses uTypes, uIntervals, ulineq;
 // Given vectors X, Y with data points and lower and upper bounds of data used 
 // returns cubic spline values used in calls to Splint 
 // This procedure must be called before actual drawing with Splint function
-procedure InitSpline(X, Y:TVector; var Yd:TVector; Lb,Ub:integer);
+procedure InitSpline(X, Y:TVector; var Ydv:TVector; Lb,Ub:integer);
 
 // After preparing drawing by InitSpline, this function returns Y value given X
 function SplInt(X:Float; Xv, Yv, Ydv: TVector; Lb,Ub:integer):Float;
@@ -27,7 +27,7 @@ type
   end;
   TExtremums = array[1..2] of TExtremum;
   
-procedure InitSpline(X, Y:TVector; var Yd:TVector; Lb,Ub:integer);
+procedure InitSpline(X, Y:TVector; var Ydv:TVector; Lb,Ub:integer);
 var
   I, J, N : integer;
   M   : TMatrix;
@@ -37,7 +37,7 @@ begin
   N := Ub - Lb;
   DimMatrix(M,N,N);
   DimVector(V,N);
-  DimVector(Yd,N);
+  DimVector(Ydv,Ub);
   for I := 1 to N-1 do
   begin
     J := I + Lb;
@@ -48,7 +48,7 @@ begin
   end;
   M[0,0]  := 2/(X[Lb+1] - X[Lb]);
   M[0,1]  := 1/(X[Lb+1] - X[Lb]);
-  V[0]:= 3*(Y[Lb+1] - Y[Lb])/Sqr(X[Lb+1] - X[Lb]);
+  V[0] := 3*(Y[Lb+1] - Y[Lb])/Sqr(X[Lb+1] - X[Lb]);
 
   M[N,N-1]:= 1/(X[Ub] - X[Ub-1]);
   M[N,N]  := 2/(X[Ub] - X[Ub-1]);
@@ -57,7 +57,7 @@ begin
   LinEq(M,V,0,N,Det);
   for I := 0 to N do
   begin
-    Yd[I] := V[I];
+    Ydv[Lb + I] := V[I];
   end;
   Finalize(M);
   Finalize(V);
@@ -65,7 +65,7 @@ end;
 
 function SplInt(X:Float; Xv, Yv, Ydv: TVector; Lb,Ub:integer):Float;
 var
-  K, Hi, Lo : integer;
+  K, Hi, Lo, J : integer;
   A, t, B, L, H: float;
 begin
   Lo := Lb;
