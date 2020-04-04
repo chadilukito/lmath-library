@@ -184,7 +184,7 @@ procedure Balance(    A            : TMatrix;
                   G := 1.0 / F;
                   Scale[I] := Scale[I] * F;
                   Conv := False;
-                  VecFloatMul(A[I],G,I_low,Ub,A[I]);
+                  VecFloatMul(A[I],G,I_low,Ub,A[I],I_low);
                   for J := Lb to I_igh do A[J,I] := A[J,I] * F;
                 end;
             end;

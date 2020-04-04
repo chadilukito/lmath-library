@@ -46,7 +46,7 @@ procedure BalBak(Z                    : TMatrix;
     if I_igh <> I_low then
       for I := I_low to I_igh do
         begin
-          VecFloatMul(Z[I],Scale[I],Lb,M,Z[I]);
+          VecFloatMul(Z[I],Scale[I],Lb,M,Z[I],LB);
           { Left hand eigenvectors are back transformed if the
             foregoing statement is replaced by S := 1.0 / Scale[I] }
         end;

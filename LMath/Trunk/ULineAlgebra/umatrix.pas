@@ -21,31 +21,36 @@ operator - (V1:TVector; V2:TVector) Res : TVector;
 
 
 {These functions use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
-function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
-function VecFloatSubstr(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
-function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;
-function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  Ziel : TVector = nil): TVector;
+function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; 
+              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+function VecFloatSubtr(V:TVector; R:Float; Lb, Ub : integer; 
+              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; 
+              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  
+              Ziel : TVector = nil; ResLb : integer = 1): TVector;
 
 function MatFloatAdd(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
-function MatFloatSubstr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
+function MatFloatSubtr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 function MatFloatDiv(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 function MatFloatMul(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 
 function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;
-function VecSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;
+function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;
 
 {This function multiplies elements of one vector by elements of other.}
 function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
 function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
+
 function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;
 function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix;
 function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;
 function VecEucLength(V:TVector; LB, Ub : integer) : float;
 function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;
 
-function MatMul(A, B, Ziel: TMatrix; LB : integer) : TMatrix;
+function MatMul(A, B : TMatrix; LB : integer; Ziel : TMatrix = nil) : TMatrix;
 
-function MatTranspose(M, Ziel:TMatrix; LB: integer) : TMatrix;
+function MatTranspose(M:TMatrix; LB: integer; Ziel: TMatrix = nil): TMatrix;
 procedure MatTransposeInPlace(M:TMatrix; Lb, Ub : integer);
 
 implementation
@@ -53,47 +58,79 @@ type
   TBigArray = array[0..10000000] of float;
   PBigArray = ^TBigArray;
 
-function VecFloatAdd(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil): TVector;
+function VecFloatAdd(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil; ResLb : integer = 1): TVector;
 var
-  I:Integer;
+  I,M,HZ:Integer;
 begin
+  HZ := ResLb + Ub - Lb;
   if Ziel = nil then
-    DimVector(Ziel,Ub);
+    DimVector(Ziel, HZ);
+  M := Lb - ResLb;
+  if High(Ziel) < HZ then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   for I := Lb to Ub do
-    Ziel[I] := V[I]+R;
+    Ziel[I-M] := V[I]+R;
   Result := Ziel;
 end;
 
-function VecFloatSubstr(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil): TVector;
+function VecFloatSubtr(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil; ResLb : integer = 1): TVector;
 var
-  I:Integer;
+  I,M,HZ:Integer;
 begin
+  HZ := ResLb + Ub - Lb;
   if Ziel = nil then
-    DimVector(Ziel,Ub);
+    DimVector(Ziel,HZ);
+  M := Lb - ResLb;
+  if High(Ziel) < HZ then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   for I := Lb to Ub do
-    Ziel[I] := V[I]-R;
+    Ziel[I-M] := V[I]-R;
   Result := Ziel;
 end;
 
-function VecFloatDiv(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil): TVector;
+function VecFloatDiv(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil; ResLb : integer = 1): TVector;
 var
-  I:Integer;
+  I,M,HZ:Integer;
 begin
+  HZ := ResLb + Ub - Lb;
   if Ziel = nil then
-    DimVector(Ziel,Ub);
+    DimVector(Ziel,HZ);
+  M := Lb - ResLb;
+  if High(Ziel) < HZ then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   for I := Lb to Ub do
-    Ziel[I] := V[I]/R;
+    Ziel[I-M] := V[I]/R;
   Result := Ziel;
 end;
 
-function VecFloatMul(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil): TVector;
+function VecFloatMul(V:TVector; R:Float;  Lb, Ub : integer; Ziel : TVector = nil; ResLb : integer = 1): TVector;
 var
-  I:Integer;
+  I,M,HZ:Integer;
 begin
+  HZ := ResLb + Ub - Lb;
   if Ziel = nil then
-    DimVector(Ziel,Lb);
+    DimVector(Ziel,HZ);
+  M := Lb - ResLb;
+  if High(Ziel) < HZ then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   for I := Lb to Ub do
-    Ziel[I] := V[I]*R;
+    Ziel[I-M] := V[I]*R;
   Result := Ziel;
 end;
 
@@ -109,7 +146,7 @@ begin
   Result := Ziel;
 end;
 
-function MatFloatSubstr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
+function MatFloatSubtr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 var
   I, J:Integer;
 begin
@@ -165,7 +202,7 @@ begin
   end;
 end;
 
-function VecSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;
+function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;
 var
   I,H:Integer;
 begin
@@ -253,7 +290,7 @@ begin
     end;
   end;
   for I := Lb to Ub1 do
-    Ziel[I] := VecFloatMul(V2,V1[I],Lb,Ub2,Ziel[I]);
+    Ziel[I] := VecFloatMul(V2,V1[I],Lb,Ub2,Ziel[I],Lb);
   Result := Ziel;
 end;
 
@@ -268,6 +305,7 @@ begin
   Ziel[Lb] := V1[Y]*V2[Z]  - V1[Z]*V2[Y];
   Ziel[Y]  := V1[Z]*V2[Lb] - V1[Lb]*V2[Z];
   Ziel[Z]  := V1[Lb]*V2[Y] - V1[Y]*V2[Lb];
+  Result := Ziel;
 end;
 
 function VecEucLength(V:TVector; LB, Ub : integer): float;
@@ -306,7 +344,7 @@ begin
   end;
 end;
 
-function MatMul(A, B, Ziel: TMatrix; LB : integer) : TMatrix;
+function MatMul(A, B : TMatrix; LB : integer; Ziel : TMatrix = nil) : TMatrix;
 var
   I,J,L : integer;
   BufB, BufC : PBigArray;
@@ -342,7 +380,7 @@ begin
   Result := Ziel;
 end;
 
-function MatTranspose(M, Ziel: TMatrix; LB: integer): TMatrix;
+function MatTranspose(M:TMatrix; LB: integer; Ziel: TMatrix = nil): TMatrix;
 var
  I,J,H,W:integer;
 begin
