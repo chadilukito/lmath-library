@@ -5,7 +5,7 @@ uses uTypes, uIntervals, ulineq;
 // Given vectors X, Y with data points and lower and upper bounds of data used 
 // returns cubic spline values used in calls to Splint 
 // This procedure must be called before actual drawing with Splint function
-procedure InitSpline(X, Y:TVector; var Ydv:TVector; Lb,Ub:integer);
+procedure InitSpline(Xv, Yv:TVector; out Ydv:TVector; Lb,Ub:integer);
 
 // After preparing drawing by InitSpline, this function returns Y value given X
 function SplInt(X:Float; Xv, Yv, Ydv: TVector; Lb,Ub:integer):Float;
@@ -16,7 +16,7 @@ function SplDeriv(X:Float; Xv, Yv, Ydv: TVector; Lb, Ub:integer):float;
 // returns all local minima and maxima of a spline between points Lb and Ub.
 // Number of found minima is returned in NMin, of maxima - in NMax
 procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer;
-          var Minima, Maxima:TRealPointVector; var NMin, NMax: integer);
+          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer);
 
 implementation
 
@@ -27,7 +27,7 @@ type
   end;
   TExtremums = array[1..2] of TExtremum;
   
-procedure InitSpline(X, Y:TVector; var Ydv:TVector; Lb,Ub:integer);
+procedure InitSpline(Xv, Yv:TVector; out Ydv:TVector; Lb,Ub:integer);
 var
   I, J, N : integer;
   M   : TMatrix;
@@ -41,18 +41,18 @@ begin
   for I := 1 to N-1 do
   begin
     J := I + Lb;
-    M[I,I-1] := 1/(X[J] - X[J-1]);  // 1/L
-    M[I,I]   := 2*(1/(X[J] - X[J-1]) + 1/(X[J+1] - X[J]));
-    M[I,I+1] := 1/(X[J+1] - X[J]);
-    V[I]     := 3 * ((Y[J] - Y[J-1])/Sqr(X[J] - X[J-1]) + (Y[J+1]-Y[J])/Sqr(X[J+1] - X[J]));
+    M[I,I-1] := 1/(Xv[J] - Xv[J-1]);  // 1/L
+    M[I,I]   := 2*(1/(Xv[J] - Xv[J-1]) + 1/(Xv[J+1] - Xv[J]));
+    M[I,I+1] := 1/(Xv[J+1] - Xv[J]);
+    V[I]     := 3 * ((Yv[J] - Yv[J-1])/Sqr(Xv[J] - Xv[J-1]) + (Yv[J+1]-Yv[J])/Sqr(Xv[J+1] - Xv[J]));
   end;
-  M[0,0]  := 2/(X[Lb+1] - X[Lb]);
-  M[0,1]  := 1/(X[Lb+1] - X[Lb]);
-  V[0] := 3*(Y[Lb+1] - Y[Lb])/Sqr(X[Lb+1] - X[Lb]);
+  M[0,0]  := 2/(Xv[Lb+1] - Xv[Lb]);
+  M[0,1]  := 1/(Xv[Lb+1] - Xv[Lb]);
+  V[0] := 3*(Yv[Lb+1] - Yv[Lb])/Sqr(Xv[Lb+1] - Xv[Lb]);
 
-  M[N,N-1]:= 1/(X[Ub] - X[Ub-1]);
-  M[N,N]  := 2/(X[Ub] - X[Ub-1]);
-  V[N]:= 3*(Y[Ub] - Y[Ub-1])/Sqr(X[Ub] - X[Ub-1]);
+  M[N,N-1]:= 1/(Xv[Ub] - Xv[Ub-1]);
+  M[N,N]  := 2/(Xv[Ub] - Xv[Ub-1]);
+  V[N]:= 3*(Yv[Ub] - Yv[Ub-1])/Sqr(Xv[Ub] - Xv[Ub-1]);
 
   LinEq(M,V,0,N,Det);
   for I := 0 to N do
@@ -174,7 +174,7 @@ begin
 end;
 
 procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer;
-          var Minima, Maxima:TRealPointVector; var NMin, NMax: integer);
+          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer);
 var
   I,J, N : integer;
   LE:TExtremums;
@@ -197,6 +197,8 @@ begin
         inc(NMax);
       end;
   end;
+  SetLength(Minima,Nmin);
+  SetLength(Maxima,NMax);
 end;
 
 end.
