@@ -1,7 +1,7 @@
 unit uVecUtils;
 
 interface
-uses uTypes, uMinMax;
+uses uTypes, uErrors, uMinMax;
 
 type
   TTestFunc    = function(X:Float):boolean;
@@ -11,16 +11,19 @@ type
     Row, Col :integer;
   end;
   
-  function tmCoords(ARow,ACol:integer):TMatCoords;
+function tmCoords(ARow,ACol:integer):TMatCoords;
 
-  procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
-  procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
-  procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
-  procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
+procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
+procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
+procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
+procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
 
-  { Checks if each component of vector X is within a fraction Tol of
-  the corresponding component of the reference vector Xref. In this
-  case, the function returns True, otherwise it returns False}
+procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
+procedure Apply(V:TIntVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TIntFunc); overload;
+
+{ Checks if each component of vector X is within a fraction Tol of
+the corresponding component of the reference vector Xref. In this
+case, the function returns True, otherwise it returns False}
 function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;
 
 // applies Test function to every enement in [Lb..Ub] and returns true
@@ -30,6 +33,8 @@ function Any(M:TMatrix; LRow, URow, LCol, UCol : integer; Test:TTestFunc):boolea
 function Any(Vector:TIntVector; Lb, Ub : integer; Test:TIntTestFunc):boolean; overload;
 function Any(M:TIntMatrix; LRow, URow, LCol, UCol : integer; Test:TIntTestFunc):boolean; overload;
 
+
+//Finds a first element satisfying the condition. If nothing is found, returns Ub+1.
 function FirstElement(Vector:TVector; Lb, Ub : integer; Ref:float; Comparator:TComparator):integer; overload;
 function FirstElement(M:TMatrix; LRow, URow, LCol, UCol : integer; Ref:float; Comparator:TComparator):TMatCoords; overload;
 
@@ -63,14 +68,23 @@ function ISeq(Lb, Ub : integer; first, increment:integer; Vector:TIntVector = ni
 
 // selects elements from array which compare to Ref value as CompType prescribes.
 // CompType can be LT, LE, EQ, GT, GE, NE
-// Other form is Ref and Comparator where comparator is function(V1,V2:float):boolean
+// Other form is Ref and Comparator where comparator is function(Val,Ref:float):boolean
 // elements for which comparator returns true are selected. Element of array is V1, Ref is V2
-// Selected elements are copied to Result array beginning from ResLb
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float; CompType:TCompOperator):TVector; overload;
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref:float; Comparator:TComparator):TVector; overload;
+// Indicis of selected elements are copied to Result array beginning from ResLb
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float;
+         CompType:TCompOperator):TIntVector; overload;
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer;
+         Ref:float; Comparator:TComparator):TIntVector; overload;
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Test:TTestFunc):TIntVector; overload;
 
-function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref: Integer; CompType:TCompOperator):TIntVector; overload;
-function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref:Integer; Comparator:TIntComparator):TIntVector; overload;
+function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref: Integer;
+         CompType:TCompOperator):TIntVector; overload;
+function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref:Integer;
+         Comparator:TIntComparator):TIntVector; overload;
+function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer;
+         Test:TIntTestFunc):TIntVector; overload;
+
+function ExtractElements(Vector:TVector; Mask:TIntVector; Lb:integer):TVector;
 
 implementation
 
@@ -84,7 +98,12 @@ procedure Apply(V: TVector; Lb, Ub: integer; Func: TFunc);
 var
   I:integer;
 begin
-  Ub := max(High(V),Ub);
+  Ub := min(High(V),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     V[I] := Func(V[I]);
 end;
@@ -95,6 +114,11 @@ var
 begin
   URow := min(High(M),URow);
   UCol := min(High(M[LRow]),UCol);
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       M[I,J] := Func(M[I,J]);
@@ -105,6 +129,11 @@ var
   I:integer;
 begin
   Ub := min(High(V),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     V[I] := Func(V[I]);
 end;
@@ -116,9 +145,50 @@ var
 begin
   URow := min(High(M),URow);
   UCol := min(High(M[LRow]),UCol);
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       M[I,J] := Func(M[I,J]);
+end;
+
+procedure Apply(V: TVector; Lb, Ub: integer; Mask: TIntVector; MaskLb: integer;
+  Func: TFunc);
+var
+  I,J:integer;
+begin
+  Ub := min(High(V),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := MaskLb to High(Mask) do
+  begin
+    J := Mask[I];
+    V[J] := Func(V[J]);
+  end;
+end;
+
+procedure Apply(V: TIntVector; Lb, Ub: integer; Mask: TIntVector;
+  MaskLb: integer; Func: TIntFunc);
+var
+  I,J:integer;
+begin
+  Ub := min(High(V),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := MaskLb to High(Mask) do
+  begin
+    J := Mask[I];
+    V[J] := Func(V[J]);
+  end;
 end;
 
 function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;
@@ -130,6 +200,11 @@ begin
   I := Lb;
   Ub := min(Ub,High(X));
   Ub := min(Ub,High(XRef));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Ok := True;
   repeat
     ITol := Tol * Abs(Xref[I]);
@@ -147,6 +222,11 @@ var
   I:Integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     if Test(Vector[I]) then
     begin
@@ -162,7 +242,12 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
-  for I := LRow to URow do
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+ for I := LRow to URow do
     for J := LCol to UCol do
       if Test(M[I,J]) then
       begin
@@ -177,6 +262,11 @@ var
   I:Integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     if Test(Vector[I]) then
     begin
@@ -192,6 +282,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       if Test(M[I,J]) then
@@ -207,6 +302,11 @@ var
   I:Integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     if Test(Vector[I]) then
     begin
@@ -222,6 +322,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       if Test(M[I,J]) then
@@ -237,6 +342,11 @@ var
   I:Integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     if Comparator(Vector[I],Ref) then
     begin
@@ -252,6 +362,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       if Comparator(M[I,J],Ref) then
@@ -267,6 +382,11 @@ var
   I:Integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
     if Comparator(Vector[I],Ref) then
     begin
@@ -282,6 +402,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
       if Comparator(M[I,J],Ref) then
@@ -298,6 +423,11 @@ var
   CMP:boolean;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
   begin
     case CompType of
@@ -324,6 +454,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
     begin
@@ -350,6 +485,11 @@ var
   CMP:boolean;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := Lb to Ub do
   begin
     case CompType of
@@ -376,6 +516,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(URow,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := LRow to URow do
     for J := LCol to UCol do
     begin
@@ -403,6 +548,11 @@ var
 begin
   Result := Lb;
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   MaxVal := Vector[Lb];
   for I := Lb+1 to Ub do
     if Vector[I] > MaxVal then
@@ -419,6 +569,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := tmCoords(LRow,LCol);
   MaxVal := M[LRow,LCol];
   for I := LRow to URow do
@@ -437,6 +592,11 @@ var
 begin
   Result := Lb;
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   MaxVal := Vector[Lb];
   for I := Lb+1 to Ub do
     if Vector[I] > MaxVal then
@@ -453,6 +613,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := tmCoords(LRow,LCol);
   MaxVal := M[LRow,LCol];
   for I := LRow to URow do
@@ -470,6 +635,11 @@ var
   MinVal:float;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := Lb;
   MinVal := Vector[Lb];
   for I := Lb+1 to Ub do
@@ -487,6 +657,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := tmCoords(LRow,LCol);
   MinVal := M[LRow,LCol];
   for I := LRow to URow do
@@ -504,6 +679,11 @@ var
   MinVal:float;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := Lb;
   MinVal := Vector[Lb];
   for I := Lb+1 to Ub do
@@ -521,6 +701,11 @@ var
 begin
   URow := min(URow,High(M));
   UCol := min(UCol,High(M[LRow]));
+  if (LRow > URow) or (LCol > UCol) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   Result := tmCoords(LRow,LCol);
   MinVal := M[LRow,LCol];
   for I := LRow to URow do
@@ -568,14 +753,19 @@ begin
   Result := Vector;
 end;
 
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float; CompType:TCompOperator):TVector; overload;
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float; CompType:TCompOperator):TIntVector; overload;
 var
   I,N:integer;
   Cmp:boolean;
 begin
+  Ub := Min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   DimVector(Result,Ub-Lb+ResLb);
   N := ResLb-1;
-  Ub := Min(Ub,High(Vector));
   for I := Lb to Ub do
     begin
     case CompType of
@@ -589,29 +779,58 @@ begin
     if CMP then
     begin
       inc(N);
-      Result[N] := Vector[I];
+      Result[N] := I;
     end;
   end;
-  if N > 0 then
+  if N >= ResLb then
     SetLength(Result,N+1)
   else
     SetLength(Result,0);
 end;
 
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref:float; Comparator:TComparator):TVector; overload;
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref:float; Comparator:TComparator):TIntVector; overload;
 var
   I,N:integer;
 begin
   Ub := min(high(Vector),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   DimVector(Result,Ub-Lb+ResLb);
   N := ResLb-1;
   for I := Lb to Ub do
     if Comparator(Vector[I],Ref) then
     begin
       inc(N);
-      Result[N] := Vector[I];
+      Result[N] := I;
     end;
-  if N > 0 then
+  if N >= ResLb then
+    SetLength(Result,N+1)
+  else
+    SetLength(Result,0);
+end;
+
+function SelElements(Vector: TVector; Lb, Ub, ResLb: integer; Test: TTestFunc): TIntVector;
+var
+  I,N:integer;
+begin
+  Ub := min(high(Vector),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  DimVector(Result,Ub-Lb+ResLb);
+  N := ResLb-1;
+  for I := Lb to Ub do
+    if Test(Vector[I]) then
+    begin
+      inc(N);
+      Result[N] := I;
+    end;
+  if N >= ResLb then
     SetLength(Result,N+1)
   else
     SetLength(Result,0);
@@ -623,6 +842,11 @@ var
   Cmp:boolean;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   DimVector(Result,Ub-Lb+ResLb);
   N := ResLb-1;
   for I := Lb to Ub do
@@ -638,10 +862,10 @@ begin
     if CMP then
     begin
       inc(N);
-      Result[N] := Vector[I];
+      Result[N] := I;
     end;
   end;
-  if N > 0 then
+  if N  >= ResLb then
     SetLength(Result,N+1)
   else
     SetLength(Result,0);
@@ -652,18 +876,56 @@ var
   I,N:integer;
 begin
   Ub := min(Ub,High(Vector));
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   DimVector(Result,Ub-Lb+ResLb);
   N := ResLb-1;
   for I := Lb to Ub do
     if Comparator(Vector[I],Ref) then
     begin
       inc(N);
-      Result[N] := Vector[I];
+      Result[N] := I;
     end;
-  if N > 0 then
+  if N  >= ResLb then
     SetLength(Result,N+1)
   else
     SetLength(Result,0);
+end;
+
+function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Test:TIntTestFunc):TIntVector; overload;
+var
+  I,N:integer;
+begin
+  Ub := min(high(Vector),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  DimVector(Result,Ub-Lb+ResLb);
+  N := ResLb-1;
+  for I := Lb to Ub do
+    if Test(Vector[I]) then
+    begin
+      inc(N);
+      Result[N] := I;
+    end;
+  if N >= ResLb then
+    SetLength(Result,N+1)
+  else
+    SetLength(Result,0);
+end;
+
+function ExtractElements(Vector: TVector; Mask: TIntVector; Lb: integer): TVector;
+var
+  I:integer;
+begin
+  DimVector(Result,High(Mask));
+  for I := Lb to High(Mask) do
+    Result[I] := Vector[Mask[I]];
 end;
 
 end.

@@ -4,7 +4,7 @@ unit uVectorHelper;
 interface
 
 uses
-  Classes, SysUtils, uTypes, uMinMax, uSorting, uStrings;
+  Classes, uTypes, uErrors, uMinMax, uSorting, uStrings;
 
 type
 
@@ -15,7 +15,9 @@ TVectorHelper = type helper for TVector
   procedure Remove(index:integer);
   procedure Swap(ind1,ind2:integer);
   procedure Fill(St, En : integer; Val:Float);
+  procedure FillWithArr(St : integer; Vals:array of Float);
   procedure Sort(Descending:boolean);
+  //inserts Source[Lb,Ub] into self beginning from Ind position.
   procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
@@ -31,6 +33,7 @@ TIntVectorHelper = type helper for TIntVector
   procedure Remove(index:integer);
   procedure Swap(ind1,ind2:integer);
   procedure Fill(St, En : integer; Val:Integer);
+  procedure FillWithArr(St : integer; Vals:array of Integer);
   procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
@@ -44,10 +47,15 @@ implementation
 
 { TIntVectorHelper }
 
-procedure TIntVectorHelper.Insert(value: integer; index: integer);
+procedure TIntVectorHelper.Insert(value: Integer; index: integer);
 var
   I: DWord;
 begin
+  if Index > High(self) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := High(self) downto index+1 do
     self[I] := self[I-1];
   self[Index] := value;
@@ -57,6 +65,11 @@ procedure TIntVectorHelper.Remove(index: integer);
 var
   I: Integer;
 begin
+  if Index > High(self) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := index to high(self)-1 do
     self[I] := self[I+1];
   self[high(self)] := 0;
@@ -66,17 +79,34 @@ procedure TIntVectorHelper.Swap(ind1, ind2: integer);
 var
   F:integer;
 begin
+  if (Ind1 > High(self)) or (Ind2 > High(Self)) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   F := self[ind1];
   self[ind1] := self[ind2];
   self[ind2] := F;
 end;
 
-procedure TIntVectorHelper.Fill(St, En: integer; Val: integer);
+procedure TIntVectorHelper.Fill(St, En: integer; Val: Integer);
 var
   I: Integer;
 begin
-  for I := St to max(En, high(self)) do
+  if Self = nil then
+    DimVector(Self,En);
+  for I := St to min(En, high(self)) do
     self[I] := Val;
+end;
+
+procedure TIntVectorHelper.FillWithArr(St: integer; Vals: array of Integer);
+var
+  I:integer;
+begin
+  if Self = nil then
+    SetLength(Self,St + length(Vals));
+  for I := St to min(St + High(Vals), High(Self)) do
+    Self[I] := Vals[I-St];
 end;
 
 procedure TIntVectorHelper.InsertFrom(Source: TIntVector; Lb, Ub: integer;
@@ -84,11 +114,17 @@ procedure TIntVectorHelper.InsertFrom(Source: TIntVector; Lb, Ub: integer;
 var
   I, C: Integer;
 begin
-  C := Ub - Lb + 1;
-  SetLength(self, length(self)+C);
+  if Self = nil then
+    DimVector(Self, ind + Ub - Lb);
+  if (Lb > High(Source)) or (Ind > High(Self)) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  C := min(min(Ub,High(Source)) - Lb + 1, High(Self)-Ind);
   for I := high(self) downto ind do
     self[I] := self[I-C]; // moving existing values freeing place for newly inserted
-  for I := Lb to Ub do
+  for I := Lb to Lb + C - 1 do
     self[ind+I-Lb] := source[I];
 end;
 
@@ -126,6 +162,11 @@ procedure TVectorHelper.Insert(value: Float; index: integer);
 var
   I: DWord;
 begin
+  if Index > High(self) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := High(self) downto index+1 do
     self[I] := self[I-1];
   self[Index] := value;
@@ -135,14 +176,25 @@ procedure TVectorHelper.Remove(index: integer);
 var
   I: Integer;
 begin
+  if Index > High(self) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   for I := index to high(self)-2 do
     self[I] := self[I+1];
+  self[high(self)] := 0;
 end;
 
 procedure TVectorHelper.Swap(ind1, ind2: integer);
 var
   F:Float;
 begin
+  if (Ind1 > High(self)) or (Ind2 > High(Self)) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
   F := self[ind1];
   self[ind1] := self[ind2];
   self[ind2] := F;
@@ -152,8 +204,20 @@ procedure TVectorHelper.Fill(St, En: integer; Val: Float);
 var
   I: Integer;
 begin
-  for I := St to En do
+  if Self = nil then
+    DimVector(Self,En);
+  for I := St to min(En, high(Self)) do
     self[I] := Val;
+end;
+
+procedure TVectorHelper.FillWithArr(St : integer; Vals: array of Float);
+var
+  I:integer;
+begin
+//  if not Assigned(Self) then
+    SetLength(Self,St + length(Vals));
+  for I := St to min(St + High(Vals), High(Self)) do
+    Self[I] := Vals[I-St];
 end;
 
 procedure TVectorHelper.Sort(Descending: boolean);
@@ -165,14 +229,21 @@ end;
 procedure TVectorHelper.InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
 var
   I, C: Integer;
-begin
-  C := Ub - Lb + 1;
-  SetLength(self, length(self)+C);
-  for I := high(self) downto ind do
-    self[I] := self[I-C]; // moving existing values freeing place for newly inserted
-  for I := Lb to Ub do
-    self[ind+I-Lb] := source[I];
-end;
+  begin
+    if Self = nil then
+      DimVector(Self, ind + Ub - Lb);
+    if (Lb > High(Source)) or (Ind > High(Self)) then
+    begin
+      SetErrCode(MatErrDim);
+      Exit;
+    end;
+    Ub := min(Ub,High(Source));
+    C := min(Ub - Lb + 1, High(Self)-Ind);
+    for I := high(self) downto ind do
+      self[I] := self[I-C]; // moving existing values freeing place for newly inserted
+    for I := Lb to Lb + C - 1 do
+      self[ind+I-Lb] := source[I];
+  end;
 
 function TVectorHelper.ToString(Index: integer): string;
 begin
