@@ -43,7 +43,7 @@ implementation
 
 function Undefined(F: Float): boolean;
 begin
-  Result := (F = MissingData) or IsNAN(F);
+  Result := IsNAN(F) or (F = MissingData);
 end;
 
 procedure SetMD(aMD:float);
