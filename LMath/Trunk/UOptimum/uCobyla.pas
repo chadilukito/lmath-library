@@ -65,7 +65,7 @@ procedure COBYLA(
     X     : TVector; // Array of variables to be optimized. Guess values before call, optimized after.
 out F     : float;   // Function value upon minimization
 out MaxCV : float;   // maximal constraint violation
-    RHOBEG: float;   // Initial size of simplex. Must be set by user, but how?
+    RHOBEG: float;   // Initial size of simplex. Must be set by user
     RHOEND: float;   // End size of simplex: desired precision of objective function and constrain satisfaction
 var MaxFun: integer;// limit on the number of calls of CALCFC user-supplied function, at the end number of actual calls
     CalcFC: TCobylaObjectProc
