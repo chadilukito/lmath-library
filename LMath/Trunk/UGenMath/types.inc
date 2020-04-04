@@ -94,7 +94,6 @@ TRealPoint = record
 end;
 
 TRealPointVector =  array of TRealPoint;
-
 PIntegerPoint = ^TIntegerPoint;
 TIntegerPoint = record
   X, Y : integer;
@@ -156,9 +155,9 @@ THessGrad = procedure(X, G : TVector; H : TMatrix);
 
 TParamFunc = function(X:Float; Params:Pointer):Float;
 
-// type for general comparison functions
-TComparator = function(V1,V2:float):boolean;
-TIntComparator = function(V1,V2:integer):boolean;
+// type for general comparison functions (Val, Ref):boolean;
+TComparator = function(Val,Ref:float):boolean;
+TIntComparator = function(Val,Ref:integer):boolean;
 
 { Random number generators }
 RNG_Type =

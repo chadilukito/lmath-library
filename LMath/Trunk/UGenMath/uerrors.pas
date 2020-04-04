@@ -36,6 +36,7 @@ const
   cobMaxFunc = 16;
   cobRoundErrors = 17;
   cobDegenerate = 18;
+// Linear Programming Errors
   lpBadConstraintCount = 19;
   lpBadSimplexTableau = 20;
   lpBadVariablesCount = 21;

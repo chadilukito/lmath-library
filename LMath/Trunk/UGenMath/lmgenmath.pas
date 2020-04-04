@@ -8,8 +8,9 @@ unit lmgenmath;
 interface
 
 uses
-  ubeta, ucomplex, udigamma, ufact, ugamma, uhyper, uibeta, uigamma, uScaling, ulambert, umath, uminmax, upolev, 
-  uround, utrigo, utypes, uErrors, uIntervals, uRealPoints, uIntPoints, LazarusPackageIntf;
+  ubeta, ucomplex, udigamma, ufact, ugamma, uhyper, uibeta, uigamma, ulambert, 
+  umath, uminmax, upolev, uround, utrigo, utypes, uErrors, uIntervals, 
+  uRealPoints, uIntPoints, LazarusPackageIntf;
 
 implementation
 

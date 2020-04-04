@@ -1,6 +1,6 @@
 //*******************************************************//
 // uRealPoints introduces operations over TRealPoint as   //
-// over 2-dimentioanal vectors                           //
+// over 2-dimentional vectors                           //
 //*******************************************************//
 unit uRealPoints;
 {$mode objfpc}{$H+}
@@ -11,7 +11,7 @@ uses uTypes;
 //Comparison of TRealPoint using epsilon; epsilon for X and for Y are defined separately.
 //If epsilon is -1, default value as defined by SetEpsilon will be used. If SetEpsilon was not used,
 // it is MachEp
-  function SameValue(P1,P2:TRealPoint; epsilonX:float = -1; epsilonY:float = -1):boolean; overload; inline;
+function SameValue(P1,P2:TRealPoint; epsilonX:float = -1; epsilonY:float = -1):boolean; overload; inline;
 
 //  constructor of TRealPoint from two floats
 function rpPoint(AX, AY:float):TRealPoint;

@@ -37,7 +37,7 @@ function SameValue(A,B:Float):boolean; overload;
   Dynamic arrays
   ------------------------------------------------------------------ }
 { Creates floating point vector V[0..Ub] }
-procedure DimVector(out V : TVector; Ub : Integer); overload;
+procedure DimVector(var V : TVector; Ub : Integer); overload;
 
 { Creates integer vector V[0..Ub] }
 procedure DimVector(out V : TIntVector; Ub : Integer); overload;
@@ -160,7 +160,7 @@ begin
   Result := D < C*DefaultEpsilon;
 end;
 
-procedure DimVector(out V : TVector; Ub : Integer);
+procedure DimVector(var V : TVector; Ub : Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
