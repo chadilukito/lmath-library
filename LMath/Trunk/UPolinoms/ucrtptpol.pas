@@ -13,7 +13,7 @@ Coef: coefficients of polynom
 Deg: degree of polynom
 DCoef: coefficience of derivative polynom
 DDeg: degree of derivative polynom (Deg - 1)}
-procedure DerivPolynom(Coef:TVector; Deg:integer; DCoef:TVector; out DDeg:integer);
+procedure DerivPolynom(Coef: TVector; Deg: integer; var DCoef: TVector; out DDeg: integer);
 
 {finds extremums of polynom
 Coef: coefficients of polynom
@@ -26,7 +26,7 @@ function CriticalPoints(Coef:TVector; Deg:integer; CtrPoints: TRealPointVector; 
 
 implementation
 
-procedure DerivPolynom(Coef: TVector; Deg: integer; DCoef: TVector; out DDeg: integer);
+procedure DerivPolynom(Coef: TVector; Deg: integer; var DCoef: TVector; out DDeg: integer);
 var
   I:Integer;
 begin
@@ -36,6 +36,8 @@ begin
     DDeg := 0;
     Exit;
   end;
+  if length(DCoef) < Deg - 1 then
+    SetLength(DCoef,max(Deg,1));
   if Deg = 0 then
   begin
     DDeg := 0;
