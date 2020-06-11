@@ -8,7 +8,7 @@ unit udistribs;
 interface
 
 uses
-  UTypes, uErrors, uMath, unlFit, uMeanSD;
+  UTypes, uErrors, uMath, unlFit, uMinMax, uMeanSD;
 
 type
   TBinomialDistribFunction = function(k, n:integer; q:Float):Float;
@@ -24,7 +24,7 @@ type
   function HyperExponentialDistribution(N:integer; var Params:TVector; X:float):float;
 
   //estimates parameters of hyperexponential distribution with 2 phases using Marqardt algorithm
-  procedure Fit2HyperExponents(var Xs, Ys:TVector; Ub:integer; var P1, beta1, beta2:float);
+  procedure Fit2HyperExponents(var Xs, Ys:TVector; Ub:integer; out P1, beta1, beta2:float);
 
   //PDF of the hypoexponential distribution with 2 phases; beta1, beta2 are time constants (not rate constants!)
   function HypoExponentialDistribution2(beta1, beta2, X:float):float;
@@ -34,7 +34,7 @@ type
   procedure EstimateHypoExponentialDistribution(M,CV:float; out beta1, beta2:float);
 
   // Iterative fit of hypoexponential distribution.
-  procedure Fit2Hypoexponents(var Xs, Ys: TVector; Ub:integer; var beta1, beta2:float);
+  procedure Fit2Hypoexponents(var Xs, Ys: TVector; Ub:integer; out beta1, beta2:float);
 
 implementation
 {dBinom = (n!/(k!*(n-k)!) * q^k*(1-q)^(n-k)    }
@@ -123,7 +123,7 @@ begin
   Derivs[3] := DerivHyperExpForBeta2(X,Params);
 end;
 
-procedure Fit2HyperExponents(var Xs, Ys:TVector; Ub:integer; var P1, beta1, beta2:float);
+procedure Fit2HyperExponents(var Xs, Ys:TVector; Ub:integer; out P1, beta1, beta2:float);
 var
   MyTol:float;
   ExpParams:TVector;
@@ -148,7 +148,7 @@ end;
 function HypoExponentialDistribution2(beta1, beta2, X:float): float;
 begin
   if (beta1 <> beta2) and not IsZero(beta1) and not IsZero(beta2) then
-    Result := (exp(-x/beta2) - exp(-x/beta1)) / (beta1-beta2)
+    Result := (exp(-x/beta1) - exp(-x/beta2)) / (beta1-beta2)
   else
     Result := 0;
 end;
@@ -202,10 +202,10 @@ begin
   Derivs[2] := DerivHypoExpGForG(X,Params);
 end;
 
-procedure Fit2HypoExponents(var Xs, Ys:TVector; Ub:integer; var beta1, beta2:float);
+procedure Fit2HypoExponents(var Xs, Ys:TVector; Ub:integer; out beta1, beta2:float);
 var
   MyTol:float;
-  ExpParams:TVector; //beta, g (diff beta-beta1)
+  ExpParams:TVector; //beta1, g (diff beta1-beta2)
   HESS:TMatrix;
   I,IndMax:integer;
   PosMax,MaxVal:float;
@@ -231,8 +231,6 @@ begin
   MyTol := 0.001;
   NLFit(@HypoExpG, @HypoExpDerivs, Xs, Ys, 1, Ub, 10000, MyTol, ExpParams, 1, 2, HESS);
   beta1 := ExpParams[1]; beta2 := ExpParams[1]-ExpParams[2];
-  Finalize(ExpParams);
-  Finalize(Hess);
 end;
 
 end.
