@@ -175,7 +175,8 @@ type
     property OnDrawData:TNotifyEvent read FOnPaint write FOnPaint;
   end;
 
-
+  operator := (P:TPoint) R:TIntegerPoint;
+  operator := (P:TIntegerPoint) R:TPoint;
 procedure Register;
 
 implementation
@@ -730,6 +731,19 @@ procedure Register;
 begin
   RegisterComponents('LMComponents', [TCoordSys]);
 end;
+
+operator := (P:TPoint) R:TIntegerPoint;
+begin
+  R.X := P.X;
+  R.Y := P.Y;
+end;
+
+operator := (P:TIntegerPoint) R:TPoint;
+begin
+  R.X := P.X;
+  R.Y := P.Y;
+end;
+
 
 initialization
   {$I nv_icons.lrs}
