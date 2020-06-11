@@ -19,13 +19,11 @@ begin
     DimVector(Coeffs, Deg);
     for I := 0 to Deg do
       readln(Coeffs[I]);
-    DimVector(CrtPoints,Deg);
-    DimVector(PointTypes,Deg);
-    N := CriticalPoints(Coeffs,Deg,CrtPoints,PointTypes);
+    N := CriticalPoints(Coeffs,Deg,CrtPoints,PointTypes,0);
     if N = 0 then
       writeln('No critical points found.')
     else
-      for I := 1 to N do
+      for I := 0 to N-1 do
       begin
         case PointTypes[I] of
           -1: write(MinS);
