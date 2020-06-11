@@ -11,16 +11,6 @@
         <OtherUnitFiles Value="units"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <CodeGeneration>
-        <Optimizations>
-          <OptimizationLevel Value="4"/>
-        </Optimizations>
-      </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="False"/>
-        </Debugging>
-      </Linking>
     </CompilerOptions>
     <Version Minor="5"/>
     <Files Count="8">

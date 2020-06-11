@@ -20,8 +20,8 @@ Coef: coefficients of polynom
 Deg: degree of polynom
 CRTPoints: Critical points; CRTPoints[i].X abscissa, CRTPoints[y] - function value at each
 PointTypes: type of critical point. -1: minimum, 0: no extremum; +1: maximum}
-function CriticalPoints(Coef:TVector; Deg:integer; CtrPoints: TRealPointVector; PointTypes:
-         TIntVector):integer;
+function CriticalPoints(Coef:TVector; Deg:integer; var CrtPoints: TRealPointVector;
+                                      var PointTypes: TIntVector; ResLb : integer = 1):integer;
 
 
 implementation
@@ -51,8 +51,8 @@ begin
   SetErrCode(MatOK);
 end;
 
-function CriticalPoints(Coef: TVector; Deg: integer; CtrPoints: TRealPointVector;
-         PointTypes: TIntVector): integer;
+function CriticalPoints(Coef: TVector; Deg: integer; var CrtPoints: TRealPointVector;
+         var PointTypes: TIntVector; ResLb : integer = 1): integer;
 var
   Deriv:TVector;
   DDeg:integer;
@@ -69,16 +69,19 @@ begin
     DimVector(Z,DDeg);
     NR := RootPol(Deriv,DDeg,Z);
     SortRoots(DDeg,Z);
-    J := 0;
+    J := ResLb;
     I := 1;
     if NR > 0 then
     begin
+      if length(CrtPoints) < NR + ResLb then
+         SetLength(CrtPoints,Nr + ResLb);
+      if length(PointTypes) < Nr + ResLb then
+         SetLength(PointTypes,Nr + ResLb);
       D1 := Poly(Z[1].X - 1,Deriv,DDeg); // value of derivative before first critical point
       while I <= NR do
       begin
-        inc(J);
-        CtrPoints[J].X := Z[I].X;
-        CtrPoints[J].Y := Poly(CtrPoints[J].X,Coef,Deg);
+        CrtPoints[J].X := Z[I].X;
+        CrtPoints[J].Y := Poly(CrtPoints[J].X,Coef,Deg);
         while SameValue(Z[I].X,Z[I+1].X) and (I < Nr) do Inc(I); // if next root of derivative is equal to this one, it is skipped
         if I = NR then
           D2 := Poly(Z[I].X + 0.2,Deriv,DDeg)
@@ -90,11 +93,10 @@ begin
           PointTypes[J] := Sign(D1); // 1 is maximum
         D1 := D2;
         Inc(I);
+        inc(J);
       end;
     end;
-    Result := J;
-    Finalize(Deriv);
-    Finalize(Z);
+    Result := J - ResLb;
   end;
 end;
 
