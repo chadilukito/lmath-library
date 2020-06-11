@@ -70,8 +70,8 @@ end;
 
 function ExponentialDistribution(beta, X:float):float;
 begin
-  if (X >= 0) and (beta > 0) then
-    Result := (1/beta)*Exp(-X/beta)
+  if (X >= 0) and IsPositive(beta) then
+    Result := (1/beta)*Expo(-X/beta)
   else
     Result := 0;
 end;
@@ -235,4 +235,3 @@ begin
 end;
 
 end.
-
