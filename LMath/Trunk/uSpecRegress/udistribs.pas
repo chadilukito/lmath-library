@@ -30,6 +30,7 @@ type
   function HypoExponentialDistribution2(beta1, beta2, X:float):float;
 
   // Analytic estimate of the parameters of hypoexponential distribution
+  // from known mean and variation coefficients
   procedure EstimateHypoExponentialDistribution(M,CV:float; out beta1, beta2:float);
 
   // Iterative fit of hypoexponential distribution.
@@ -147,7 +148,7 @@ end;
 function HypoExponentialDistribution2(beta1, beta2, X:float): float;
 begin
   if (beta1 <> beta2) and not IsZero(beta1) and not IsZero(beta2) then
-    Result := (exp(-x/beta1) - exp(-x/beta2)) / (beta1-beta2)
+    Result := (exp(-x/beta2) - exp(-x/beta1)) / (beta1-beta2)
   else
     Result := 0;
 end;
