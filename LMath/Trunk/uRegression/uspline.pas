@@ -16,7 +16,7 @@ function SplDeriv(X:Float; Xv, Yv, Ydv: TVector; Lb, Ub:integer):float;
 // returns all local minima and maxima of a spline between points Lb and Ub.
 // Number of found minima is returned in NMin, of maxima - in NMax
 procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer;
-          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer);
+          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer; ResLb: integer = 1);
 
 implementation
 
@@ -174,13 +174,13 @@ begin
 end;
 
 procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer;
-          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer);
+          out Minima, Maxima:TRealPointVector; out NMin, NMax: integer; ResLb: integer = 1);
 var
   I,J, N : integer;
   LE:TExtremums;
 begin
-  SetLength(Minima,Ub-Lb);
-  SetLength(Maxima,Ub-Lb);
+  SetLength(Minima,Ub-Lb+ResLb);
+  SetLength(Maxima,Ub-Lb+ResLb);
   NMin := 0;
   NMax := 0;
   for I := Lb to Ub-1 do
@@ -189,16 +189,16 @@ begin
     for J := 1 to N do
       if LE[J].minimum then
       begin
-        Minima[NMin] := LE[J].Pt;
+        Minima[ResLb+NMin] := LE[J].Pt;
         inc(NMin);
-      end else
+     end else
       begin
-        Maxima[NMax] := LE[J].Pt;
+        Maxima[ResLb+NMax] := LE[J].Pt;
         inc(NMax);
       end;
   end;
-  SetLength(Minima,Nmin);
-  SetLength(Maxima,NMax);
+  SetLength(Minima,Nmin+ResLb);
+  SetLength(Maxima,NMax+ResLb);
 end;
 
 end.
