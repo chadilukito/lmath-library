@@ -13,15 +13,7 @@
       </SearchPaths>
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
-        <Optimizations>
-          <OptimizationLevel Value="4"/>
-        </Optimizations>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="False"/>
-        </Debugging>
-      </Linking>
       <Other>
         <CustomOptions Value="-CfAVX2
 -CpCOREAVX2

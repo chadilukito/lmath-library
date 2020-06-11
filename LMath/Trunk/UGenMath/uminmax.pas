@@ -42,7 +42,7 @@ function IsNegative(X: float):boolean; overload;
 
 function IsNegative(X: Integer):boolean; overload;
 
-// returns true if X is positive ( > -DefaultZeroEpsilon )
+// returns true if X is positive ( > DefaultZeroEpsilon )
 function IsPositive(X: float):boolean; overload;
 
 function IsPositive(X: Integer):boolean; overload;

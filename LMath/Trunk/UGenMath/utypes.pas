@@ -40,34 +40,34 @@ function SameValue(A,B:Float):boolean; overload;
 procedure DimVector(var V : TVector; Ub : Integer); overload;
 
 { Creates integer vector V[0..Ub] }
-procedure DimVector(out V : TIntVector; Ub : Integer); overload;
+procedure DimVector(var V : TIntVector; Ub : Integer); overload;
 
 { Creates complex vector V[0..Ub] }
-procedure DimVector(out V : TCompVector; Ub : Integer); overload;
+procedure DimVector(var V : TCompVector; Ub : Integer); overload;
 
 { Creates vector V[0..Ub] of TRealPoint}
-procedure DimVector(out V: TRealPointVector; Ub: Integer); overload;
+procedure DimVector(var V: TRealPointVector; Ub: Integer); overload;
 
 { Creates boolean vector V[0..Ub] }
-procedure DimVector(out V : TBoolVector; Ub : Integer); overload;
+procedure DimVector(var V : TBoolVector; Ub : Integer); overload;
 
 { Creates string vector V[0..Ub] }
-procedure DimVector(out V : TStrVector; Ub : Integer); overload;
+procedure DimVector(var V : TStrVector; Ub : Integer); overload;
 
 { Creates floating point matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(out A : TMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(var A : TMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates integer matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(out A : TIntMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(var A : TIntMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates complex matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(out A : TCompMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(var A : TCompMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates boolean matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(out A : TBoolMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(var A : TBoolMatrix; Ub1, Ub2 : Integer); overload;
 
 { Creates string matrix A[0..Ub1, 0..Ub2] }
-procedure DimMatrix(out A : TStrMatrix; Ub1, Ub2 : Integer); overload;
+procedure DimMatrix(var A : TStrMatrix; Ub1, Ub2 : Integer); overload;
 
 {Sets default epsilon for SameValue }
 procedure SetEpsilon(AEpsilon: float);
@@ -172,7 +172,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimVector(out V : TIntVector; Ub : Integer);
+procedure DimVector(var V : TIntVector; Ub : Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -185,7 +185,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimVector(out V : TCompVector; Ub : Integer);
+procedure DimVector(var V : TCompVector; Ub : Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -198,7 +198,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimVector(out V: TRealPointVector; Ub: Integer);
+procedure DimVector(var V: TRealPointVector; Ub: Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -209,7 +209,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimVector(out V : TBoolVector; Ub : Integer);
+procedure DimVector(var V : TBoolVector; Ub : Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -220,7 +220,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimVector(out V : TStrVector; Ub : Integer);
+procedure DimVector(var V : TStrVector; Ub : Integer);
 begin
   { Check bounds }
   if (Ub < 0) or (Ub > MaxSize) then
@@ -231,7 +231,7 @@ begin
   SetLength(V, Ub + 1);
 end;
 
-procedure DimMatrix(out A : TMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(var A : TMatrix; Ub1, Ub2 : Integer);
 begin
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
     begin
@@ -241,7 +241,7 @@ begin
   SetLength(A, Ub1 + 1, Ub2 + 1);
 end;
 
-procedure DimMatrix(out A : TIntMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(var A : TIntMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -253,7 +253,7 @@ begin
   SetLength(A, Ub1 + 1, Ub2 + 1);
 end;
 
-procedure DimMatrix(out A : TCompMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(var A : TCompMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -265,7 +265,7 @@ begin
   SetLength(A, Ub1 + 1, Ub2 + 1);
 end;
 
-procedure DimMatrix(out A : TBoolMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(var A : TBoolMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
@@ -277,7 +277,7 @@ begin
   SetLength(A, Ub1 + 1, Ub2 + 1);
 end;
 
-procedure DimMatrix(out A : TStrMatrix; Ub1, Ub2 : Integer);
+procedure DimMatrix(var A : TStrMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
   if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
