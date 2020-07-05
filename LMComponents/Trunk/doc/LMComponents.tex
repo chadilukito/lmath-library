@@ -71,6 +71,47 @@ Exception which flags invalid operation with \code{TPoints}.
 \index{TPoints}
 \subsubsection{Hierarchy}
 TPoints {$>$} TObject
+\subsubsection{Declaration}
+\begin{verbatim}
+TPoints = class
+protected
+  function GetBuffer(I: integer): pointer;
+  function GetX(ind:integer):Float;
+  function GetY(ind:integer):Float;
+  procedure SetX(ind:integer; value:Float);
+  procedure SetY(ind:integer; value:Float);
+  function GetPoint(ind:integer):TRealPoint;
+  procedure SetPoint(ind:integer; Value:TRealPoint);
+public
+  Points:TRealPointVector;
+  Capacity:integer;
+  Count:integer;
+  Index:integer;
+  constructor Create(ACapacity:integer);
+  constructor Combine(XVector,YVector:TVector; Lb, Ub:integer);
+  destructor Destroy; override;
+  procedure Append(APoint:TRealPoint);
+  function RemovePoints(Ind: integer; ACount:integer):integer;
+  function Reallocate(Step:integer):integer;
+  procedure FreePoints; virtual;
+  procedure AllocatePoints(ACapacity:integer);
+  procedure SortX(descending:boolean);
+  function MaxX: Float; virtual;
+  function MaxY: Float; virtual;
+  function MinX: Float; virtual;
+  function MinY: Float; virtual;
+  function Range: Float; virtual;
+  function RangeY: Float; virtual;
+  procedure SortY(descending:boolean);
+  procedure ExtractX(var AXVector:TVector; Lb, Ub: integer);
+  procedure ExtractY(var AYVector:TVector; Lb, Ub: integer);
+  property X[I:integer]:Float read GetX write SetX;
+  property Y[I:integer]:Float read GetY write SetY;
+  property ThePoints[I:integer]:TRealPoint read GetPoint write SetPoint; default;
+  property DataBuffer[I:integer]:pointer read GetBuffer;
+end;
+\end{verbatim}
+
 \subsubsection{Properties}
 \begin{itemize}
 	\item[\declarationitem{X}\hfill]
@@ -335,7 +376,7 @@ $RangeY=MaxY-MinY$
 \label{lmfilters}
 \index{lmfilters}
 \section{Description}
-Unit lmFilters includes several digital filters of a signal implemented as non-visual components. You can drop a component on your form, define sampling rate and cut-off frequency, define \code{OnInput} and \code{OnOutput} events and call \code{Filter} method.
+Unit lmFilters includes several off-line digital filters of a signal which are implemented as non-visual components. You can drop a component on your form, define sampling rate and cut-off frequency, define \code{OnInput} and \code{OnOutput} events and call \code{Filter} method. \code{OnInput} event is called from \code{Filter} method whenever the filtering procedure needs next input value, and \code{OnOutput} when it is ready to return a next value. This technique makes the components independent of a format of data which are filtered.
 
 Currently, implemented are gaussian filter, moving average filter, which are probably the best ``smoothing'' filters for time domain, and median filter which is ideal to remove short spikes preserving sharp edges.
 
@@ -370,6 +411,19 @@ EFilterException {$>$} exception
 \index{TDigFilter}
 \subsubsection{Hierarchy}
 TDigFilter {$>$} TComponent
+\subsubsection{Declaration}
+	\begin{verbatim}
+		TDigFilter = class(TComponent)
+		protected
+		  FOnInput:TInputFunc;
+		  FOnOutput:TOutputProc;
+		public
+		  procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;
+		published
+		  property OnInput:TInputFunc read FOnInput write FOnInput;
+		  property OnOutput:TOutputProc read FOnOutput write FOnOutput;
+		end;
+		\end{verbatim}
 \subsubsection{Description}
 TDigFilter is an abstract ancestor class for all digital filters. Itself it is never instantiated, but introduces important common behaviour. 
 \subsubsection{Events}
@@ -446,6 +500,20 @@ end;
 \subsubsection{Hierarchy}
 TOneFreqFilter {$>$} \code{TDigFilter} {$>$} 
 TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TOneFreqFilter = class(TDigFilter)
+private
+  FSamplingRate : Float;
+  FCutFreq1     : Float;
+public
+  constructor Create(AOwner:TComponent); override;
+  procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;
+published
+  property SamplingRate : Float read FSamplingRate;
+  property Cutfreq1     : Float read FCutFreq1;
+end;
+\end{verbatim}
 \subsubsection{Description}
 Descendant of \code{TDigFilter} which describes lowpass or highpass filters (but not pass- or stopband) with Infinite Impulse Response. Introduces \code{SamplingRate} and \code{CutFreq1} properties.
 \subsubsection{Properties}
@@ -494,6 +562,18 @@ Descendant of \code{TDigFilter} which describes lowpass or highpass filters (but
 \subsubsection{Hierarchy}
 TFIRFilter {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} 
 TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TFIRFilter = class(TOneFreqFilter)
+protected
+  FWinLength : integer;
+  procedure SetWinLength(L:integer); virtual;
+public
+  constructor Create(AOwner:TComponent); override;
+published
+  property WinLength : integer read FWinLength write SetWinLength;
+end;
+\end{verbatim}
 \subsubsection{Description}
 TFIRFilter: Finite Impulse response filter. Abstract class, descendant of \code{TOneFreqFilter} which introduces \code{WinLength} property for the filter window length (or length of the Impulse Response). 
 \subsubsection{Properties}
@@ -541,6 +621,18 @@ TFIRFilter: Finite Impulse response filter. Abstract class, descendant of \code{
 \subsubsection{Hierarchy}
 TMovAvFilter {$>$} \code{TFIRFilter} {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} 
 TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TMovAvFilter = class(TFIRFilter)
+protected
+  procedure SetWinLength(L:integer); override;
+public
+  procedure Filter(StartIndex, EndIndex:integer); override;
+  procedure SetupFilter(ASamplingRate, ACutFreq:Float); override;
+published
+  property WinLength : integer read FWinLength write SetWinLength;
+end;
+\end{verbatim}
 \subsubsection{Description}
 Implements moving average filter. It is possible to use \hyperref[lmfilters.TMovAvFilter-SetupFilter]{SetupFilter} procedure to set \code{CutFreq1} and \code{SamplingRate} fields or directly set \hyperref[lmfilters.TFIRFilter-WinLength]{WinLength}. In the first case, needed \code{WinLength} is automatically calculated; in the second case, resulting \code{CutFreq1} is automatically found, provided that \code{SamplingRate} was previously set. So, these approaches are mutually exclusive. 
 \subsubsection{Properties}
@@ -586,6 +678,15 @@ Implements moving average filter. It is possible to use \hyperref[lmfilters.TMov
 \index{TGaussFilter}
 \subsubsection{Hierarchy}
 TGaussFilter {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TGaussFilter = class(TOneFreqFilter)
+public
+  constructor Create(AOwner:TComponent); override;
+  procedure SetupFilter(ASamplingRate, ACutFreq1: Float); override;
+  procedure Filter(StartIndex, EndIndex:integer); override;
+end;
+\end{verbatim}
 \subsubsection{Description}
 Implements gaussian filter with the algorithm described in:\\
 Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // Signal Processing, 44 (1995) 139-151
@@ -624,6 +725,17 @@ Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // 
 \index{TMedianFilter}
 \subsubsection{Hierarchy}
 TMedianFilter {$>$} \code{TFIRFilter} {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TMedianFilter = class(TFIRFilter)
+protected
+  function FindMedian:Float;
+  procedure SetWinLength(L:integer); override;
+public
+  constructor Create(AOwner:TComponent); override;
+  procedure filter(StartIndex, EndIndex:integer); override;
+end;
+\end{verbatim}
 \subsubsection{Description}
 Implementation of Median Filter
 \subsubsection{Methods}
@@ -749,6 +861,90 @@ All drawing of user's data must occur in \code{OnDrawData} event, which is calle
 \index{TCoordSys}
 \subsubsection{Hierarchy}
 TCoordSys {$>$} TPanel
+\subsubsection{Declaration}
+\begin{verbatim}
+TCoordSys = class(TPanel)
+protected
+  function GetFont:TFont;
+  procedure SetXAxisLabel(const ALabel:String);virtual;
+  function GetXAxisLabel:string; virtual;
+  procedure SetYAxisLabel(const ALabel:String);virtual;
+  function GetYAxisLabel:string; virtual;
+  procedure SetMinX(AMinX:Float); virtual;
+  procedure SetMaxX(AMaxX:Float); virtual;
+  procedure SetMinY(AMinY:Float); virtual;
+  procedure SetMaxY(AMaxY:Float); virtual;
+  procedure DrawAxis; virtual;
+  procedure DrawGridLines; virtual;
+  procedure DrawAxisLabels; virtual; abstract; 
+  procedure SetLeftMargin(AMargin:integer); virtual;
+  procedure SetRightMargin(AMargin:integer); virtual;
+  procedure SetLowerMargin(AMargin:integer); virtual;
+  procedure SetUpperMargin(AMargin:integer); virtual;
+  procedure SetXPos(AXPos:Float); virtual;
+  procedure SetYPos(AYPos:Float); virtual;
+  procedure SetXGridDist(AXGridDist:Float); virtual;
+  procedure SetYGridDist(AYGridDist:Float); virtual;
+  procedure SetAxisPen(APen:TPen); virtual;
+  procedure SetGridPen(APen:TPen); virtual;
+  procedure SetOutputPen(APen:TPen); virtual;
+  procedure SetPenPos(APenPos:TRealPoint); virtual;
+  procedure SetGridDir; virtual; abstract;
+public
+  ScaleX, ScaleY:Float;
+  property PenPos: TRealPoint read FPenPos write SetPenPos;
+  constructor Create(AOwner:TComponent); override;
+  destructor Destroy; override;
+  procedure Paint; override;
+  procedure LineTo(APoint:TRealPoint); overload; 
+  procedure LineTo(X,Y:Float); overload;
+  procedure NewLimits(AMinX,AMinY,AMaxX,AMaxY:Float); virtual;
+  procedure XScrollTo(AX:Float); virtual;
+  procedure YScrollTo(AY:Float); virtual;
+  procedure PutLine(P1,P2:TRealPoint); overload;
+  procedure PutLine(X1,Y1,X2,Y2:Float); overload;
+  function UserToScreen(UP:TRealPoint):TPoint;virtual;
+  function  XUserToScreen(X:Float):integer;virtual;
+  function  YUserToScreen(Y:Float):integer;virtual;
+  function  XScreenToUser(X:integer):Float; virtual;
+  function  YScreenToUser(Y:integer):Float; virtual;
+  procedure Circle(Center:TRealPoint; R:integer); virtual;
+  procedure Aim(Center: TRealPoint; R: integer); virtual;
+  procedure FillRect(X1,Y1,X2,Y2:Float); overload;
+  procedure Fillrect(P1,P2:TRealPoint); overload;
+  procedure GoToXY(X,Y:Float);
+  function ScreenToUser(SP:TPoint):TRealPoint; virtual;
+  procedure ReScale(CoeffX, CoeffY:Float);
+  procedure FastDraw(APoints:TPoints; Lb, Ub: integer);
+  procedure DrawSpline(APoints:TPoints; Lb, Ub: integer);
+  procedure DrawFunc(AFunc:TParamFunc; Params:Pointer; LeftX, RightX : Float); virtual;
+published                                    
+  property XAxisLabel:string read FXAxisLabel write FXAxisLabel;
+  property YAxisLabel:string read FYAxisLabel write FYAxisLabel;
+  property MinX:Float read FMinX write SetMinX; 
+  property MinY:Float read FMinY write SetMinY;
+  property MaxX:Float read FMaxX write SetMaxX;
+  property MaxY:Float read FMaxY write SetMaxY;
+  property XPos:Float read FXPos write SetXPos;
+  property YPos:Float read FYPos write SetYPos;
+  property Font:TFont read GetFont;
+  property AxisPen:TPen read FAxisPen write SetAxisPen;
+  property OutputPen:TPen read FOutputPen write SetOutputPen;
+  property GridPen:TPen read FGridPen write SetGridPen;
+  property LeftMargin:integer read FLeftMargin write SetLeftMargin default 0;
+  property RightMargin:integer read FRightMargin write SetRightMargin default 0;
+  property LowerMargin:integer read FLowerMargin write SetLowerMargin default 0;
+  property UpperMargin:integer read FUpperMargin write SetUpperMargin default 0;
+  property XGridDist:Float read FXGridDist write SetXGridDist;
+  property YGridDist:Float read FYGridDist write SetYGridDist;
+  property XGridNumbersPrecision: integer read FXGridNumbersPrecision write FXGridNumbersPrecision default 5;
+  property XGridNumbersDecimals: integer read FXGridNumbersDecimals write FXGridNumbersDecimals default 2;
+  property YGridNumbersPrecision: integer read FYGridNumbersPrecision write FYGridNumbersPrecision default 9;
+  property YGridNumbersDecimals: integer read FYGridNumbersDecimals write FYGridNumbersDecimals default 4;
+  property Canvas;
+  property OnDrawData:TNotifyEvent read FOnPaint write FOnPaint;
+end;
+\end{verbatim}
 \subsubsection{Description}
 TCoordSys
 \subsubsection{Properties}
@@ -785,14 +981,15 @@ published property MinY: Float;\\
 published property MaxX: Float;\\
 published property MaxY: Float;
 }
-\label{lmcoordsys.TCoordSys-MinX}
 \end{flushleft}
+\label{lmcoordsys.TCoordSys-MinX}
  MinX,MinY,MaxX,MaxY define window bounds in user coordinate space.\label{lmcoordsys.TCoordSys-MinY}
 \index{MinY}
 \index{MaxX}
 \index{MaxY}
 \label{lmcoordsys.TCoordSys-XPos}
 \index{XPos}
+
 \item[\declarationitem{XPos}\hfill]
 \begin{flushleft}
 \code{
