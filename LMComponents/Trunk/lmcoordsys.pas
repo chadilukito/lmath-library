@@ -14,7 +14,7 @@
   <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA 02111-1307, USA. }
 unit lmcoordsys;
-
+{ TODO : Write DrawSpline for separate X and Y arrays }
 interface
 
 uses
@@ -129,7 +129,7 @@ type
     procedure ReScale(CoeffX, CoeffY:Float);
     //fast optimized drawing of large (>10000) arrays of TRealPoint
     // Only if "X" is sorted in ascending order
-    procedure FastDraw(APoints:TPoints; Lb, Ub: integer);
+    procedure FastDraw(APoints:TRealPointVector; Lb, Ub: integer);
     // draw spline through the points Apoints[Lb]..APoints[Ub]
     procedure DrawSpline(APoints:TPoints; Lb, Ub: integer);
     //draws TParamFunc (function(X:Float; Params:Pointer):Float from LeftX to RightX.
@@ -593,60 +593,57 @@ end;
 //even if "PutNewLine" is used. Therefore, for every such group of points
 //sharing same screen "X" we find min and max and then draw one vertical line
 // and then line connecting last point in this group to first in the next group.
-procedure TCoordSys.FastDraw(APoints: TPoints; Lb, Ub: integer);
+procedure TCoordSys.FastDraw(APoints: TRealPointVector; Lb, Ub: integer);
 var
   SXSt, SXE: word;
   J: integer;
   MinLY, MaxLY: Float;
 begin
-  with APoints do
+  SXSt := XUserToScreen(APoints[Lb].X);
+  SXE := XUserToScreen(APoints[Ub].X);
+  if (SXSt < SXE) and ((Ub - Lb) div (SXE - SXSt) > 5) then
   begin
-    SXSt := XUserToScreen(Points[Lb].X);
-    SXE := XUserToScreen(Points[Ub].X);
-    if (SXSt < SXE) and ((Ub - Lb) div (SXE - SXSt) > 5) then
+    J := Lb;
+    while J <= Ub do
     begin
-      J := Lb;
-      while J <= Ub do
+      MinLY := APoints[J].Y; MaxLY := MinLY;
+      while XUserToScreen(APoints[J].X) = SXSt do
       begin
-        MinLY := Points[J].Y; MaxLY := MinLY;
-        while XUserToScreen(Points[J].X) = SXSt do
+        if APoints[J].Y < MinLY then
+          MinLY := APoints[J].Y;
+        if APoints[J].Y > MaxLY then
+          MaxLY := APoints[J].Y;
+        inc(J);
+        if J > Ub then
         begin
-          if Points[J].Y < MinLY then
-            MinLY := Points[J].Y;
-          if Points[J].Y > MaxLY then
-            MaxLY := Points[J].Y;
-          inc(J);
-          if J > Ub then
-          begin
-            Canvas.Line(SXSt,YUserToScreen(MinLY),SXSt,YUserToScreen(MaxLY));
-            PenPos := Points[Ub];
-            Exit;
-          end;
+          Canvas.Line(SXSt,YUserToScreen(MinLY),SXSt,YUserToScreen(MaxLY));
+          PenPos := APoints[Ub];
+          Exit;
         end;
-        Canvas.Line(SXSt,YUserToScreen(MinLY),SXSt,YUserToScreen(MaxLY));
-        PutLine(Points[J-1],Points[J]);
-        SxSt := Canvas.PenPos.X;
       end;
-    end else
-    begin
-      PenPos := Points[Lb];
-      for J := Lb + 1 to Ub do
-          LineTo(Points[J]);
+      Canvas.Line(SXSt,YUserToScreen(MinLY),SXSt,YUserToScreen(MaxLY));
+      PutLine(APoints[J-1],APoints[J]);
+      SxSt := Canvas.PenPos.X;
     end;
+  end else
+  begin
+    PenPos := APoints[Lb];
+    for J := Lb + 1 to Ub do
+        LineTo(APoints[J]);
   end;
 end;
 
 procedure TCoordSys.DrawSpline(APoints: TPoints; Lb, Ub: integer);
 var
-  XInterval, FuncXInterval : TInterval;
+  WinXInterval, FuncXInterval : TInterval;
   DInt : TInterval;
   Delta, Curr : Float;
   XV, YV, D2 : TVector;
   N : integer;
 begin
-  XInterval := DefineInterval(MinX, MaxX);
+  WinXInterval := DefineInterval(MinX, MaxX);
   FuncXInterval := DefineInterval(APoints[Lb].X, APoints[Ub].X);
-  DInt := intersection(XInterval, FuncXInterval);
+  DInt := intersection(WinXInterval, FuncXInterval);
   if IntervalDefined(DInt) then
   begin
     Delta := (Dint.Hi - Dint.Lo)/(XUserToScreen(DInt.Hi) - XUserToScreen(DInt.Lo));
@@ -666,9 +663,6 @@ begin
       LineTo(Curr, SplInt(Curr, XV, YV, D2, Lb, Ub));
     end;
   end;
-  Finalize(XV);
-  Finalize(YV);
-  Finalize(D2);
 end;
 
 procedure TCoordSys.DrawFunc(AFunc: TParamFunc; Params: Pointer; LeftX, RightX: Float);

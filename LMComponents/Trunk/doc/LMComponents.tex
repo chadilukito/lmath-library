@@ -915,7 +915,7 @@ public
   procedure GoToXY(X,Y:Float);
   function ScreenToUser(SP:TPoint):TRealPoint; virtual;
   procedure ReScale(CoeffX, CoeffY:Float);
-  procedure FastDraw(APoints:TPoints; Lb, Ub: integer);
+  procedure FastDraw(APoints:TRealPointVector; Lb, Ub: integer);
   procedure DrawSpline(APoints:TPoints; Lb, Ub: integer);
   procedure DrawFunc(AFunc:TParamFunc; Params:Pointer; LeftX, RightX : Float); virtual;
 published                                    
@@ -1310,7 +1310,7 @@ public procedure Fillrect(P1,P2:TRealPoint); overload;}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 \begin{flushleft}
 \code{
-public procedure FastDraw(APoints:TPoints; Lb, Ub: integer);}
+public procedure FastDraw(APoints:TRealPointVector; Lb, Ub: integer);}
 \end{flushleft}
 \item[\descriptiontitle{Description}]
 Fast optimized drawing of large ({$>$}10000) arrays of \code{TRealPoint}. Only if "X" is sorted in ascending order
@@ -1508,10 +1508,28 @@ LowerLimitForFixedFormat = 1E-4;}
 \paragraph{Hierarchy}\hspace*{\fill}
 
 TFloatEdit {$>$} TEdit
+\subsubsection{Declaration}
+\begin{verbatim}
+TFloatEdit = class(TEdit)
+protected
+  procedure TextChanged; override;
+  procedure SetDecimals(ADecimals: Integer); virtual;
+  procedure SetValue(const AValue: Float); virtual;
+  procedure SetValueEmpty(const AValue: Boolean); virtual;
+  procedure KeyPress(var Key: char); override;
+public
+  constructor Create(TheOwner: TComponent); override;
+  procedure PasteFromClipboard; override;
+  function ValueToStr(const AValue: Float): String; virtual;
+published
+  property DecimalPlaces: Integer read FDecimals write SetDecimals default 2;
+  property Value: Float read FValue write SetValue;
+  property ValueEmpty: Boolean read FValueEmpty write SetValueEmpty default False;
+end;
+\end{verbatim}
 \paragraph{Description}\hspace*{\fill}
 
-TCustomFloatEdit\paragraph{Properties}\hspace*{\fill}
-
+TFloatEdit\paragraph{Properties}\hspace*{\fill} class defines an Edit component for float numbers. Usage: Drop the component on a form; set and read \code{Value} property. 
 \begin{itemize}\label{lmnumericedits.TFloatEdit-DecimalPlaces}
 \index{DecimalPlaces}
 \item[\declarationitem{DecimalPlaces}\hfill]
