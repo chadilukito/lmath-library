@@ -8,7 +8,7 @@ unit ugauss;
 interface
 
 uses
-  Classes, SysUtils, utypes, uMath, uNormal, unlFit, uSigmaTable;
+  Classes, SysUtils, utypes, uMath, uNormal, uMeanSD, uVecUtils, unlFit, uSigmaTable;
 
 type
   ENoSigma = class(Exception)
@@ -49,7 +49,7 @@ X is independent variable; Params - vector of parameters:
   Params[1] - sigma0, Params[2] - sigma,
   Params[3]..Params[NumberOfGaussians+2] are ScF (scaling factors)
   Params[NumberOfGaussians+3]..[2*NumberOfGaussians+2] are mu }
-function SumGaussiansS0(X:Float; Params:TVector):float; //
+function SumGaussiansS0(X:Float; Params:TVector):float;
 
 {Params is vector of parameters, Dervis - vector of partial derivatives in X,Y point}
 {used as DerivProc}
@@ -63,7 +63,7 @@ procedure DerivGaussiansS0(X, Y: Float; Params, Derivs:TVector);
 ANumberOfGaussians: How many gaussians form the distribution
 AUseSigma0 : if Sigma0 may be different from others
 AFitMeans: if means of every gaussian are fitted or they are fixed and only sigmas and scale factors
-(which gives probabilities for every gaussian are fitted}
+(which gives probabilities for every gaussian) are fitted}
 procedure SetGaussFit(ANumberOfGaussians:integer; AUseSigma0, AFitMeans: boolean);
 
 {Actual fit of the model.
@@ -85,23 +85,15 @@ var
   FitLevels:boolean;
   NumParams:integer;
 
-  function FindSigma(var XArray, YArray:TVector; TheLength, MuPos :integer):Float;
+function FindSigma(var XArray, YArray:TVector; TheLength, MuPos :integer):Float;
 var
   Maxi, Half, LeftMin, RightMin, Rat:Float;
   I,J,LeftMinPos, RightMinPos, Step:integer;
 begin
-  Maxi := YArray[0];
-  for I := 1 to TheLength - 1 do
-    if Maxi < YArray[I] then  //maximal value which may be not in a supposed position
-      Maxi := YArray[I];      // of mu, is found
+  Maxi := max(YArray,0,TheLength); //maximal value which may be not in a supposed position of mu
   LeftMin := Maxi;
-  LeftMinPos := 0;
-  for I := 0 to MuPos do
-  if YArray[I] < LeftMin then
-  begin
-    LeftMin := YArray[I];
-    LeftMinPos := I;
-  end;
+  LeftMinPos := MinLoc(YArray,0,MuPos);
+  LeftMin := YArray[I];
   RightMin := Maxi;
   RightMinPos := TheLength - 1;
   for I := TheLength - 1 downto MuPos do

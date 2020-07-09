@@ -14,7 +14,7 @@ var
 in absolute value of current and not density, P is m^3/s.
 z is ion charge (-1 for Cl-; 2 for Ca++ etc). It is float since for non-selective channels apparent valence of
 permeated ion may be non-integer.
-Cin is intracellular concentration of ion, Mol/m^3 or mM/ml; Cout is extracellular concentration.
+Cin is intracellular concentration of ion, Mol/m^3 or mM/l; Cout is extracellular concentration.
 Vm is transmembrane voltage, mVolts.
 TC is temperature, grad Celsii}
 function GHK(P, z, Cin, Cout, Vm, TC: float):float; // Goldman-Hodgkin-Katz equation
@@ -40,7 +40,7 @@ var
 procedure SetConstants(const TC: float);
 begin
   T := TK+TC;
-  RTF := FR/T/1000; // 1000 because mV in mV
+  RTF := FR/T/1000; // 1000 because Vm in mV
   RTF2 := F2R/T/1000;
 end;
 
@@ -194,10 +194,8 @@ begin
     NLFit(@fPC_GHK, @GoldmanDerivProc_PC, Voltages, Currents, Lb, Ub, 400, MyTol, ExpParams, 1, 2, HESS);
     Cin := ExpParams[2];
   end else
-    NLFit(@fP_GHK,@GoldmanDerivProc_P, Voltages, Currents, Lb, Ub, 400, MyTol, ExpParams, 1, 1, HESS);
+    NLFit(@fP_GHK, @GoldmanDerivProc_P, Voltages, Currents, Lb, Ub, 400, MyTol, ExpParams, 1, 1, HESS);
   P := ExpParams[1];
-  Finalize(ExpParams);
-  Finalize(Hess);
 end;
 
 end.
