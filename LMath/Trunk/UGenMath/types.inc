@@ -109,7 +109,17 @@ const
 
 {  Vectors and matrices. }
 const                    { Max. array size }
+
+  {$IFDef CPU32}
   MaxSize = 2147483647;  {< 2^31 - 1 }
+  {$ELSE IF CPU64}
+  MaxSize = 9223372036854775807;
+  {$ENDIF}
+  MaxVecLength  = MaxSize div SizeOf(Float);
+  MaxIntLength  = MaxSize div SizeOf(Integer);
+  MaxCompLength = MaxSize div SizeOf(Complex);
+  MaxBoolLength = MaxSize div SizeOf(Boolean);
+
 
 type
   TVector     = array of Float;

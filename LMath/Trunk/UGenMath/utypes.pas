@@ -163,7 +163,7 @@ end;
 procedure DimVector(var V : TVector; Ub : Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxVecLength) then
   begin
     V := nil;
     Exit;
@@ -175,12 +175,11 @@ end;
 procedure DimVector(var V : TIntVector; Ub : Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxIntLength) then
     begin
       V := nil;
       Exit;
     end;
-
   { Allocate vector }
   SetLength(V, Ub + 1);
 end;
@@ -188,12 +187,11 @@ end;
 procedure DimVector(var V : TCompVector; Ub : Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxCompLength) then
     begin
       V := nil;
       Exit;
     end;
-
   { Allocate vector }
   SetLength(V, Ub + 1);
 end;
@@ -201,7 +199,7 @@ end;
 procedure DimVector(var V: TRealPointVector; Ub: Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxCompLength) then
   begin
     V := nil;
     Exit;
@@ -212,7 +210,7 @@ end;
 procedure DimVector(var V : TBoolVector; Ub : Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxBoolLength) then
     begin
       V := nil;
       Exit;
@@ -223,7 +221,7 @@ end;
 procedure DimVector(var V : TStrVector; Ub : Integer);
 begin
   { Check bounds }
-  if (Ub < 0) or (Ub > MaxSize) then
+  if (Ub < 0) or (Ub > MaxIntLength) then  //because element of string array is essentially pointer
     begin
       V := nil;
       Exit;
@@ -233,7 +231,7 @@ end;
 
 procedure DimMatrix(var A : TMatrix; Ub1, Ub2 : Integer);
 begin
-  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
+  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxVecLength) or (Ub2 > MaxVecLength) then
     begin
       A := nil;
       Exit;
@@ -244,7 +242,7 @@ end;
 procedure DimMatrix(var A : TIntMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
-  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
+  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxIntLength) or (Ub2 > MaxIntLength) then
   begin
     A := nil;
     Exit;
@@ -256,7 +254,7 @@ end;
 procedure DimMatrix(var A : TCompMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
-  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
+  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxCompLength) or (Ub2 > MaxCompLength) then
      begin
        A := nil;
        Exit;
@@ -268,7 +266,7 @@ end;
 procedure DimMatrix(var A : TBoolMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
-  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
+  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxBoolLength) or (Ub2 > MaxBoolLength) then
     begin
       A := nil;
       Exit;
@@ -280,7 +278,7 @@ end;
 procedure DimMatrix(var A : TStrMatrix; Ub1, Ub2 : Integer);
 begin
   { Check bounds }
-  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxSize) or (Ub2 > MaxSize) then
+  if (Ub1 < 0) or (Ub2 < 0) or (Ub1 > MaxIntLength) or (Ub2 > MaxIntLength) then
     begin
       A := nil;
       Exit;
