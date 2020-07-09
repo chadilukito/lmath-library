@@ -84,6 +84,7 @@ function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref:Integer;
 function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer;
          Test:TIntTestFunc):TIntVector; overload;
 
+//extracts from Vector elements whose indices are listed in Mask.
 function ExtractElements(Vector:TVector; Mask:TIntVector; Lb:integer):TVector;
 
 implementation
