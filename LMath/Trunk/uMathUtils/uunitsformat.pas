@@ -19,28 +19,31 @@ const
   //Formats a value Val and SI units name UnitStr with SI decimal prefix such that
   // numeric value in the output string is in [-999..999] range and corresponding prefix is used.
   //E.g.: FormatUnits(12000, "Hz") returns "1.2 kHz"
-  function FormatUnits(Val:float; UnitsStr:string):string;
+  function FormatUnits(Val:float; UnitsStr:string; long:boolean=false):string;
 
-  function FindPrefixForExponent(E:integer):string;
+  function FindPrefixForExponent(E:integer; long:boolean=false):string;
 
 implementation
 const
   FmtStr = '%.5G %s%s';
 
-function FindPrefixForExponent(E:integer):string;
+function FindPrefixForExponent(E:integer; long:boolean=false):string;
   var
     I:integer;
   begin
     for I := 0 to High(UnitExponents) do
       if UnitExponents[I] = E then
       begin
-        Result := UnitPrefix[I];
+        if long then
+          Result := UnitPrefixLong[I]
+        else
+          Result := UnitPrefix[I];
         Exit;
       end;
     Result := 'Too high or low value';
   end;
 
-function FormatUnits(Val:float; UnitsStr:string):string;
+function FormatUnits(Val:float; UnitsStr:string; long:boolean=false):string;
 var
   Mant:Extended;
   Expo, ED:integer;
@@ -96,7 +99,7 @@ begin
       end;
     end;
   end;
-  Prefix := FindPrefixForExponent(Expo);
+  Prefix := FindPrefixForExponent(Expo,long);
   Result := Format(FmtStr,[Mant,Prefix,UnitsStr]);
 end;
 
