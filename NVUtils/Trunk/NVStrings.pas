@@ -10,7 +10,9 @@ uses SysUtils, Classes, Strings;
 
 function FileMatchesMask(FileName, Mask: string):boolean;
 function StringMatchesMask(Source, Mask: string):boolean;
-function LastPos(Ch:Char; const Source: string):integer;
+function LastPos(Ch:Char; const Source: string):integer; //< last entrance of Ch in Source
+
+// line in TStrings from Pos in TStrings as text
 function FindLineByPos(Strings:TStrings;Pos:integer):integer;
 
 function StrChangeFileExt(Source, NewExt:PChar; out Dest:PChar):PChar;
