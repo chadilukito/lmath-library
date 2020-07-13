@@ -133,8 +133,8 @@ begin
   if Ub > Count - 1 then
     Ub := Count - 1;
   L := Ub - Lb;
-  if High(AXVector) < L-1 then
-    SetLength(AXVector, L+1);
+  if High(AXVector) < L then
+    DimVector(AXVector, L);
   for I := Lb to Ub do
     AXVector[I-Lb] := Points[I].X;
 end;
@@ -148,8 +148,8 @@ begin
   if Ub > Count - 1 then
     Ub := Count - 1;
   L := Ub - Lb;
-  if High(AYVector) < L-1 then
-    SetLength(AYVector, L+1);
+  if High(AYVector) < L then
+    DimVector(AYVector, L);
   for I := Lb to Ub do
     AYVector[I-Lb] := Points[I].Y;
 end;
@@ -301,8 +301,8 @@ constructor TPoints.Combine(XVector, YVector: TVector; Lb, Ub: integer);
 var
   I:Integer;
 begin
-  TObject.Create;
-  Capacity := Ub - Lb;
+  inherited Create;
+  Capacity := Ub - Lb + 1;
   setLength(Points,Capacity);
   Count := Capacity;
   for I := 0 to Count - 1 do
