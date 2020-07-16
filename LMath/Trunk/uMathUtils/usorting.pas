@@ -261,7 +261,7 @@ begin
            (not desc and (Points[J+Corr].X < Points[J+Corr+1].X)) then
           J := J+1;
       if (desc and (Buf.X > Points[J+Corr].X)) or
-         (not Desc and (Buf.X < Points.[J+Corr].X)) then
+         (not Desc and (Buf.X < Points[J+Corr].X)) then
       begin
         Points[I+Corr] := Points[J+Corr];
         I := J;
@@ -308,7 +308,7 @@ begin
            (not desc and (Points[J+Corr].Y < Points[J+Corr+1].Y)) then
           J := J+1;
       if (desc and (Buf.Y > Points[J+Corr].Y)) or
-         (not Desc and (Buf.Y < Points.[J+Corr].Y)) then
+         (not Desc and (Buf.Y < Points[J+Corr].Y)) then
       begin
         Points[I+Corr] := Points[J+Corr];
         I := J;

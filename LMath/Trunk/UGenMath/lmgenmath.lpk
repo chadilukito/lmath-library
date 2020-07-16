@@ -68,7 +68,6 @@
       </Item10>
       <Item11>
         <Filename Value="uscaling.pas"/>
-        <AddToUsesPkgSection Value="False"/>
         <UnitName Value="uScaling"/>
       </Item11>
       <Item12>

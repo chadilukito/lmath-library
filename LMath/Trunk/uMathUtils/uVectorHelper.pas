@@ -14,8 +14,8 @@ TVectorHelper = type helper for TVector
   procedure Insert(value:Float; index:integer);
   procedure Remove(index:integer);
   procedure Swap(ind1,ind2:integer);
-  procedure Fill(St, En : integer; Val:Float);
-  procedure FillWithArr(St : integer; Vals:array of Float);
+  procedure Fill(Lb, Ub : integer; Val:Float);
+  procedure FillWithArr(Lb : integer; Vals:array of Float);
   procedure Sort(Descending:boolean);
   //inserts Source[Lb,Ub] into self beginning from Ind position.
   procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
@@ -32,8 +32,8 @@ TIntVectorHelper = type helper for TIntVector
   procedure Insert(value:Integer; index:integer);
   procedure Remove(index:integer);
   procedure Swap(ind1,ind2:integer);
-  procedure Fill(St, En : integer; Val:Integer);
-  procedure FillWithArr(St : integer; Vals:array of Integer);
+  procedure Fill(Lb, Ub : integer; Val:Integer);
+  procedure FillWithArr(Lb : integer; Vals:array of Integer);
   procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
@@ -89,24 +89,24 @@ begin
   self[ind2] := F;
 end;
 
-procedure TIntVectorHelper.Fill(St, En: integer; Val: Integer);
+procedure TIntVectorHelper.Fill(Lb, Ub: integer; Val: Integer);
 var
   I: Integer;
 begin
   if Self = nil then
-    DimVector(Self,En);
-  for I := St to min(En, high(self)) do
+    DimVector(Self,Ub);
+  for I := Lb to min(Ub, high(self)) do
     self[I] := Val;
 end;
 
-procedure TIntVectorHelper.FillWithArr(St: integer; Vals: array of Integer);
+procedure TIntVectorHelper.FillWithArr(Lb: integer; Vals: array of Integer);
 var
   I:integer;
 begin
   if Self = nil then
-    SetLength(Self,St + length(Vals));
-  for I := St to min(St + High(Vals), High(Self)) do
-    Self[I] := Vals[I-St];
+    SetLength(Self,Lb + length(Vals));
+  for I := Lb to min(Lb + High(Vals), High(Self)) do
+    Self[I] := Vals[I-Lb];
 end;
 
 procedure TIntVectorHelper.InsertFrom(Source: TIntVector; Lb, Ub: integer;
@@ -200,24 +200,24 @@ begin
   self[ind2] := F;
 end;
 
-procedure TVectorHelper.Fill(St, En: integer; Val: Float);
+procedure TVectorHelper.Fill(Lb, Ub: integer; Val: Float);
 var
   I: Integer;
 begin
   if Self = nil then
-    DimVector(Self,En);
-  for I := St to min(En, high(Self)) do
+    DimVector(Self,Ub);
+  for I := Lb to min(Ub, high(Self)) do
     self[I] := Val;
 end;
 
-procedure TVectorHelper.FillWithArr(St : integer; Vals: array of Float);
+procedure TVectorHelper.FillWithArr(Lb : integer; Vals: array of Float);
 var
   I:integer;
 begin
-//  if not Assigned(Self) then
-    SetLength(Self,St + length(Vals));
-  for I := St to min(St + High(Vals), High(Self)) do
-    Self[I] := Vals[I-St];
+  if not Assigned(Self) then
+    SetLength(Self,Lb + length(Vals));
+  for I := Lb to min(Lb + High(Vals), High(Self)) do
+    Self[I] := Vals[I-Lb];
 end;
 
 procedure TVectorHelper.Sort(Descending: boolean);
