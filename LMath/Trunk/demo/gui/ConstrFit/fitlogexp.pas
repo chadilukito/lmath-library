@@ -11,8 +11,7 @@ function logPdf(S,B,X:float):float;
 function logPDFTriple(s,p,q,b1,b2,b3,x:float):float;
 function RFunc(X:float; B:TVector):float;
 procedure Constr(MaxCon: integer; B, Con : TVector);
-procedure InitFit(out Variables:TVector);
-procedure ReadDataPoints(var DataPoints:TPoints; Source:TStrings);
+procedure ReadDataPoints(out DataPoints:TPoints; Source:TStrings);
 const
   VarNum = 6;
   ConstrNum = 3;
@@ -44,14 +43,7 @@ begin
   Con[3] := 1 - B[2] - B[3];
 end;
 
-procedure InitFit(out Variables:TVector);
-begin
-  DimVector(Variables,VarNum);
-  Variables[1] := 1.0; Variables[2] := 0.6; Variables[3] := 0.3;
-  Variables[4] := 0.003; Variables[5] := 0.02; Variables[6] := 0.1;
-end;
-
-procedure ReadDataPoints(var DataPoints:TPoints; Source:TStrings);
+procedure ReadDataPoints(out DataPoints:TPoints; Source:TStrings);
 var
   S:string;
   SV:TStrVector;

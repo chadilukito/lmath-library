@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, StrHolder,
-  uTypes, uConstrNLFit, lmcoordsys, lmPointsVec, globals, ModelForms;
+  uTypes, uVectorHelper, uConstrNLFit, lmcoordsys, lmPointsVec, globals, ModelForms;
 
 type
 
@@ -21,6 +21,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure CoordSysDrawData(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure ShowParamsButtonClick(Sender: TObject);
   public
     DataColor, FittedColor : TColor;
@@ -43,8 +44,6 @@ procedure TMainForm.CalculateFit;
 var
   YC: TVector;
 begin
-  DimVector(X,DataPoints.Count);
-  DimVector(Y,DataPoints.Count);
   DataPoints.ExtractX(X,0,DataPoints.Count-1);
   DataPoints.ExtractY(Y,0,DataPoints.Count-1);
   ConstrNLFit(@RFunc,@Constr,X,Y,0,DataPoints.Count-1,OFCalls,Rho,Variables,VarNum,ConstrNum,MaxCV);
@@ -73,10 +72,16 @@ begin
   CoordSys.NewLimits(DataPoints[0].X-0.2,DataPoints.MinY-0.2,DataPoints[DataPoints.Count-1].X+0.2,
                      DataPoints.MaxY + 0.2);
   CoordSys.YGridDist := (CoordSys.MaxY - CoordSys.MinY)/6;
-  InitFit(Variables);
-  RhoBeg := 0.5;
-  Rho := 0.000001;
-  OFCalls := 150000;
+  Variables.FillWithArr(1,[1.0,0.6,0.3,0.003,0.02,0.1]); //< fill with guess values
+  RhoBeg := 0.5;       //< initial step of variable values
+  Rho := 0.000001;     //< end step of variable vaules, defines accuracy of fit
+  OFCalls := 150000;   //< maximal number of calls to objective function
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(DataPoints);
+  FreeAndNil(FittedPoints);
 end;
 
 procedure TMainForm.ShowParamsButtonClick(Sender: TObject);

@@ -112,15 +112,18 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="..\dialogs"/>
+      <IncludeFiles Value="..\dialogs;$(ProjOutDir)"/>
       <OtherUnitFiles Value="..\dialogs"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="delphi"/>
+        <SyntaxMode Value="Delphi"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <TargetOS Value="win32"/>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>

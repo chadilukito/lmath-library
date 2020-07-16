@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 251
+  Left = 278
   Height = 735
-  Top = 78
+  Top = 77
   Width = 564
   Caption = 'Linear System Solver'
   ClientHeight = 735
@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnActivate = FormActivate
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '2.0.2.0'
   object Label1: TLabel
     Left = 8
     Height = 20
@@ -300,19 +300,19 @@ object Form1: TForm1
     DefaultExt = '.dat'
     Filter = 'Data files|*.dat|All files|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    left = 296
-    top = 8
+    Left = 296
+    Top = 8
   end
   object SaveDialog1: TSaveDialog
     Filter = 'Data files|*.dat|All files|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    left = 336
-    top = 8
+    Left = 336
+    Top = 8
   end
   object SaveDialog2: TSaveDialog
     Filter = 'Data files|*.dat|All files|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    left = 376
-    top = 8
+    Left = 376
+    Top = 8
   end
 end

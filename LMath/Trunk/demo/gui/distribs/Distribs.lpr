@@ -1,4 +1,4 @@
-program DrawCurve;
+program Distribs;
 
 {$mode objfpc}{$H+}
 
