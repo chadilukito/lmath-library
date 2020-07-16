@@ -1,4 +1,5 @@
 \documentclass[12pt,a4paper,oneside]{report}
+\usepackage[top=1in, bottom=1in, left=1.5in, right=1.0in]{geometry}
 \usepackage{imakeidx}
 \usepackage{fancyhdr}
 \pagestyle{empty}
@@ -7,10 +8,8 @@
 \makeindex[name=types, title = Types]
 \makeindex
 \usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash]{caption} % figures and tables caption options
-\usepackage[top=1in, bottom=1in, left=1.5in, right=1.0in]{geometry}
 \usepackage[compact]{titlesec}
 \usepackage{gensymb} % provides Celsius, micro and degree commands
-
 \titlespacing*{\chapter}{0pt}{-60pt}{10pt}
 \titleformat{\chapter}[display]{\normalfont\LARGE\bfseries}{\chaptertitlename\ \thechapter}{10pt}{}
 \titleformat{\section}[hang]{\normalfont\Large\bfseries}{\thesection\ }{0pt}{}
@@ -93,21 +92,26 @@ But in general, I did not modify existing algorithms, since Jean Debord did real
 \item In \code{uMath}, operator \code{**} was defined.
 \item In \code{uCompex} unit, opreators over complex numbers defined (inspired by \\ \code{uComplex} unit from Free Pascal RTL).
 \item uIntervals unit was written where TInterval type is defined which represents an interval between two real numbers, several procedures with it are defined. See \ref{uIntervals} for details.
+\item Unit uMatrix (\ref{sec:unit-umatrix}) was written which defines some basic operation of linear algebra.
 \item uCrtPtPol unit written, with the procedures to find critical points of a polynomial, see \ref{unit-ucrtptpol}.
 \item Unit uMeanSD{\_}MD written which defines functions of descriptive statistics over array containing missed values. By default, missed value is represented as NAN, but any code can be defined.
 \item In the unit uNormal, function DGaussian added to evaluate a normal distribution with arbitrary $\mu$ and $\sigma$.
 \item Unit uSpline written, for cubic spline interpolation of a set of points and to investigate the resulting spline function, finding roots and extremums.
 \item Goldman-Hodgkin-Katz equation for current and Sum of Gaussians distribution were added to the library of fitting models (see \ref{ugauss}, \ref{ugaussf} and \ref{ugoldman}).
 \item Estimates and models of exponential, hyperexponential and hypoexponential distributions added (see \ref{udistribs}).
+\item Optimization algorithm innitially written by COBYLA by Michael J. D. Powell was implemented and used for constrained non-linear regression (see \ref{sec:unit-ucobyla} and \ref{sec:unit-uconstrnlfit}).
+\item Unit uLinSimplex which solves linear programming problems with simplex method was written \ref{sec:unit-ulinsimplex}.
 \item Unit lmSorting written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
 \item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
+\item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
+  
 \end{enumerate}
 \section*{About the documentation} 
 DMath comes with very nice \href{DMath.pdf}{manual} which describes not only the library itself, but a lot of underlying theory. This document, written by Jean Debord, is included with LMath library. Practically everything what you find in this manual remains true for LMath as well. However, new code is, of course, not covered by DMath manual. 
 
 Therefore, I created the document which you are reading now. It was generated using \href{https://sourceforge.net/projects/pasdoc/}{PasDoc} program from the comments contained in the source files and later manually edited and extended. It contains rather formal and terse description of every routine, variable or constant found in the library and may serve as a brief reference. It covers both old and new procedures. Each chapter describes one package so you can easily find where needed function is located. I suggest that DMath.pdf is used to study the most of the library, and this document for the aquaintance with new possibilities and for quick reference.
 
-All elements added or modified in LMath library are labeled in the margins, as shown here. If this symbol is related to a unit identifier, it means that the entire unit is new. \lmath{-28pt} 
+All elements added or modified in LMath library are labeled in the margins, as shown here.\lmath{-28pt} If this symbol is related to a unit identifier, it means that the entire unit is new. Accompanying \href{LMath_NewFunc_guide}{Guide to New Functions in LMath} provides more detailed introduction to new functions written for LMath. 
 \chapter{Structure of the Library}
 I find that huge packages with hundreds of units are inconvenient, therefore I organized the library into 12 relatively small packages:
 \begin{enumerate}
@@ -268,7 +272,9 @@ StatClass = record  { Statistical class }
 end;
 	\end{verbatim}
 	\item[\descriptiontitle{Description}]
-This type represents a class (bin) in a statistical distribution and is used by function \hyperref[udistrib]{distrib} and several other functions from \code{lmMathStat} package. See file \href{DMath.pdf}{DMath.pdf}, Section~16.5 and 16.6 and chapter \ref{package-lmMathStat} for details. 
+This type represents a class (bin) in a statistical distribution and is used by function \hyperref[udistrib]{distrib} and several other functions from \code{lmMathStat} package. 
+\code{Inf} is a lower bound of a bin, \code{Sup} is its upper bound; \code{N} is a count of values which fell into this bin ($n_i$); \code{F} is a frequency of the bin ($F=n_i/N$), where $N$ is a number of values in the whole distributed population and \code{D} is probability density ($F/(Sup-Inf)$).
+See file \href{DMath.pdf}{DMath.pdf}, Section~16.5 and 16.6 and chapter \ref{package-lmMathStat} for details. 
 \end{itemize}
 
 \subsubsection{TRegTest}\label{sec:tregtest}\index[types]{TRegTest}
@@ -532,21 +538,21 @@ This type is used by \code{RegTest} and \code{WRegTest} functions from \code{lmM
 \lmatha{-24pt}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
-	\code{TComparator = function(V1, V2 : float) : boolean;}
+	\code{TComparator = function(Val, Ref : float) : boolean;}
 	\item[\descriptiontitle{Description}]Function for general comparisons of \code{Float}. Used for example in the element-wise procedures and functions over \code{TVector} and \code{TMatrix}. See \ref{sec:unit-uvecutils}.
 \end{itemize}
 \subsubsection{TStatClassVector}
 \label{utypes-TStatClassVector}
 \index[types]{TStatClassVector}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
 			TStatClassVector = array of StatClass;}
-		
 	\end{flushleft}
-	
+	\item[\descriptiontitle{Description}]
+Vector of \hyperref[sec:statclass]{''StatClass''}. Used in \hyperref[udistrib]{''uDistrib''} unit for generation of a frequency and density table of a randomly distributed variable.
 \end{itemize}
-
 
 \subsubsection{TRegFunc}
 \label{utypes-TRegFunc}
@@ -557,7 +563,7 @@ This type is used by \code{RegTest} and \code{WRegTest} functions from \code{lmM
 			TRegFunc = function(X : Float; B : TVector) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Regression function
+	Regression function which is used by \hyperref[unlfit-NLFit]{NLFit} and other procedures of non-linear fitting.
 \end{itemize}
 \subsubsection{TDerivProc}
 \label{utypes-TDerivProc}
@@ -2987,7 +2993,7 @@ Unit \code{uIntPoints} introduces operations over \code{TIntegerPoint}
 	\item[\declarationitem{Declaration}\hfill]
 	\code{function ipSum(P1,P2:TIntegerPoint):TIntegerPoint;\\
 		function ipSubtr(P1, P2:TIntegerPoint):TIntegerPoint;}
-	\item[\descriptiontitle{Description}]Element-wise substraction and summation of \code{TIntegerPoint}.
+	\item[\descriptiontitle{Description}]Element-wise subtraction and summation of \code{TIntegerPoint}.
 \end{itemize}
 \subsubsection{ipMul}
 \label{ipMul}\index[proc]{ipMul}
@@ -3038,48 +3044,53 @@ Finds an appropriate scale for plotting the data in X[Lb..Ub]
 \chapter[Package lmLineAlgebra]{Package lmLineAlgebra: Operations with Vectors and Matrices}\label{package-lmLineAlgebra}
 \section{Description}
 This package includes procedures for linear algebra: operations with vectors, matrices, systems of linear equations.
-\section{Unit uMatrix}
-\lmath{-28pt}
+\section{Unit uMatrix}\label{sec:unit-umatrix}
+\lmatha{-28pt}
 \label{umatrix}\index[unit]{umatrix} 
 \subsection{Description}
-This unit introduces several basic functions  and defines several operators over vectors and matrices.  Functions which have \code{Ziel = nil} default parameter, place result in \code{Ziel} and return it as a result. If \code{Ziel} is nil, it is allocated, otherwise it must have a size sufficient to accomodate the result. For vectors, length of \code{Ziel} must be at least \code{Ub+1}, for matrices it must be at least \code{[Lb..Ub1,Lb..Ub2]}.
+This unit introduces several basic functions  and defines several operators over vectors and matrices.  Functions which have \code{Ziel = nil} default parameter, place result in \code{Ziel} beginning from \code{Ziel[ResLb]} and return it as a result. If \code{Ziel} is nil, it is allocated, otherwise it must have a size sufficient to accomodate the result. For vectors, length of \code{Ziel} must be at least \code{Ub - Lb + ResLb}, for matrices it must be at least \code{[Lb..Ub1,Lb..Ub2]}. Note that \code{ResLb} default value is 1. Reason is that many routines in DMath and LMath were written originally in Fortran, and its inheritance makes us to use arrays beginning from index 1. 
 \subsection{Functions and Procedures}
-\subsubsection{VecFloatAdd,VecFloatSubstr,VecFloatMul,VecFloatDiv}
-\label{VecFloatAdd}\index[proc]{VecFloatAdd}\index[proc]{VecFloatSubstr}\index[proc]{VecFloatMul}\index[proc]{VecFloatDiv}
+\subsubsection{VecFloatAdd,VecFloatSubtr,VecFloatMul,VecFloatDiv}
+\label{VecFloatAdd}\index[proc]{VecFloatAdd}\index[proc]{VecFloatSubtr}\index[proc]{VecFloatMul}\index[proc]{VecFloatDiv}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-	\code{function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;\\
-	function VecFloatSubstr(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;\\
-	function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; Ziel : TVector = nil): TVector;\\
-	function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  Ziel : TVector = nil): TVector;}
+	\code{function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; 
+		Ziel : TVector = nil; ResLb : integer = 1): TVector;\\
+	function VecFloatSubtr(V:TVector; R:Float; Lb, Ub : integer; 
+	Ziel : TVector = nil; ResLb : integer = 1): TVector;\\
+	function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; 
+	Ziel : TVector = nil; ResLb : integer = 1): TVector;\\
+	function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  
+	Ziel : TVector = nil; ResLb : integer = 1): TVector;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Every of these functions adds, substracts, multiplies or divides every element of the vector \code{V} with float \code{R}, beginning from element \code{Lb} and to element \code{Ub}. To modify original \code{V}, make \code{Ziel = V}. 
+	Every of these functions adds, subtracts, multiplies or divides every element of the vector \code{V} with float \code{R}, beginning from element \code{Lb} and to element \code{Ub}. To modify original \code{V}, make \code{Ziel = V}. 
 \end{itemize} 
-\subsubsection{MatFloatAdd,MatFloatSubstr,MatFloatMul,MatFloatDiv}
-\index[proc]{MatFloatAdd}\index[proc]{MatFloatSubstr}\index[proc]{MatFloatMul}\index[proc]{MatFloatDiv}\label{MatFloatDiv}
+\subsubsection{MatFloatAdd,MatFloatSubtr,MatFloatMul,MatFloatDiv}
+\index[proc]{MatFloatAdd}\index[proc]{MatFloatSubtr}\index[proc]{MatFloatMul}\index[proc]{MatFloatDiv}\label{MatFloatDiv}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]\begin{flushleft}
 \code{	function MatFloatAdd(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;}\\
-	\code{function MatFloatSubstr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;}\\
+	\code{function MatFloatSubtr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;}\\
 	\code{function MatFloatDiv(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;}\\
 	\code{function MatFloatMul(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]These functions are similar to \code{VecFloat*}, but are defined for matrix. Operation is done element-wize for submatrix \code{M[Lb..Ub1,Lb..Ub2]}.
 \end{itemize}
-\subsubsection{VecAdd,VecSubstr,VecElemMul,VecDiv}
-\label{VecAdd}\index[proc]{VecAdd}\index[proc]{VecSubstr}\index[proc]{VecElemMul}\index[proc]{VecDiv}
+\subsubsection{VecAdd,VecSubtr,VecElemMul,VecDiv}
+\label{VecAdd}\index[proc]{VecAdd}\index[proc]{VecSubtr}\index[proc]{VecElemMul}\index[proc]{VecDiv}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 	\code{function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
-	\code{function VecSubstr(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
+	\code{function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
 	\code{function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
 	\code{function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Another set of element-wise functions. This time, element of second vector is added to, substracted from, multiplied with or is a divider of each element of a first vector, beginning from 0 to High(V1). VecDiv checks if V2[0] = 0. If yes, operation is fulfilled from 1 to High(V1). 
+	Another set of element-wise functions. This time, element of second vector is added to, substracted from, multiplied with or is a divider of each element of a first vector, beginning from 0 to High(V1). VecDiv checks if V2[0] = 0. If yes, operation is fulfilled from 1 to High(V1).
+	\code{V1} and \code{V2} must have equal dimentions, otherwise error \code{MatErrDim} is set.
 \end{itemize} 
 \subsubsection{VecDotProd}
 \index[proc]{VecDotProd}\label{VecDotProd}
@@ -3123,13 +3134,13 @@ This unit introduces several basic functions  and defines several operators over
 \label{MatMul}\index[proc]{MatMul}
 \begin{itemize}
 \item[\declarationitem{Declaration}\hfill]
-\code{function MatMul(A, B, Ziel: TMatrix; LB : integer) : TMatrix;}
+\code{MatMul(A, B : TMatrix; LB : integer; Ziel : TMatrix = nil) : TMatrix;}
 \item[\descriptiontitle{Description}] Product of matrix \code{A} with matrix \code{B}. Length of row in B must be equal to length of column in \code{A}.
 \end{itemize}
 \subsubsection{MatTranspose}
 \index[proc]{MatTranspose}\label{MatTranspose}
 \begin{itemize}
-\item[\declarationitem{Declaration}\hfill]\code{function MatTranspose(M, Ziel:TMatrix; LB: integer) : TMatrix;}
+\item[\declarationitem{Declaration}\hfill]\code{function MatTranspose(M:TMatrix; LB: integer; Ziel: TMatrix = nil): TMatrix;) : TMatrix;}
 \item[\descriptiontitle{Description}] Transposes a matrix \code{M}. If \code{Ziel} is not \code{nil}, length of its columns must be equal to length of rows in \code{M} and vice versa.
 \end{itemize}
 \subsubsection{MatTransposeInPlace}
@@ -3843,14 +3854,10 @@ This unit defines routines to find a derivative of a polynomial and its critical
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			function CriticalPoints(Coef:TVector; Deg:integer; CtrPoints: TRealPointVector; PointTypes: TIntVector):integer;}
-		
+			function CriticalPoints(Coef:TVector; Deg:integer; var CrtPoints: TRealPointVector; var PointTypes: TIntVector; ResLb : integer = 1):integer;}
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
-	Finds extrema of polynomial.  Input: Coef: coefficients of polynomial; Deg: degree of polynomial. Output: CRTPoints: Critical points; $CRTPoints_i.X$ is abscissa, $CRTPoints_i.Y$ is function value at each of $CrtPoints_i$; Types: type of critical points: -1: it is minimum, 0: no extremum; +1: maximum. Returns number of critical points.
-	
+	Finds extrema of polynomial.  Input: Coef: coefficients of polynomial; Deg: degree of polynomial. Output: CRTPoints: Critical points; $CRTPoints_i.X$ is abscissa, $CRTPoints_i.Y$ is function value at each of $CrtPoints_i$; Types: type of critical points: -1: it is minimum, 0: no extremum; +1: maximum. Indexing begins from \code{ResLb}, default value is 1. Returns number of critical points. If CrtPoints and PointTypes are too short, their length is adjusted by the function. 
 \end{itemize}
 \section{Unit upolutil}
 \label{upolutil}
@@ -4673,6 +4680,7 @@ Median
 \label{udistrib}
 \index[unit]{udistrib}
 \subsection{Description}
+\hyperdef{lmMathStat}{uDistrib}
 Statistical distribution 
 \subsection{Functions and Procedures}
 \subsubsection{DimStatClassVector}
@@ -4684,7 +4692,7 @@ Statistical distribution
 			function DimStatClassVector(out C : TStatClassVector; A, B, H : float):integer;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Allocates an array of statistical classes (histogram bins).
+	Allocates an array of statistical classes (histogram bins, see \ref{sec:statclass}) for description of \code{StatClass}.
 	\code{A} is lower border of histogram; \code{B} is upper border; \code{H} is bin width.
 	Function calculates number of bins and allocates them. Number of bins is returned. If allocation is impossible, nil is returned.
 \end{itemize}
@@ -4704,8 +4712,22 @@ Statistical distribution
 	A      A+H     A+2H                     B
 	\end{verbatim}	
 	such that $ B = A + M H$
-	
 \end{itemize}
+\subsubsection{distExtract*}\lmatha{-24pt}
+\label{udistrib-distExtract}
+\index[proc]{distExtractX}\index[proc]{distExtractN}\index[proc]{distExtractD}\index[proc]{distExtractF}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+procedure distExtractX(C : TStatClassVector; out Xv : TVector);\\
+procedure distExtractN(C : TStatClassVector; out Nv : TIntVector);\\
+procedure distExtractFreq(C : TStatClassVector; out Fv : TVector);\\
+procedure distExtractDensity(C : TStatClassVector; out Dv : TVector);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	\hyperref[utypes-TStatClassVector]{\code{TStatClassVector}} is a vector of \hyperref[sec:statclass]{\code{StatClass}} records, which contain various information about a bin of statistical distribution.
+	\code{DistExtract*} family procedures extract particular information from these records and place it into \code{TVector} or \code{TIntVector}. \code{distExtractX} returns middle of each bin in the distribution; \code{distExtractN}: count of values falling into the bin; \code{distExtractFreq}: frequency value for this bin; \code{distExtractDensity}: a probability density value.
+\end{itemize}	
 \section{Unit uskew}
 \label{uskew}
 \index[unit]{uskew}
@@ -6059,6 +6081,7 @@ Minimization of a sum of squared functions along a line (Used internally by equa
 \end{itemize}
 
 \section[unit uCobyla]{Unit uCobyla. Constrained optimization by linear approximation}\label{sec:unit-ucobyla}
+\lmatha{-48pt}
 \subsection{Description}
 This unit defines a procedure implementing the Constrained optimization by linear approximation (COBYLA) algorithm, initially developed by Michael J. D. Powell and adapted from Fortran 77 for LMath by V. Nesterov. Source code in Fortran can be found \href{http://mat.uc.pt/~zhang/software.html#cobyla}{here}.  COBYLA is an optimization method for constrained problems which does not require knowing a derivative of the objective function. The procedure minimizes an objective function F(X) subject to M inequality constraints on X, where X is a vector of variables that has N components. Constrain expressions must be nonnegative. The algorithm employs linear approximations to the objective and constraint functions, the approximations being formed by linear interpolation at N+1 points in the space of the variables.
 These interpolation points are regarded as vertices of a simplex. The parameter RHO controls the size of the simplex and it is reduced automatically from RHOBEG to RHOEND. For each RHO the procedure tries to achieve a good vector of variables for the current size, and then RHO is reduced until the value RHOEND is reached. Therefore RHOBEG and RHOEND should be set to reasonable initial values and the required accuracy in the variables respectively, but this accuracy should be viewed as a subject for experimentation because it is not guaranteed.
@@ -6087,6 +6110,7 @@ These interpolation points are regarded as vertices of a simplex. The parameter 
 \end{itemize}
 
 \section{unit uTrsTlp}\label{sec:unit-utrstlp}
+\lmatha{-24pt}
 \subsection{Description}
 Unit uTrsTlp impplements linear optimization procedure uTrsTlp initially written by Michael J. D. Powell in Fortran 77 and adapted for LMath by V. Nesterov. This procedure is used by COBYLA algorithm, implemented in uCOBYLA unit.
 
@@ -6132,7 +6156,10 @@ procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVe
 \end{itemize}
 
 \section[Unit uLinSimplex]{Unit uLinSimplex. Linear Programming}
+\label{sec:unit-ulinsimplex}
+\lmatha{-24pt}
 \subsection{Description}
+\hyperdef{lmoptimum}{ulinsimplex}
 Simplex method for linear programming.  
 Adapted from Fortran 90, \textit{Numerical Recipes.}
 Detailed description of principle and input and output parameters may be found in the 
@@ -6589,13 +6616,9 @@ Nonlinear regression. This unit defines generic procedures for non-linear regres
 	\begin{flushleft}
 		\code{
 			procedure NLFit(RegFunc : TRegFunc; DerivProc : TDerivProc; X, Y : TVector; Lb, Ub : Integer; MaxIter : Integer; Tol : Float; B : TVector; FirstPar, LastPar : Integer; V : TMatrix);}
-		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
-	Unweighted nonlinear regression. Input parameters: RegFunc:\hyperref[utypes-TRegFunc]{TRegFunc} = regression function; DerivProc = procedure to compute derivatives; X, Y = point coordinates; Lb, Ub = array bounds; MaxIter = max. number of iterations; Tol = tolerance on parameters; B = initial parameter values; FirstPar = index of first regression parameter; LastPar = index of last regression parameter; Output parameters: B = fitted regression parameters; V = inverse matrix. Its dimentions must be [Lb..Ub, Lb..Ub], or [0..Ub,0..Ub]. The matrix must be allocated, but does not require any initialization.
-	
+	Unweighted nonlinear regression. Input parameters: RegFunc:\hyperref[utypes-TRegFunc]{TRegFunc} = regression function to be modeled; DerivProc = procedure to compute derivatives; X, Y = point coordinates; Lb, Ub = array bounds; MaxIter = max. number of iterations; Tol = tolerance on parameters; B = initial parameter values; FirstPar = index of first regression parameter; LastPar = index of last regression parameter; Output parameters: B = fitted regression parameters; V = inverse matrix. Its dimentions must be [Lb..Ub, Lb..Ub], or [0..Ub,0..Ub]. The matrix must be allocated, but does not require any initialization.
 \end{itemize}
 \subsubsection{WNLFit}
 \label{unlfit-WNLFit}
@@ -6658,7 +6681,7 @@ Nonlinear regression. This unit defines generic procedures for non-linear regres
 \end{itemize}
 
 \section{Unit uConstrNLFit}\label{sec:unit-uconstrnlfit}
-\subsection{Description}
+\subsection{Description}\lmatha{-50pt}
 This unit implements fit of a data with non-linear regression models including arbitrary constrains on the model variables and their relations. Fitting procedure uses the COBYLA algorithm, implemented in the unit uCOBYLA, see \ref{sec:unit-ucobyla}. 
 \subsection{Types}
 \subsubsection{TConstrainsProc}
@@ -7354,13 +7377,13 @@ Goodness of fit tests
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			procedure InitSpline(Xv, Yv:TVector; var Yd:TVector; Lb,Ub:integer);}
+			procedure InitSpline(Xv, Yv:TVector; out Ydv:TVector; Lb,Ub:integer);}
 		
 	\end{flushleft}
 	
 	\par
 	\item[\descriptiontitle{Description}]
-	Input parameters: Xv, Yv are data points; Lb, Ub:  array bounds; Ydv: cubic spline values used in calls to \code{Splint}. This procedure must be called before actual drawing with \code{Splint} function.
+	Input parameters: \code{Xv}, \code{Yv} are data points; \code{Lb}, \code{Ub}:  array bounds; Output: \code{Ydv}: cubic spline values used in calls to \code{Splint}. Vector \code{Ydv} is allocated by \code{InitSpline} and after it has length \code{Ub - Lb + 1}.  This procedure must be called before actual drawing with \code{Splint} function or spline investigation with \code{SplDeriv} and \code{FindSplineExtremums}.
 \end{itemize}
 \subsubsection{SplInt}
 \label{uSpline-SplInt}
@@ -7372,7 +7395,7 @@ Goodness of fit tests
 	\end{flushleft}
 	\par
 	\item[\descriptiontitle{Description}]
-	After preparing drawing by InitSpline, this function returns Y value at X. Input parameters: Xv, Yv: data points, same as at a call of \code{InitSpline}; Ydv: vector of spline data as returned by \code{InitSpline}; Lb,Ub: array bounds; X: independent variable. Returns spline value at X.
+	After preparing drawing by \code{InitSpline}, this function returns \code{Y} value at \code{X}. Input parameters: \code{Xv, Yv}: data points, same as at a call of \code{InitSpline}; \code{Ydv}: vector of spline data as returned by \code{InitSpline}; \code{Lb,Ub}: array bounds; \code{X}: independent variable. Returns spline value at \code{X}.
 	
 \end{itemize}
 \subsubsection{SplDeriv}
@@ -7396,13 +7419,13 @@ Goodness of fit tests
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer; var Minima, Maxima:TRealPointVector; var NMin, NMax: integer);}
+			procedure FindSplineExtremums(Xv,Yv,Ydv:TVector; Lb,Ub:integer; out Minima, Maxima:TRealPointVector; out NMin, NMax: integer; ResLb : integer = 1);}
 		
 	\end{flushleft}
 	
 	\par
 	\item[\descriptiontitle{Description}]
-	Finds all local minima and maxima of a spline between points Lb and Ub. Input parameters are the same as for \code{Splint}, except X. Output: found maximums in Maxima; minimums are in Minima; Minima[j].X is abscissa and Minima[j].Y an ordinate of extremum. Number of found minima is returned in NMin; of maxima, in NMax.
+	Finds all local minima and maxima of a spline between points \code{Lb} and \code{Ub}. Input parameters are the same as for \code{Splint}, except \code{X}. Output: found maximums in \code{Maxima}; minimums are in \code{Minima}; \code{Minima[j].X} is abscissa and \code{Minima[j].Y} an ordinate of extremum. Numbering of output arrays begins from \code{ResLb}, default value is 1. \code{Minima} and \code{Maxima} are allocated by \code{FindSplineExtremums}. Number of found minima is returned in \code{NMin}; of maxima, in \code{NMax}.
 	
 \end{itemize}
 
@@ -7412,7 +7435,7 @@ Goodness of fit tests
 \subsection{Description}
 Fast Fourier transform 
 
-Modified from Don Cross: \href{http://groovit.disjunkt.com/analog/time-domain/fft.html}{http://groovit.disjunkt.com/analog/time-domain/fft.html}
+Modified from Don Cross:\\ \href{http://groovit.disjunkt.com/analog/time-domain/fft.html}{http://groovit.disjunkt.com/analog/time-domain/fft.html}
 
 \subsection{Functions and Procedures}
 \subsubsection{FFT}
@@ -7643,31 +7666,9 @@ ENoSigma {$>$} Exception
 	\begin{flushleft}
 		\begin{ttfamily}
 			function FindSigma(var XArray, YArray:TVector; TheLength, MuPos :integer):Float;\end{ttfamily}
-		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
 	Quick and rough estimate of sigma for normal distribution, if $\mu$ is known and upper part of the empiric probability density curve is known. uses SigmaArray. Used internally to get guess value for the fit.
-	
-\end{itemize}
-\subsubsection{expsig}
-\label{ugauss-expsig}
-\index[proc]{expsig}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function expsig(mu, sigma, X:float):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Returns
-	$$
-	\frac{1}{2\pi}\dot\euler^\frac{-(\mu - x)^2}{2\sigma^2}
-	$$
-	Is used internally by several functions in the unit.
 \end{itemize}
 \subsubsection{ScaledGaussian}
 \label{ugauss-ScaledGaussian}
@@ -7683,66 +7684,6 @@ ENoSigma {$>$} Exception
 	\item[\descriptiontitle{Description}]
 	Evaluates pdf of a gaussian distribution with mathematical expectance $\mu$ and variation $\sigma$, scaled by factor $ScF$.
 \end{itemize}
-\subsubsection{DerivGaussForX}
-\label{ugauss-DerivGaussForX}
-\index[proc]{DerivGaussForX}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForX(mu, sigma, ScF, X: float):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	derivative of scaled gaussian with respect to X
-	
-\end{itemize}
-\subsubsection{DerivGaussForSigma}
-\label{ugauss-DerivGaussForSigma}
-\index[proc]{DerivGaussForSigma}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForSigma(mu, sigma, ScF, X: float):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	derivative of scaled gaussian with respect to sigma
-	
-\end{itemize}
-\subsubsection{DerivGaussForScaler}
-\label{ugauss-DerivGaussForScaler}
-\index[proc]{DerivGaussForScaler}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForScaler(mu, sigma, X:float):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	derivative of scaled gaussian with respect to scaling factor
-	
-\end{itemize}
-\subsubsection{DerivGaussForMean}
-\label{ugauss-DerivGaussForMean}
-\index[proc]{DerivGaussForMean}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForMean(mu, sigma, ScF, X:float):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	derivative of scaled gaussian with respect to mean
-	
-\end{itemize}
 \subsubsection{SumGaussians}
 \label{ugauss-SumGaussians}
 \index[proc]{SumGaussians}
@@ -7752,13 +7693,10 @@ ENoSigma {$>$} Exception
 			function SumGaussians(X:Float; Params:TVector):float;\end{ttfamily}
 		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
-	Evaluates sum of gaussians. X is independent variable; Params is vector of parameters, such that 
+	Evaluates sum of gaussians where $\sigma$ is the same for all of them. X is independent variable; Params is vector of parameters, such that 
 	
-	Params[1] = $\sigma$, Params[2]..Params[N+1] -- scaling factors (in other words, probabilities of all gaussians); Params[N+2..2*N+2] -- $\mu_i,\ 0 \le i \le N$, where $N$ is number of gaussians. This function is used as RegFunc for fitting the sum of gaussians.
-	
+	Params[1] = $\sigma$, Params[2]..Params[N+1]: scaling factors (in other words, probabilities of all gaussians); Params[N+2..2*N+2]: $\mu_i,\ 0 \le i \le N$, where $N$ is number of gaussians. This function is used internally as \hyperref[utypes-TRegFunc]{RegFunc} for fitting the sum of gaussians, but may be used also for evaluating a ready model.
 \end{itemize}
 \subsubsection{SumGaussiansS0}
 \label{ugauss-SumGaussiansS0}
@@ -7767,45 +7705,11 @@ ENoSigma {$>$} Exception
 	\begin{flushleft}
 		\begin{ttfamily}
 			function SumGaussiansS0(X:Float; Params:TVector):float;\end{ttfamily}
-		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
-	$\sigma_0$ for gaussian defined as $g(\mu_0,\sigma_0)$ (See Equation~\ref{eq:sum_gaussians}) may be different from $\sigma$ for gaussians $[g_1..g_N]$ and is fitted separately. X is independent variable; Params is vector of parameters such that:
+	Evaluates sum of gaussians where $\sigma_0$ for the first gaussian defined as $g(\mu_0,\sigma_0)$ (See Equation~\ref{eq:sum_gaussians}) may be different from $\sigma$ for gaussians $[g_1..g_N]$ and is fitted separately. X is independent variable; Params is vector of parameters such that:
 	
-	Params[1] = $\sigma_0$, Params[2] = $\sigma$, it\'s value is shared among gaussians $g_1..g_N$; Params[3]..Params[N+2] are $ScF_i$ (scaling factors); Params[N+3]..[2*N+2] are $\mu_i$ for N gaussians.
-	
-\end{itemize}
-\subsubsection{DerivGaussians}
-\label{ugauss-DerivGaussians}
-\index[proc]{DerivGaussians}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			procedure DerivGaussians(X, Y: Float; Params, Derivs:TVector);\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	used as DerivProc
-	
-\end{itemize}
-\subsubsection{DerivGaussiansS0}
-\label{ugauss-DerivGaussiansS0}
-\index[proc]{DerivGaussiansS0}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			procedure DerivGaussiansS0(X, Y: Float; Params, Derivs:TVector);\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	used as DerivProc
-	
+	Params[1] = $\sigma_0$, Params[2] = $\sigma$, its value is shared among gaussians $g_1..g_N$; Params[3]..Params[N+2] are $ScF_i$ (scaling factors); Params[N+3]..[2*N+2] are $\mu_i$ for N gaussians.
 \end{itemize}
 \subsubsection{SetGaussFit}
 \label{ugauss-SetGaussFit}
@@ -7816,11 +7720,8 @@ ENoSigma {$>$} Exception
 			procedure SetGaussFit(ANumberOfGaussians:integer; AUseSigma0, AFitMeans: boolean);\end{ttfamily}
 		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
 	Set model parameters: ANumberOfGaussians: How many gaussians form the distribution; AUseSigma0 : if Sigma0 may be different from others; AFitMeans: if means of all gaussians are fitted or they are fixed and only sigmas and scale factors (which give probabilities for every gaussian) are fitted. This procedure must be called before \begin{ttfamily} SumGaussFit \end{ttfamily}.
-	
 \end{itemize}
 \subsubsection{SumGaussFit}
 \label{ugauss-SumGaussFit}
@@ -7829,19 +7730,15 @@ ENoSigma {$>$} Exception
 	\begin{flushleft}
 		\begin{ttfamily}
 			procedure SumGaussFit(var AMathExpect: TVector; var ASigma, ASigma0:Float; var ScFs : TVector; const AXV, AYV:TVector; Observ:integer);\end{ttfamily}
-		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
-	Actual fit of the model. AMathExpect: as input, guess values for means; as output, fitted means; ASigma, ASigma0: guessed and then found Sigma for all gaussians and, if needed, for first one; AXV, AYV: experimental data for X and for Y (observed probability distribution density); Observ: number of observations (High bound of AXV and AYV
-	
+	Actual fit of the model. AMathExpect: as input, guess values for means; as output, fitted means; ASigma, ASigma0: guessed and then found Sigma for all gaussians and, if needed, for first one; AXV, AYV: experimental data for X and for Y (observed probability distribution density); Observ: number of observations (High bound of AXV and AYV).
 \end{itemize}
 \section{Unit uGaussf}\lmath{-24pt}
 \label{ugaussf}
 \index[unit]{ugaussf}
 \subsection{Description}
-This unit is largely similar to \code{lmgauss}, but in this model difference $\mu_{i+1} - \mu_{i} = \delta_{\mu}$ is constant. Such distributions arise often in patch-clamp experiments. Consequently, fitted are $[\sigma_0,\sigma, \mu_0,\delta_{\mu},SCF_i]$.
+This unit is largely similar to \code{uGauss}, but in this model difference $\mu_{i+1} - \mu_{i} = \delta_{\mu}$ is constant. Such distributions arise often in patch-clamp experiments. Consequently, fitted are $[\sigma_0,\sigma, \mu_0,\delta_{\mu},SCF_i]$.
 \subsection{Functions and Procedures}
 \subsubsection{SumGaussiansF}
 \label{ugaussf-SumGaussiansF}
@@ -7853,11 +7750,9 @@ This unit is largely similar to \code{lmgauss}, but in this model difference $\m
 			function SumGaussiansF(X:Float; Params:TVector):float;
 		\end{ttfamily}
 	\end{flushleft}
-	\par
 	\item[\descriptiontitle{Description}]
 	X is independent variable; Params is vector of parameters: Params[1] is $\sigma$, Params[2]..Params[N+1] are $ScF_i$ (scaling factors); Params[N+2] is $\mu_0$; Params[N+3] is $\delta_{\mu}$. This function is used as RegFunc for fitting of sum of gaussian. 
 \end{itemize}
-
 \subsubsection{SumGaussiansFS0}
 \label{ugaussf-SumGaussiansFS0}
 \index[proc]{SumGaussiansFS0}
@@ -7867,80 +7762,8 @@ This unit is largely similar to \code{lmgauss}, but in this model difference $\m
 			function SumGaussiansFS0(X:Float; Params:TVector):float;
 		\end{ttfamily}
 	\end{flushleft}
-	\par
 	\item[\descriptiontitle{Description}]
 	Similar to \code{SumGaussiansS0}, this function evaluates multigaussian distribution with a separate $\sigma_0$. $X$ is independent variable; Params is vector of parameters: Params[1] is $\sigma_0$, Params[2] is $\sigma$, Params[3]..Params[N+2] are $ScF_i$ (scaling factors). Params[N+3] is $\mu_0$, Params[N+4] is $\delta_{\mu}$.
-	
-\end{itemize}
-\subsubsection{DerivGaussForDelta}
-\label{ugaussf-DerivGaussForDelta}
-\index[proc]{DerivGaussForDelta}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForDelta(X:float; Params:TVector; HaveS0:boolean):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates a partial derivative of \code{SumGaussiansF} with respect to $\delta_{\mu}$.
-	
-\end{itemize}
-\subsubsection{DerivGaussForMu0}
-\label{ugaussf-DerivGaussForMu0}
-\index[proc]{DerivGaussForMu0}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussForMu0(X:float; Params:TVector):float;\end{ttfamily}
-		
-	\end{flushleft}
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates a partial derivative of \code{SumGaussiansF} with respect to $\mu_0$.
-	
-\end{itemize}
-\subsubsection{DerivGaussS0ForMu0}
-\label{ugaussf-DerivGaussS0ForMu0}
-\index[proc]{DerivGaussS0ForMu0}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			function DerivGaussS0ForMu0(X:float; Params:TVector):float;\end{ttfamily}
-		
-	\end{flushleft}
-	
-\end{itemize}
-\subsubsection{DerivGaussiansF}
-\label{ugaussf-DerivGaussiansF}
-\index[proc]{DerivGaussiansF}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			procedure DerivGaussiansF(X, Y: Float; Params, Derivs:TVector);\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates partial derivatives for all fitted params. Derivs[1] {-} with resp. to sigma Derivs[2]..Derivs[NumberOfGaussians+1] with respect to ScF Derivs[NumberOfGaussians+2] {-} to Mu0 Derivs[NumberOfGaussians+3] {-} to Delta
-	
-\end{itemize}
-\subsubsection{DerivGaussiansFS0}
-\label{ugaussf-DerivGaussiansFS0}
-\index[proc]{DerivGaussiansFS0}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\begin{ttfamily}
-			procedure DerivGaussiansFS0(X, Y: Float; Params, Derivs:TVector);\end{ttfamily}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates partial derivatives for all fitted params, separate sigma for Mu0 Derivs[1] {-} with resp. to sigma0; Derivs[2] {-} to Sigma Derivs[3]..Derivs[NumberOfGaussians+2] with respect to ScF Derivs[NumberOfGaussians+3] {-} to Mu0 Derivs[NumberOfGaussians+4] {-} to Delta
-	
 \end{itemize}
 \subsubsection{SetGaussFitF}
 \label{ugaussf-SetGaussFitF}
@@ -7949,12 +7772,9 @@ This unit is largely similar to \code{lmgauss}, but in this model difference $\m
 	\begin{flushleft}
 		\begin{ttfamily}
 			procedure SetGaussFitF(ANumberOfGaussians:integer; AUseSigma0:boolean);\end{ttfamily}
-		
 	\end{flushleft}
-	\par
 	\item[\descriptiontitle{Description}]
 	Sets parameters of the model. \code{ANumberOfGaussians} is the number of gaussians which form the multigaussian distribution; \code{AUseSigma0} defines if $\sigma_0$ can be different from $\sigma$ for other distributions. This procedure must be called before \code{DeltaFitGauss}.
-	
 \end{itemize}
 \subsubsection{DeltaFitGaussians}
 \label{ugaussf-DeltaFitGaussians}
@@ -7963,13 +7783,10 @@ This unit is largely similar to \code{lmgauss}, but in this model difference $\m
 	\begin{flushleft}
 		\begin{ttfamily}
 			procedure DeltaFitGaussians(var ASigma, ASigma0, ADelta, AMu0: Float; var ScFs: TVector; const AXV, AYV: TVector; Observ: integer);\end{ttfamily}
-		
 	\end{flushleft}
-	\par
 	\item[\descriptiontitle{Description}]
 	This procedure executes actual fit of the multigaussian model with the costant $\delta_{\mu}$. \code{ASigma, ASigma0, ADelta, AMu0} before call must contain guess values for respective parameters of the model; after call, the found refined values. \code{ScFs[1..N]} is vector of scaling factors, guess values before the call and refined values upon return. \code{AXV[1..Observ]} and \code{AVY[1..Observ]} are vectors of independent variable (X) and corresponding distribution density (Y) in the observed histogram; \code{Observ} is number of observations, or bins in the histogram.
 \end{itemize}
-
 \section{Unit ugoldman}\lmath{-24pt}
 \label{ugoldman}
 \index[unit]{ugoldman}
@@ -7980,7 +7797,7 @@ I=P\dfrac{z^2F^2V_m}{RT}\cdot\dfrac{{C_i}-{C_e}\,\euler^{\frac{-zFV_m}{RT}}}{1-\
 \end{equation}
 where $I$ is current ($Amp$) or current density ($Amp/m^2$); $P$ is specific permeability ($Mol/m^2$) if current density is calculated or permeability ($Mol/m^3$) if current is calculated. $z$ is valence of permeated ion; $F$ is Faraday constant; $R$ is gas constant; $T$ is absolute temperature, $K$; $V_m$ is transmembrane voltage, $V$; $C_{i}$ and $C_{e}$ are intracellular and extracellular concentrations of permeated ion, respectively.
 
-Note, that at a call to function, temerature is expressed in \celsius\ and voltage in $mV$; all conversions are done by the function itself.   
+Note, that at a call to function, temperature is expressed in \celsius\ and voltage in $mV$; all conversions are done by the function itself.   
 \subsection{Functions and Procedures}
 \subsubsection{GHK}
 \label{ugoldman-GHK}
@@ -7996,7 +7813,7 @@ Note, that at a call to function, temerature is expressed in \celsius\ and volta
 	\item[\descriptiontitle{Description}]
 	Returns current, $Amp$, calculated according to Goldman-Hodgkin-Katz equation (\ref{eq:GHK_current}) at a given transmembrane potential, $mV$. 
 	
-	Parameters: $P$: permeability constant. Classically, current density $(Amp/m^2)$ is calculated and $P$ is in $m/s$. If we are interested in absolute value of current and not density, P is $m^3/s$. $z$ is ion charge (-1 for Cl\textsuperscript{-}; 2 for Ca\textsuperscript{++} etc). It is float since for non-selective channels apparent valence of permeated ion may be non-integer. $Cin$ is intracellular concentration of ion, $Mol/m^3$ or $mM/ml$; $Cout$ is extracellular concentration. Vm is transmembrane voltage, $mV$. TC is temperature, \celsius.
+	Parameters: $P$: permeability constant. Classically, current density $(Amp/m^2)$ is calculated and $P$ is in $m/s$. If we are interested in absolute value of current and not density, P is $m^3/s$. $z$ is ion charge (-1 for Cl\textsuperscript{-}; 2 for Ca\textsuperscript{++} etc). It is float since for non-selective channels apparent valence of permeated ion may be non-integer. $Cin$ is intracellular concentration of ion, $Mol/m^3$ or $mM/l$; $Cout$ is extracellular concentration. Vm is transmembrane voltage, $mV$. TC is temperature, \celsius.
 	
 \end{itemize}
 \subsubsection{FitGHK}
@@ -8791,9 +8608,12 @@ Constructor of TMatCoords from two integers.
 \begin{flushleft}	\code{procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc);\\ \vspace{4pt}
 	procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); \\ \vspace{4pt}
 	procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc);\\ \vspace{4pt}
-	procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc);}
+	procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc);\\ \vspace{6pt}
+	procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc);\\ \vspace{4pt}
+	procedure Apply(V:TIntVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TIntFunc);}
 \end{flushleft}	\item[\descriptiontitle{Description}]
-	These procedures apply \hyperref[utypes-TFunc]{\code{TFunc}} or \code{TIntFunc} to every element of \code{V} or \code{M}.
+	These procedures apply \hyperref[utypes-TFunc]{\code{TFunc}} or \code{TIntFunc} to every element of \code{V} or \code{M} in the slice defined by \code{Lb} and \code{Ub} variables. Last two versions are ``masked'' functions which apply the functions only to elements whose indices are included into \code{Mask} array.
+	For example, if \code{Mask = (3,5,7)} then the function will be applied only to \code{V[3],V[5] and V[7]}. The \code{Mask} array may be formed for example with the help of \hyperref[uvecutils:SelElements]{\code{SelectElements}} function.
 \end{itemize}
 \subsubsection{CompVec}
 \label{uvectutils:compvec}\index[proc]{CompVec}
@@ -8874,21 +8694,31 @@ Applies \code{Test} function of type \hyperref[uvecutils:ttestfunc]{TTestFunc}\ 
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float; CompType:TCompOperator):TVector;\\
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref: float; CompType:TCompOperator):TIntVector;\\
 \vspace{4pt}
-function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref:float; Comparator:TComparator):TVector;\\
+function SelElements(Vector:TVector; Lb, Ub, ResLb : integer; Ref:float; Comparator:TComparator):TIntVector;\\
 \vspace{12pt}
 function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref: Integer; CompType:TCompOperator):TIntVector; \\ \vspace{4pt}
 function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref:Integer; Comparator:TIntComparator):TIntVector;
 \end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-Selects from input array those elements which compare to \code{Ref} value as CompType prescribes. CompType can be \code{LT, LE, EQ, GT, GE, NE} (type \hyperref[utypes-TCompOperator]{TCompOperator}).
-
-Other form is \code{Ref} and \code{Comparator} where comparator is:\\ \code{function(V1,V2:float):boolean}\\ (\hyperref[utypes-TComparator]{TComparator}).
-If comparator returns true for an array element, the element is selected. Element of array is passed as \code{V1}, \code{Ref} as \code{V2}.
-Selected elements are copied to Result array beginning from \code{ResLb}.
+Functions of \code{SelElements} family select elements from a source array, which can
+be of \code{TVector} or \code{TIntVector} type and place their indices into a result array
+of \code{TIntVector} type. Similar to FirstElement, selection criteria may be defined with a reference value and type of comparison (\hyperref[utypes-TCompOperator]{TCompOperator} type) or with a reference value and a comparator function of TIntComparator or \hyperref[utypes-TComparator]{TComparator}
+type. Selected indices are copied to Result array beginning from ResLb. Resulting ``mask'' array can be used with masked versions of \hyperref[uvecutils:apply]{Apply} procedure. Besides, all corresponding elements can be extracted in a new array using ExtractElements function (see below).
 \end{itemize}
-\section{uVecFunc}\index[unit]{uVecFunc}\lmath{-28pt}
+\subsubsection{ExtractElements}
+\label{uvecutils:extractelements}\index[proc]{ExtractElements}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		function ExtractElements(Vector:TVector; Mask:TIntVector; Lb:integer):TVector;
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill]
+	Function \code{ExtractElements} allows to extract selected elements into a separate TVector. Elements of \code{Vector} whose indices are contained in \code{Mask} array are copied into \code{Result} beginning from \code{Lb}.
+\end{itemize}
+
+\section{uVecFunc}\label{sec:uvecfunc}\index[unit]{uVecFunc}\lmatha{-28pt}
 \subsection{Description}
 Unit \code{uVecFunc} defines several standard functions over elements of arrays (vectors and matrices).
 \subsection{Functions} 
@@ -8957,7 +8787,7 @@ procedure VecSqrt(V : TVector; Lb, Ub : integer);
 		Calculates square root of all elements in M[Lb1,Lb2] to M[Lb2,Ub2].
 \end{itemize}
 
-\section{Unit uVectorHelpers}
+\section{Unit uVectorHelpers}\label{sec:unit-uvectorhelpers}
 \lmath{-28pt}
 \subsection{Description}
 This unit defines type helpers for \hyperref[utypes-TVector]{TVector} and \hyperref[utypes-TIntVector]{TIntVector}.
@@ -8989,6 +8819,7 @@ TIntVectorHelper = type helper for TIntVector
      procedure Remove(index:integer);
      procedure Swap(ind1,ind2:integer);
      procedure Fill(St, En : integer; Val:Integer);
+     procedure FillWithArr(St : integer; Vals:array of Float);
      procedure InsertFrom(
      	Source:TIntVector; Lb, Ub: integer; ind:integer);
      function ToString(Index:integer):string;
@@ -9035,7 +8866,18 @@ Most of the methods of TVectorHelper and TVIntVectorHelper are identical with th
 		     procedure Fill(St, En : integer; Val:integer);
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-	Sets all elements from \code{self[St]} to \code{self[En]} to \code{Val}. If \code{en} > high(self) all elements to the end of the array are set.
+	Sets all elements from \code{self[St]} to \code{self[En]} to \code{Val}. If \code{Self} is empty, it is allocated, otherwise it id filled to min(En,high(self)). Length of \code{Self} remains unchanged.
+\end{itemize}
+\subsubsection{FillWithArr}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure FillWithArr(St : integer; Vals:array of Float);\\ \vspace{4pt}
+		procedure FillWithArr(St : integer; Vals:array of Integer);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill]
+	Copies all elements from \code{Vals} into \code{self} beginning from \code{self[St]}. If \code{Self} is empty, it is allocated, otherwise filled up to \\ min(St+length(Vals),High(Self)). \\ This procedure is designed mainly for convenient initialization of arrays in statements like \\ 
+	MyNewVector.FillWithArr(1,[3,4,5,9,12]);
 \end{itemize}
 \subsubsection{InsertFrom}
 \begin{itemize}
@@ -9045,7 +8887,7 @@ Most of the methods of TVectorHelper and TVIntVectorHelper are identical with th
      procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-Elements of Source beginning from \code{Source[Lb]} to \code{Source[Ub]} are inserted into \code{Self} beginning from \code{Self[ind]}. If necessary, self is expanded with \code{SetLength}. No range check for Source is performed.	
+Elements of Source beginning from \code{Source[Lb]} to \code{Source[Ub]} are inserted into \code{Self} beginning from \code{Self[ind]}. Elements of target array beginning from \code{Ind} are shifted to the right. Length of target array remains unchanged, last elements of it are lost. If $Ind + Ub - Lb > High(Self)$, only $High(Self) - Ind$ elements are inserted. 	
 \end{itemize}
 \subsubsection{Sort (TVectorHelper only)}
 \begin{itemize}
