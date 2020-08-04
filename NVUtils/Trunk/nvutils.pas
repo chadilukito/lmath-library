@@ -8,7 +8,7 @@ unit NVUtils;
 interface
 
 uses
-  LinePars, NVStrings, LLIST, nvbufstream, CRTExt, LazarusPackageIntf;
+  LinePars, NVStrings, LLIST, nvbufstream, CRTExt, ustringlists, uGetStr, LazarusPackageIntf;
 
 implementation
 

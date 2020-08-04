@@ -1,15 +1,20 @@
 unit CRTExt;
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H-}
 interface
 
 uses Windows, CRT;
 
 function GetConsoleBackColor:byte;
 function GetConsoleTextColor:byte;
+function GetMinX:integer;
+function GetMaxX:integer;
+function GetMinY:integer;
+function GetMaxY:integer;
 function GetWinHeight:integer;
 function GetWinWidth:integer;
 procedure InvertColors;
 procedure NormalColors;
+procedure OutString(X,Y:integer;S:string); //writes string to specified position
 
 implementation
 var
@@ -21,15 +26,52 @@ var
        srWindow : SMALL_RECT;
        dwMaximumWindowSize : COORD;
     end; }
-    Fore, Back:byte;
+
+   Fore, Back:byte;
+
+function GetMinX:integer;
+begin
+  if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
+  with ConsoleInfo do
+    Result := srWindow.Left + 1
+  else
+    Result := 1;
+end;
+
+function GetMaxX:integer;
+begin
+  if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
+  with ConsoleInfo do
+    Result := srWindow.Right + 1
+  else
+    Result := 80;
+end;
+
+function GetMinY:integer;
+begin
+  if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
+  with ConsoleInfo do
+    Result := srWindow.Top + 1
+  else
+    Result := 1;
+end;
+
+function GetMaxY:integer;
+begin
+  if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
+  with ConsoleInfo do
+    Result := srWindow.Bottom + 1
+  else
+    Result := 25;
+end;
+
 
 function GetWinHeight : integer;
 begin
   if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
   with ConsoleInfo do
-  begin
-    Result := srWindow.Bottom - srWindow.Top + 1;
-  end else
+    Result := srWindow.Bottom - srWindow.Top + 1
+  else
     Result := 25;
 end;
 
@@ -37,10 +79,22 @@ function GetWinWidth : integer;
 begin
   if GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ConsoleInfo) then
   with ConsoleInfo do
-  begin
-    Result := srWindow.Right - srWindow.Left + 1;
-  end else
+    Result := srWindow.Right - srWindow.Left + 1
+  else
     Result := 80;
+end;
+
+procedure OutString(X,Y:integer;S:string);
+var
+  OX,OY:integer;
+begin
+  OX := WhereX;
+  OY := WhereY;
+  CursorOff;
+  GoToXY(X,Y);
+  write(S);
+  GoToXY(OX,OY);
+  CursorOn;
 end;
 
 function GetConsoleTextColor:byte;

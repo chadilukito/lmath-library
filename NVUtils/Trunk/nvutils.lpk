@@ -12,23 +12,27 @@
         <OtherUnitFiles Value="."/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <IncludeAssertionCode Value="True"/>
+        </SyntaxOptions>
+      </Parsing>
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
-        <Optimizations>
-          <OptimizationLevel Value="4"/>
-        </Optimizations>
+        <Checks>
+          <IOChecks Value="True"/>
+          <RangeChecks Value="True"/>
+          <OverflowChecks Value="True"/>
+          <StackChecks Value="True"/>
+        </Checks>
+        <VerifyObjMethodCallValidity Value="True"/>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="False"/>
-        </Debugging>
-      </Linking>
     </CompilerOptions>
     <Description Value="1.4: pair of PChar functions added"/>
     <License Value="LGPL 2.0"/>
     <Version Major="1" Minor="4"/>
-    <Files Count="5">
+    <Files Count="7">
       <Item1>
         <Filename Value="linepars.pas"/>
         <UnitName Value="LinePars"/>
@@ -49,6 +53,14 @@
         <Filename Value="crtext.pas"/>
         <UnitName Value="CRTExt"/>
       </Item5>
+      <Item6>
+        <Filename Value="ustringlists.pas"/>
+        <UnitName Value="ustringlists"/>
+      </Item6>
+      <Item7>
+        <Filename Value="ugetstr.pas"/>
+        <UnitName Value="uGetStr"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="1">
       <Item1>
@@ -61,5 +73,8 @@
     <PublishOptions>
       <Version Value="2"/>
     </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
   </Package>
 </CONFIG>

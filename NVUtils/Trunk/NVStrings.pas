@@ -8,9 +8,15 @@ unit NVStrings;
 interface
 uses SysUtils, Classes, Strings;
 
+// returns true if S contains "*" or "?"
+function IsMask(S:string):boolean;
+
 function FileMatchesMask(FileName, Mask: string):boolean;
+
+// mask may contain either one "*" for any substring or any number of "?" for one char each, but not both "*" or "?"
 function StringMatchesMask(Source, Mask: string):boolean;
-function LastPos(Ch:Char; const Source: string):integer; //< last entrance of Ch in Source
+
+function LastPos(Ch:Char; const Source: string):integer; //< last occurence of Ch in Source
 
 // line in TStrings from Pos in TStrings as text
 function FindLineByPos(Strings:TStrings;Pos:integer):integer;
@@ -81,6 +87,11 @@ begin
   Result := Result;
 end;
 
+function IsMask(S: string): boolean;
+begin
+  Result := Pos('*',S) + Pos('?',S) > 0; // ie at least one of them <> 0
+end;
+
 function FileMatchesMask(FileName, Mask: string):boolean;
 var
   Buf1, Buf2:string;
@@ -128,12 +139,12 @@ begin
   Result := Dest;
 end;
 
-function Pas2PChar(out Dest:PChar; const S: string): PChar;
-begin
-  Dest := StrAlloc(length(S)+1);
-  StrPCopy(Dest,S);
-  Result := Dest;
-end;
+//function Pas2PChar(out Dest:PChar; const S: string): PChar;
+//begin
+//  Dest := StrAlloc(length(S)+1);
+//  StrPCopy(Dest,S);
+//  Result := Dest;
+//end;
 
 
 end.

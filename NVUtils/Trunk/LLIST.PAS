@@ -1,5 +1,4 @@
 { This file is part of NVUtils suite.
-  Home of the project: http://sourceforge.net/projects/nvcomponents.nestopatch.p/
   Copyright (C) 1995 Viatcheslav Nesterov
 
   This source is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
@@ -15,7 +14,7 @@
   Temple Place - Suite 330, Boston, MA 02111-1307, USA. }
 unit llist;
 interface
-uses classes;
+uses classes, SysUtils;
 
 type
 
@@ -33,11 +32,13 @@ type
   PMatch = ^TMatch;
   TMatch = function(Item:TListNode):boolean;
 
+  { TDoubleList }
+
   TDoubleList = class(TListNode)
     First: TListNode;
     Last : TListNode;
     Selected : TListNode;
-    Counter:cardinal;
+    Counter : cardinal;
     procedure Insert(Item:TListNode); virtual;
     procedure Delete(Item:TListNode); virtual;
     procedure InsertBefore(Item,Target:TListNode); virtual;
@@ -45,6 +46,9 @@ type
     procedure ForEach(Action:TNodeAction); virtual;
     function FirstThat(Match:TMatch):TListNode; virtual;
     function LastThat(Match:TMatch):TListNode; virtual;
+    function NextThat(Match:TMatch):TListNode; virtual;
+    function PrevThat(Match:TMatch):TListNode; virtual;
+    procedure Move(Item,Target:TListNode); virtual;
     procedure FreeAll; virtual;
     destructor Destroy; override;
   end;
@@ -54,6 +58,8 @@ implementation
 
 procedure TDoubleList.Insert(Item:TListNode);
 begin
+  if Item = nil then
+    Exit;
   Item.Owner := Self;
   if First = nil then
   begin
@@ -70,7 +76,8 @@ end;
 
 procedure TDoubleList.Delete(Item:TListNode);
 begin
-  if Item.Owner <> Self then Exit;
+  if (Item = nil) or (Item.Owner <> Self) then
+    Exit;
   Item.Owner := nil;
   if First = Item then First := Item.Next;
   if Last = Item then Last := Item.Prev;
@@ -88,7 +95,7 @@ end;
 
 procedure TDoubleList.InsertBefore(Item,Target:TListNode);
 begin
-  if (Target = nil) or (Target.Owner <> Self) then Exit;
+  if (Target = nil) or (Target.Owner <> Self) or (Item = nil) then Exit;
   if Target = First then First := Item;
   Item.Prev := Target.Prev;
   Target.Prev.Next := Item;
@@ -101,8 +108,7 @@ end;
 procedure TDoubleList.FreeNode(Item:TListNode);
 begin
   Delete(Item);
-  Item.Free;
-  Dec(Counter);
+  FreeAndNil(Item);
 end;
 
 procedure TDoubleList.FreeAll;
@@ -168,6 +174,58 @@ begin
       Exit;
     end;
   until Item = First;
+end;
+
+function TDoubleList.NextThat(Match: TMatch): TListNode;
+var
+  Item:TListNode;
+begin
+  Result := nil;
+  if First = nil then exit;
+  if Selected = nil then
+    Selected := First;
+  Item := selected;
+  repeat
+    if Match(Item) then
+    begin
+      NextThat := Item;
+      Selected := Item;
+      Exit;
+    end;
+    Item := Item.Next;
+  until Item = Selected;
+end;
+
+function TDoubleList.PrevThat(Match: TMatch): TListNode;
+var
+  Item:TListNode;
+begin
+  Result := nil;
+  if First = nil then exit;
+  if Selected = nil then
+    Selected := Last;
+  Item := selected;
+  repeat
+    if Match(Item) then
+    begin
+      Result := Item;
+      Selected := Item;
+      Exit;
+    end;
+    Item := Item.Prev;
+  until Item = Selected;
+end;
+
+procedure TDoubleList.Move(Item, Target:TListNode);
+begin
+  if (Item = nil) or (Item = nil) or
+     (Item.Owner <> Self) or
+     (Target.Owner <> Self) or
+     (Item.Next = Target) or
+     (Item = Target) then
+  Exit;
+  Delete(Item);
+  InsertBefore(Item,Target);
 end;
 
 destructor TDoubleList.Destroy;
