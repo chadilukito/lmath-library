@@ -93,7 +93,6 @@ begin
   Maxi := max(YArray,0,TheLength); //maximal value which may be not in a supposed position of mu
   LeftMin := Maxi;
   LeftMinPos := MinLoc(YArray,0,MuPos);
-  LeftMin := YArray[I];
   RightMin := Maxi;
   RightMinPos := TheLength - 1;
   for I := TheLength - 1 downto MuPos do
