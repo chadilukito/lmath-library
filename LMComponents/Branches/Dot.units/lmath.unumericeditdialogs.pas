@@ -1,12 +1,12 @@
-unit lmnumericinputdialogs;
+unit lmath.unumericeditdialogs;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, Controls, StdCtrls, Forms, Dialogs, uTypes, uIntervals, lmNumericEdits,
-  Buttons, ButtonPanel, Spin;
+  Classes, SysUtils, Controls, StdCtrls, Forms, Dialogs, lmath.uTypes,
+  lmath.uIntervals, lmath.uNumericEdits, Buttons, ButtonPanel, Spin;
 
 // input dialog with two float edits. Sets TInterval; one edit is fot Low, other for High.
 // Returns True if was closed with OK, false otherwise
@@ -19,7 +19,7 @@ function IntegerInputDialog(const InputCaption, InputPrompt : String; var AValue
   AMinValue : integer = 0; AMaxValue : integer = 100; AIncrement : integer = 1) : Boolean;
 
 implementation
-{$R lmnumericinputdialogs.lfm}
+{$R lmath.unumericeditdialogs.lfm}
 
 type
   { TIntervalEditDialog }

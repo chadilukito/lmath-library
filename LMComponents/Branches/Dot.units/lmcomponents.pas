@@ -8,15 +8,15 @@ unit lmComponents;
 interface
 
 uses
-  lmcoordsys, lmfilters, lmnumericedits, lmnumericinputdialogs, lmPointsVec, LazarusPackageIntf;
+  lmath.ufilters, lmath.unumericeditdialogs, lmath.unumericedits, lmath.uPointsVec, lmath.ucoordsys, LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
-  RegisterUnit('lmcoordsys', @lmcoordsys.Register);
-  RegisterUnit('lmfilters', @lmfilters.Register);
-  RegisterUnit('lmnumericedits', @lmnumericedits.Register);
+  RegisterUnit('lmath.ufilters', @lmath.ufilters.Register);
+  RegisterUnit('lmath.unumericedits', @lmath.unumericedits.Register);
+  RegisterUnit('lmath.ucoordsys', @lmath.ucoordsys.Register);
 end;
 
 initialization

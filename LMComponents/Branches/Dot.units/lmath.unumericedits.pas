@@ -1,10 +1,10 @@
-unit lmnumericedits;
+unit lmath.unumericedits;
 
 {$mode objfpc}{$H+}
 interface
 
 uses
-  Classes, Controls, SysUtils, StdCtrls, StrUtils, Clipbrd, uTypes;
+  Classes, Controls, SysUtils, StdCtrls, StrUtils, Clipbrd, lmath.uTypes;
 
 type
 

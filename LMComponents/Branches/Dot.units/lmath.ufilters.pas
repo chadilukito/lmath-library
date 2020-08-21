@@ -1,4 +1,4 @@
-unit lmfilters;
+unit lmath.ufilters;
 (*
    Both OnInput and OnOutput events are called from Filter method, to get next
    value from the data stream been filtered. This technique makes the filter
@@ -26,7 +26,7 @@ unit lmfilters;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, SysUtils, uTypes;
+  Classes, SysUtils, lmath.uTypes;
 
 //finds effective cutoff frequency of cascade of 2 gaussian filters
 function GaussCascadeFreq(Freq1, Freq2:Float):Float;

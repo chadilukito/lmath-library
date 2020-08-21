@@ -1,5 +1,4 @@
-{ This file is part of NVUtils suite.
-  Home of the project: http://sourceforge.net/projects/nvcomponents.nestopatch.p/
+{ This file is part of LMath suite.
   Copyright (C) 2013-2015 Viatcheslav Nesterov
 
   This source is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
@@ -13,14 +12,14 @@
   A copy of the GNU General Public License is available on the World Wide Web at
   <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA 02111-1307, USA. }
-unit lmcoordsys;
+unit lmath.ucoordsys;
 { TODO : Write DrawSpline for separate X and Y arrays }
 interface
 
 uses
   {$ifndef fpc}Windows, Messages,{$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, uTypes, uIntervals, uspline, lmPointsVec, LResources;
+  ExtCtrls, lmath.uTypes, lmath.uIntervals, lmath.uspline, lmath.uPointsVec, LResources;
 
 const
   AxisUp    = 0;{<Constants, defining direction of Y-axis}
@@ -177,6 +176,7 @@ type
 
   operator := (P:TPoint) R:TIntegerPoint;
   operator := (P:TIntegerPoint) R:TPoint;
+
 procedure Register;
 
 implementation

@@ -49,40 +49,41 @@ Ver 2.4 New functions of NVFilters
 Ver 2.5 TMedianFilter
 Ver 2.5.1 TNVCoordSys.[XY]ScrollTo functions added
 Ver 2.6 TFloatEdit component added, icons added
-Ver 2.7 IntervalQuery function added"/>
+Ver 2.7 IntervalQuery function added
+Ver 5.1 Version numbering synchronized with LMath. File naming changed accordingly."/>
     <License Value="GDP"/>
-    <Version Major="2" Minor="7"/>
+    <Version Major="5" Minor="1"/>
     <Files Count="7">
       <Item1>
-        <Filename Value="lmcoordsys.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="lmcoordsys"/>
-      </Item1>
-      <Item2>
-        <Filename Value="lmfilters.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="lmfilters"/>
-      </Item2>
-      <Item3>
-        <Filename Value="lmnumericedits.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="lmnumericedits"/>
-      </Item3>
-      <Item4>
-        <Filename Value="lmnumericinputdialogs.pas"/>
-        <UnitName Value="lmnumericinputdialogs"/>
-      </Item4>
-      <Item5>
         <Filename Value="icons\nv_icons.lrs"/>
         <Type Value="LRS"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.ufilters.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="lmath.ufilters"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.unumericeditdialogs.pas"/>
+        <UnitName Value="lmath.unumericeditdialogs"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.unumericedits.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="lmath.unumericedits"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.upointsvec.pas"/>
+        <UnitName Value="lmath.uPointsVec"/>
       </Item5>
       <Item6>
-        <Filename Value="lmpointsvec.pp"/>
-        <UnitName Value="lmPointsVec"/>
+        <Filename Value="lmath.unumericeditdialogs.lfm"/>
+        <Type Value="LFM"/>
       </Item6>
       <Item7>
-        <Filename Value="lmnumericinputdialogs.lfm"/>
-        <Type Value="LFM"/>
+        <Filename Value="lmath.ucoordsys.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="lmath.ucoordsys"/>
       </Item7>
     </Files>
     <RequiredPkgs Count="3">
