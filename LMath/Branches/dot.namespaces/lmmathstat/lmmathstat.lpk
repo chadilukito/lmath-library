@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmmathstat"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="units"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="4"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="26">
+      <Item1>
+        <Filename Value="lmath.uanova1.pas"/>
+        <UnitName Value="lmath.uanova1"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.uanova2.pas"/>
+        <UnitName Value="lmath.uanova2"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.ubartlet.pas"/>
+        <UnitName Value="lmath.ubartlet"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.ubinom.pas"/>
+        <UnitName Value="lmath.ubinom"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.ucorrel.pas"/>
+        <UnitName Value="lmath.ucorrel"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lmath.udistrib.pas"/>
+        <UnitName Value="lmath.udistrib"/>
+      </Item6>
+      <Item7>
+        <Filename Value="lmath.uexpdist.pas"/>
+        <UnitName Value="lmath.uexpdist"/>
+      </Item7>
+      <Item8>
+        <Filename Value="lmath.ugamdist.pas"/>
+        <UnitName Value="lmath.ugamdist"/>
+      </Item8>
+      <Item9>
+        <Filename Value="lmath.uibtdist.pas"/>
+        <UnitName Value="lmath.uibtdist"/>
+      </Item9>
+      <Item10>
+        <Filename Value="lmath.uigmdist.pas"/>
+        <UnitName Value="lmath.uigmdist"/>
+      </Item10>
+      <Item11>
+        <Filename Value="lmath.uinvbeta.pas"/>
+        <UnitName Value="lmath.uinvbeta"/>
+      </Item11>
+      <Item12>
+        <Filename Value="lmath.uinvgam.pas"/>
+        <UnitName Value="lmath.uinvgam"/>
+      </Item12>
+      <Item13>
+        <Filename Value="lmath.uinvnorm.pas"/>
+        <UnitName Value="lmath.uinvnorm"/>
+      </Item13>
+      <Item14>
+        <Filename Value="lmath.ukhi2.pas"/>
+        <UnitName Value="lmath.ukhi2"/>
+      </Item14>
+      <Item15>
+        <Filename Value="lmath.umeansd.pas"/>
+        <UnitName Value="lmath.umeansd"/>
+      </Item15>
+      <Item16>
+        <Filename Value="lmath.umeansd_md.pas"/>
+        <UnitName Value="lmath.umeansd_md"/>
+      </Item16>
+      <Item17>
+        <Filename Value="lmath.umedian.pas"/>
+        <UnitName Value="lmath.umedian"/>
+      </Item17>
+      <Item18>
+        <Filename Value="lmath.unonpar.pas"/>
+        <UnitName Value="lmath.unonpar"/>
+      </Item18>
+      <Item19>
+        <Filename Value="lmath.unormal.pas"/>
+        <UnitName Value="lmath.unormal"/>
+      </Item19>
+      <Item20>
+        <Filename Value="lmath.upca.pas"/>
+        <UnitName Value="lmath.upca"/>
+      </Item20>
+      <Item21>
+        <Filename Value="lmath.upoidist.pas"/>
+        <UnitName Value="lmath.upoidist"/>
+      </Item21>
+      <Item22>
+        <Filename Value="lmath.uskew.pas"/>
+        <UnitName Value="lmath.uskew"/>
+      </Item22>
+      <Item23>
+        <Filename Value="lmath.usnedeco.pas"/>
+        <UnitName Value="lmath.usnedeco"/>
+      </Item23>
+      <Item24>
+        <Filename Value="lmath.ustdpair.pas"/>
+        <UnitName Value="lmath.ustdpair"/>
+      </Item24>
+      <Item25>
+        <Filename Value="lmath.ustudind.pas"/>
+        <UnitName Value="lmath.ustudind"/>
+      </Item25>
+      <Item26>
+        <Filename Value="lmath.uwoolf.pas"/>
+        <UnitName Value="lmath.uwoolf"/>
+      </Item26>
+    </Files>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="lmlinearalgebra"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="lmgenmath"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmMathUtil"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="."/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CPPInline Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
+      </CodeGeneration>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="10">
+      <Item1>
+        <Filename Value="lmath.uqsort.pas"/>
+        <UnitName Value="lmath.uqsort"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.usearchtrees.pas"/>
+        <UnitName Value="lmath.usearchtrees"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.usorting.pas"/>
+        <UnitName Value="lmath.usorting"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.ustrings.pas"/>
+        <UnitName Value="lmath.ustrings"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.uunitsformat.pas"/>
+        <UnitName Value="lmath.uunitsformat"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lmath.uvecfunc.pas"/>
+        <UnitName Value="lmath.uVecFunc"/>
+      </Item6>
+      <Item7>
+        <Filename Value="lmath.uvecmatprn.pas"/>
+        <UnitName Value="lmath.uVecMatPrn"/>
+      </Item7>
+      <Item8>
+        <Filename Value="lmath.uVectorHelper.pas"/>
+        <UnitName Value="lmath.uVectorHelper"/>
+      </Item8>
+      <Item9>
+        <Filename Value="lmath.uVecUtils.pas"/>
+        <UnitName Value="lmath.uVecUtils"/>
+      </Item9>
+      <Item10>
+        <Filename Value="lmath.uwinstr.pas"/>
+        <UnitName Value="lmath.uwinstr"/>
+      </Item10>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="lmgenmath"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

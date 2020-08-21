@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmintegrals"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="units;."/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="3">
+      <Item1>
+        <Filename Value="lmath.ugausleg.pas"/>
+        <UnitName Value="lmath.ugausleg"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.urkf.pas"/>
+        <UnitName Value="lmath.urkf"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.utrapint.pas"/>
+        <UnitName Value="lmath.utrapint"/>
+      </Item3>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="lmgenmath"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

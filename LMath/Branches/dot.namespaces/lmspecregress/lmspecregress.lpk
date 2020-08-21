@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmspecregress"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
+      </CodeGeneration>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="10">
+      <Item1>
+        <Filename Value="lmath.udistribs.pas"/>
+        <UnitName Value="lmath.udistribs"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.ugauss.pas"/>
+        <UnitName Value="lmath.ugauss"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.ugaussf.pas"/>
+        <UnitName Value="lmath.ugaussf"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.ugoldman.pas"/>
+        <UnitName Value="lmath.ugoldman"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.uhillfit.pas"/>
+        <UnitName Value="lmath.uhillfit"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lmath.umichfit.pas"/>
+        <UnitName Value="lmath.umichfit"/>
+      </Item6>
+      <Item7>
+        <Filename Value="lmath.umintfit.pas"/>
+        <UnitName Value="lmath.umintfit"/>
+      </Item7>
+      <Item8>
+        <Filename Value="lmath.umodels.pas"/>
+        <UnitName Value="lmath.umodels"/>
+      </Item8>
+      <Item9>
+        <Filename Value="lmath.upkfit.pas"/>
+        <UnitName Value="lmath.upkfit"/>
+      </Item9>
+      <Item10>
+        <Filename Value="lmath.usigmatable.pas"/>
+        <UnitName Value="lmath.usigmatable"/>
+      </Item10>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="lmRegression"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

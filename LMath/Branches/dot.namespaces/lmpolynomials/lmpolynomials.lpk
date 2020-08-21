@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmpolynomials"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="units"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="8">
+      <Item1>
+        <Filename Value="lmath.ucrtptpol.pas"/>
+        <UnitName Value="lmath.ucrtptpol"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.upolutil.pas"/>
+        <UnitName Value="lmath.upolutil"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.upolynom.pas"/>
+        <UnitName Value="lmath.upolynom"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.urootpol.pas"/>
+        <UnitName Value="lmath.urootpol"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.urtpol1.pas"/>
+        <UnitName Value="lmath.urtpol1"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lmath.urtpol2.pas"/>
+        <UnitName Value="lmath.urtpol2"/>
+      </Item6>
+      <Item7>
+        <Filename Value="lmath.urtpol3.pas"/>
+        <UnitName Value="lmath.urtpol3"/>
+      </Item7>
+      <Item8>
+        <Filename Value="lmath.urtpol4.pas"/>
+        <UnitName Value="lmath.urtpol4"/>
+      </Item8>
+    </Files>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="lmlinearalgebra"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

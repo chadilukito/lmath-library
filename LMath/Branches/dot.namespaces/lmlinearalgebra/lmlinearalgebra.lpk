@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="lmlinearalgebra"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="units"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
+        <RelocatableUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="4"/>
+        </Optimizations>
+      </CodeGeneration>
+      <Other>
+        <CustomOptions Value="-CfAVX2
+-CpCOREAVX2
+-OoFASTMATH
+-OoLOOPUNROLL
+-OpCOREAVX2"/>
+      </Other>
+    </CompilerOptions>
+    <Version Minor="5" Release="1"/>
+    <Files Count="17">
+      <Item1>
+        <Filename Value="lmath.ubalance.pas"/>
+        <UnitName Value="lmath.ubalance"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lmath.ubalbak.pas"/>
+        <UnitName Value="lmath.ubalbak"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lmath.ucholesk.pas"/>
+        <UnitName Value="lmath.ucholesk"/>
+      </Item3>
+      <Item4>
+        <Filename Value="lmath.ueigsym.pas"/>
+        <UnitName Value="lmath.ueigsym"/>
+      </Item4>
+      <Item5>
+        <Filename Value="lmath.ueigval.pas"/>
+        <UnitName Value="lmath.ueigval"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lmath.ueigvec.pas"/>
+        <UnitName Value="lmath.ueigvec"/>
+      </Item6>
+      <Item7>
+        <Filename Value="lmath.uelmhes.pas"/>
+        <UnitName Value="lmath.uelmhes"/>
+      </Item7>
+      <Item8>
+        <Filename Value="lmath.ueltran.pas"/>
+        <UnitName Value="lmath.ueltran"/>
+      </Item8>
+      <Item9>
+        <Filename Value="lmath.ugausjor.pas"/>
+        <UnitName Value="lmath.ugausjor"/>
+      </Item9>
+      <Item10>
+        <Filename Value="lmath.uhqr.pas"/>
+        <UnitName Value="lmath.uhqr"/>
+      </Item10>
+      <Item11>
+        <Filename Value="lmath.uhqr2.pas"/>
+        <UnitName Value="lmath.uhqr2"/>
+      </Item11>
+      <Item12>
+        <Filename Value="lmath.ujacobi.pas"/>
+        <UnitName Value="lmath.ujacobi"/>
+      </Item12>
+      <Item13>
+        <Filename Value="lmath.ulineq.pas"/>
+        <UnitName Value="lmath.ulineq"/>
+      </Item13>
+      <Item14>
+        <Filename Value="lmath.ulu.pas"/>
+        <UnitName Value="lmath.ulu"/>
+      </Item14>
+      <Item15>
+        <Filename Value="lmath.umatrix.pas"/>
+        <UnitName Value="lmath.uMatrix"/>
+      </Item15>
+      <Item16>
+        <Filename Value="lmath.uqr.pas"/>
+        <UnitName Value="lmath.uqr"/>
+      </Item16>
+      <Item17>
+        <Filename Value="lmath.usvd.pas"/>
+        <UnitName Value="lmath.usvd"/>
+      </Item17>
+    </Files>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="lmMathUtil"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="lmgenmath"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>
