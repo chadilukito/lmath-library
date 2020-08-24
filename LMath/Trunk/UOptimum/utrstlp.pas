@@ -48,28 +48,27 @@ var
   Z : TMatrix;
   ZDota, VMultc, SDirn, DXNew, VMultd : TVector;
 
-procedure InitTrsTlp(M: integer; N: integer; var DX : TVector);
+procedure InitTrsTlp(M: integer; N: integer; DX : TVector);
 var
   i: Integer;
 begin
-  SetLength(IAct,m+2);
-  SetLength(Z, N+1,N+1);
-  SetLength(ZDota,N+1);
-  SetLength(VMultC,M+2);
-  SetLength(SDirn,N+1);
-  SetLength(DXNew, N+1);
-  SetLength(VMultD, M+2);
-  for i := 1 to n do
+  DimVector(IAct,m+1);
+  DimMatrix(Z, N,N);
+  DimVector(ZDota,N);
+  DimVector(VMultC,M+1);
+  DimVector(SDirn,N);
+  DimVector(DXNew, N);
+  DimVector(VMultD, M+1);
+  for i := 1 to N do
   begin
     z[i].Fill(0,N,0);
     z[i,i] := 1.0;
-    DX[i] := 0.0;
   end;
+  DX.Fill(1,N,0);
 end;
 
-procedure FinTrsTlp(var IFULL: integer);
+procedure FinTrsTlp;
 begin
-  ifull := 0;
   Finalize(IAct);
   Finalize(Z);
   Finalize(ZDota);
@@ -97,11 +96,11 @@ label
     vector SDIRN gives a search direction that reduces all the active
     constraint violations by one simultaneously.  }
 begin
+      InitTrsTlp(M,N,DX);
       ifull := 1;
       mcon := m; // first stage, dealing with constraints
       nact := 0;
       resmax := 0.0; // maximal violation
-      InitTrsTlp(M, N, DX);
       if m >= 1 then
       begin
         for k := 1 to m do
@@ -523,7 +522,7 @@ begin
       if icon > 0 then goto 70;
       if step = stpful then
       begin
-        FinTrsTlp(IFULL);
+        FinTrsTlp;
         exit;
       end;
   480: mcon := m+1;
@@ -536,7 +535,8 @@ begin
 //     function before returning a DX whose length is less than RHO.
 //
   490: if mcon = m then goto 480;
-      FinTrsTlp(IFULL);
+       IFull := 0;
+       FinTrsTlp;
 end;
 
 end.

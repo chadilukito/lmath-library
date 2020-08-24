@@ -94,10 +94,10 @@ begin
     DimVector(DX,N);
 end;
 
-procedure FinCobyla(ErrCode: integer);
+procedure FinCobyla(ExitCode: integer);
 begin
     Finalize(W);
-    Finalize(Con); // calcfc returns constraint functions here. Must be non-negative
+    Finalize(Con);
     Finalize(Sim);
     Finalize(Simi);
     Finalize(DATMat);
@@ -106,9 +106,8 @@ begin
     Finalize(Veta);
     Finalize(SigBar);
     Finalize(DX);
-    SetErrCode(ErrCode);
+    SetErrCode(ExitCode);
 end;
-
 
 procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: float; RHOBEG: float; RHOEND: float;
     var MaxFun: integer; CalcFC: TCobylaObjectProc);
@@ -122,7 +121,7 @@ var
   Rho: float; // current size of vertex
   Temp: float;
   error: float; // rounding error
-  ResMax: Float;
+  ResMax: Float; // Maximal constrain violation
 
 label
   40,130,140,370,440,550;
@@ -180,35 +179,35 @@ begin
       FinCobyla(cobMaxFunc);
       Exit;
     end;
-    CalcObjectFunc;
+    CalcObjectFunc; // places Constrain function values to Con[1]..Con[m], F to Con[mp], largest violation ResMax to Con[mpp]
     if ibrnch = 1 then goto 440;
 
-   {Set the recently calculated function values in a column of DATMAT. This
+   {Set the recently calculated function values in a column of DATMAT replacing jDrop vertex. This
    array has a column for each vertex of the current simplex, the entries of
    each column being the values of the constraint functions (if any)
    followed by the objective function and the greatest constraint violation
    at the vertex.}
 
-    for k := 1 to mpp do
-      datmat[k,jdrop] := Con[k];
+    for k := 1 to mpp do // newly calculated values in DatMat[*,Jdrop]
+      datmat[k,jdrop] := Con[k]; //DatMat[1..m,JDrop] constrain violations, m function val, mpp max.viol
     if nfvals > np then goto 130;
 
     {Exchange the new vertex of the initial simplex with the optimal vertex if
     necessary. Then, if the initial simplex is not complete, pick its next
     vertex and calculate the function values there.}
 
-    if jdrop <= n then
+    if jdrop <= n then // initial jdrop is np, corresponds to optimal vertex, at first call with guess values
     begin
-      if datmat[mp,np] <= F then
-        x[jdrop] := sim[jdrop,np]
+      if datmat[mp,np] <= F then // F is new function value
+        x[jdrop] := sim[jdrop,np] // if old optimal was better than new, we take it into X for next calculation
       else begin
-        sim[jdrop,np] := x[jdrop];
+        sim[jdrop,np] := x[jdrop]; // place new value to optimal column
         for k := 1 to mpp do
         begin
-          datmat[k,jdrop] := datmat[k,np];
-          datmat[k,np] := con[k];
+          datmat[k,jdrop] := datmat[k,np]; // previous optimal column to jdrop
+          datmat[k,np] := con[k]; // new values to optimal column
         end;
-        for k := 1 to jdrop do
+        for k := 1 to jdrop do // fill inverse
         begin
           sim[jdrop,k] := -rho;
           temp := 0.0;
@@ -218,17 +217,17 @@ begin
         end;
       end;
     end;
-    if NFVals <= N then
-    begin
+    if NFVals <= N then // number of evaluations so far less than number of variables
+    begin               // so we are in the first iteration filling in each vertex
       jdrop := nfvals;
       x[jdrop] := x[jdrop]+rho;
       GoTo 40;
     end;
-130:ibrnch := 1;
+130:ibrnch := 1;  // initial vertex is ready, go further
 
    //Identify the optimal vertex of the current simplex.
-140:phimin := datmat[mp,np]+parmu*datmat[mpp,np];
-    nbest := np;
+140:phimin := datmat[mp,np]+parmu*datmat[mpp,np]; // initial parmu is 0.
+    nbest := np; // phimin is now sum of function value and max, constrain violation * parmu, as a measure of badness
     for j := 1 to N do
     begin
       temp := datmat[mp,j]+parmu*datmat[mpp,j];
@@ -244,7 +243,7 @@ begin
    {Switch the best vertex into pole position if it is not there already,
    and also update SIM, SIMI and DATMAT. }
 
-    if nbest <= n then
+    if nbest < np then
     begin
       for i := 1 to mpp do
         swap(datmat[i,np],datmat[i,nbest]);
@@ -576,14 +575,15 @@ begin
 
     if IFull = 0 then
     begin
-      SetErrCode(cobDegenerate);
       for i := 1 to n do
          x[i] := sim[i,np];
+      FinCobyla(cobDegenerate);
+      Exit;
     end;
     F := datmat[mp,np];
     MaxCV := datmat[mpp,np];
     MaxFun := nfvals;
-    SetErrCode(optOK);
+    FinCobyla(optOK);
 end;
 
 end.
