@@ -52,13 +52,13 @@ procedure InitTrsTlp(M: integer; N: integer; var DX : TVector);
 var
   i: Integer;
 begin
-  DimVector(IAct,m+1);
-  DimMatrix(Z, N,N);
-  DimVector(ZDota,N);
-  DimVector(VMultC,M+1);
-  DimVector(SDirn,N);
-  DimVector(DXNew, N);
-  DimVector(VMultD, M+1);
+  SetLength(IAct,m+2);
+  SetLength(Z, N+1,N+1);
+  SetLength(ZDota,N+1);
+  SetLength(VMultC,M+2);
+  SetLength(SDirn,N+1);
+  SetLength(DXNew, N+1);
+  SetLength(VMultD, M+2);
   for i := 1 to n do
   begin
     z[i].Fill(0,N,0);
@@ -521,7 +521,11 @@ begin
 //     Otherwise switch to stage two or end the calculation.
 //
       if icon > 0 then goto 70;
-      if step = stpful then exit;
+      if step = stpful then
+      begin
+        FinTrsTlp(IFULL);
+        exit;
+      end;
   480: mcon := m+1;
       icon := mcon;
       iact[mcon] := mcon;

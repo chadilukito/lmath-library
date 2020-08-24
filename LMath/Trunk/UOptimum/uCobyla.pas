@@ -94,6 +94,22 @@ begin
     DimVector(DX,N);
 end;
 
+procedure FinCobyla(ErrCode: integer);
+begin
+    Finalize(W);
+    Finalize(Con); // calcfc returns constraint functions here. Must be non-negative
+    Finalize(Sim);
+    Finalize(Simi);
+    Finalize(DATMat);
+    Finalize(A);
+    Finalize(VSig);
+    Finalize(Veta);
+    Finalize(SigBar);
+    Finalize(DX);
+    SetErrCode(ErrCode);
+end;
+
+
 procedure COBYLA(N: integer; M: integer; X: TVector; out F: float; out MaxCV: float; RHOBEG: float; RHOEND: float;
     var MaxFun: integer; CalcFC: TCobylaObjectProc);
 
@@ -161,7 +177,7 @@ begin
 
  40:if (nfvals >= MaxFun) and (nfvals > 0) then
     begin
-      SetErrCode(cobMaxFunc);
+      FinCobyla(cobMaxFunc);
       Exit;
     end;
     CalcObjectFunc;
@@ -261,7 +277,7 @@ begin
       end;
     if error > 0.1 then
     begin
-      SetErrCode(cobRoundErrors);
+      FinCobyla(cobRoundErrors);
       Exit;
     end;
 
