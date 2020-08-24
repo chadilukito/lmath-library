@@ -37,7 +37,7 @@ shift RESMAX that makes the lest residual zero. }
 
 unit uTrsTlp;
 interface
-uses uTypes, uMinMax, uMath, uMatrix;
+uses uTypes, uMinMax, uMath, uMatrix, uVectorHelper;
 
 procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
 
@@ -61,6 +61,7 @@ begin
   DimVector(VMultD, M+1);
   for i := 1 to n do
   begin
+    z[i].Fill(0,N,0);
     z[i,i] := 1.0;
     DX[i] := 0.0;
   end;
@@ -156,9 +157,9 @@ begin
 //     rounding errors. The array DXNEW is used for working space.
 //
       if icon <= nact then goto 260;
-      kk := iact[icon];
+      kk := iact[icon]; // iact is array of active constrains
       for i := 1 to n do
-        dxnew[i] := A[i,kk];
+        dxnew[i] := A[i,kk];  // extract column for maximally violated constrain
       tot := 0.0;
       k := n;
       while k > nact do
@@ -167,7 +168,7 @@ begin
         spabs := 0.0;
         for i := 1 to n do
         begin
-          temp := z[i,k]*dxnew[i];
+          temp := z[i,k]*dxnew[i]; // z is initially identity matrix
           sp := sp+temp;
           spabs := spabs+abs(temp);
         end;
@@ -367,9 +368,9 @@ begin
         vmultc[k] := vsave;
       end;
       nact := nact-1;
-//
+
 //     If stage one is in progress, then set SDIRN to the direction of the next
-//     change to the current vector of varia<=.
+//     change to the current vector of variable.
 //
       if mcon > m then goto 320;
       temp := 0.0;
@@ -391,7 +392,7 @@ begin
 //     calculation. Further, we skip the step if it could be zero within a
 //     reasonable tolerance for computer rounding errors.
 //
-  340: dd := rho*rho;
+  340:dd := rho*rho;
       sd := 0.0;
       ss := 0.0;
       for i := 1 to n do
@@ -407,10 +408,10 @@ begin
          temp := sqrt(ss*dd+sd*sd);
       stpful := dd/(temp+sd);
       step := stpful;
-      if mcon = m then
+      if mcon = m then // first stage, constrain violations
       begin
-        acca := step+0.1*resmax;
-        accb := step+0.2*resmax;
+        acca := step+0.1*resmax;  // actually, test for positivity of
+        accb := step+0.2*resmax;  // ResMax
         if (step >= acca) or (acca >= accb) then goto 480;
         step := Min(step,resmax);
       end;
