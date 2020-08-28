@@ -8,13 +8,13 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
       </CodeGeneration>
     </CompilerOptions>
-    <RequiredPkgs Count="13">
+    <RequiredPkgs Count="12">
       <Item1>
         <PackageName Value="lmspecregress"/>
       </Item1>
@@ -43,17 +43,14 @@
         <PackageName Value="lmmathstat"/>
       </Item9>
       <Item10>
-        <PackageName Value="lmlinealgebra"/>
+        <PackageName Value="lmintegrals"/>
       </Item10>
       <Item11>
-        <PackageName Value="lmintegrals"/>
+        <PackageName Value="lmgenmath"/>
       </Item11>
       <Item12>
-        <PackageName Value="lmgenmath"/>
-      </Item12>
-      <Item13>
         <PackageName Value="FCL"/>
-      </Item13>
+      </Item12>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

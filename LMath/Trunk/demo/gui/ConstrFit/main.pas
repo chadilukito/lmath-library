@@ -49,6 +49,8 @@ begin
   ConstrNLFit(@RFunc,@Constr,X,Y,0,DataPoints.Count-1,OFCalls,Rho,Variables,VarNum,ConstrNum,MaxCV);
   YC := GetCFFittedData;
   FittedPoints := TPoints.Combine(X,YC,0,high(X));
+  Finalize(X);
+  Finalize(Y);
 end;
 
 procedure TMainForm.CoordSysDrawData(Sender: TObject);

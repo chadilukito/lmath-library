@@ -1,0 +1,31 @@
+Time in milliseconds to evaluate 10000000 functions
+
+Ln             603
+Log10         1202
+Log2          1108
+Exp            901
+Exp10         1381
+Exp2          1428
+Power         2714
+Sin            648
+Cos            679
+Tan           1748
+ArcSin        1569
+ArcCos        1868
+ArcTan         842
+ArcTan2       1406
+Sinh          1487
+Cosh          1493
+Tanh          1754
+ArcSinh       1116
+ArcCosh       1124
+ArcTanh       1150
+Gamma         2970
+DiGamma       3268
+TriGamma      2774
+IGamma        6977
+Beta          9431
+IBeta        18706
+Erf           6619
+Erfc          7143
+Random         203

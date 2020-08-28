@@ -1,19 +1,21 @@
 Program testcobyla;
 {$mode delphi}
-Uses uTypes, uMath, uErrors, SysUtils, TestFunc, uCobyla;
+Uses uTypes, uMath, uErrors, SysUtils, TestFunc, uCobyla, uVecMatPrn, uVectorHelper, uStrings;
 const
  OutputFmt = 'NFVALS = %6.4d F = %13.6g  MaxCV = %13.6g';
 
 var
   X: TVector;
-  XOPT: array [1..10] of float;
+  XOPT: TVector;
   N, M, I : integer;
   ICase, MaxFun: integer;
   Temp, TempA, TempB, TempC, TempD : float;
   RhoBeg, RhoEnd : Float;
   F, MaxCV: Float; // value of function after minimization
+  OutMatrix : TMatrix;
 begin
   DimVector(X, 10);
+  DimVector(XOpt,10);
   for NPROB := 1 to 10 do    // NProb is defined in TestFunc unit
   begin
     Case NProb of
@@ -93,6 +95,16 @@ begin
           writeln( 'Output from test problem 10 (Hexagon area)');
           N := 9;         // This problem is taken from page 415 of Luenberger's book Applied
           M := 14;        // Nonlinear Programming. It is to maximize the area of a hexagon of
+          TEMPA := X[1]+X[3]+X[5]+X[7];
+          TEMPB := X[2]+X[4]+X[6]+X[8];
+          TEMPC := 0.5/SQRT(TEMPA*TEMPA+TEMPB*TEMPB);
+          TEMPD := TEMPC*SQRT(3.0);
+          XOPT[1] := TEMPD*TEMPA+TEMPC*TEMPB;
+          XOPT[2] := TEMPD*TEMPB-TEMPC*TEMPA;
+          XOPT[3] := TEMPD*TEMPA-TEMPC*TEMPB;
+          XOPT[4] := TEMPD*TEMPB+TEMPC*TEMPA;
+          for I := 1 TO 4 do
+            XOPT[I+4] := XOPT[I];
         end;            // unit diameter.
     END; //case
     for  ICASE := 1 to 2 do
@@ -101,8 +113,8 @@ begin
           X[I] := 1.0; // filling X with guess values
       RHOBEG := 0.5;
       case ICase of
-        1: RHOEND := 0.001;
-        2: RHOEND := 0.0001;
+        1: RHOEND := 0.0001;
+        2: RHOEND := 0.00001;
       end;
       MAXFUN := 2000;
       COBYLA(N,M,X,F,MaxCV,RHOBEG,RHOEND,MAXFUN,@CalcFC);
@@ -113,27 +125,16 @@ begin
         writeln(MathErrMessage);
 
       writeln(Format(OutputFmt,[MaxFun,F,MaxCV]));
-      writeln('X:');
-      for I := 1 to N do
-         writeln(X[i]);
-
-      IF NPROB = 10 THEN
-      BEGIN
-         TEMPA := X[1]+X[3]+X[5]+X[7];
-         TEMPB := X[2]+X[4]+X[6]+X[8];
-         TEMPC := 0.5/SQRT(TEMPA*TEMPA+TEMPB*TEMPB);
-         TEMPD := TEMPC*SQRT(3.0);
-         XOPT[1] := TEMPD*TEMPA+TEMPC*TEMPB;
-         XOPT[2] := TEMPD*TEMPB-TEMPC*TEMPA;
-         XOPT[3] := TEMPD*TEMPA-TEMPC*TEMPB;
-         XOPT[4] := TEMPD*TEMPB+TEMPC*TEMPA;
-         for I := 1 TO 4 do
-           XOPT[I+4] := XOPT[I];
-      end;
+      writeln('X calculated and X theoretical:');
+      Finalize(outMatrix);
+      DimMatrix(outMatrix,2,N);
+      OutMatrix[1].InsertFrom(X,1,N,1);
+      OutMatrix[2].InsertFrom(XOpt,1,N,1);
+      PrintMatrix(OutMatrix);
       TEMP := 0.0;
       for I := 1 to N do
          TEMP := TEMP+(X[I]-XOPT[I])**2;
-      writeln('Least squares error in variables  := ', SQRT(TEMP));
+      writeln('Least squares error in variables  := ', FloatStr(SQRT(TEMP)));
     End; //Do
    writeln('----------------------------------------------');
   End; //Do

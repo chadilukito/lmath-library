@@ -159,7 +159,7 @@ begin
   writeln('and');
   printvector(ResV2);
   ResF := VecDotProd(ResV,Resv2,Lb, high(ResV));
-  writeln(Format(lmFmtStr,[ResF]));
+  writeln(Format(vprnFmtStr,[ResF]));
 
   writeln('Now testing outer product.');
   ResV := TVector.Create(0,2.0,3.0,4.0,5.0);
