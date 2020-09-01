@@ -29,13 +29,13 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="lmoptimum"/>
+        <PackageName Value="lmlinearalgebra"/>
       </Item1>
       <Item2>
-        <PackageName Value="lmrandoms"/>
+        <PackageName Value="lmoptimum"/>
       </Item2>
       <Item3>
-        <PackageName Value="lmlinealgebra"/>
+        <PackageName Value="lmrandoms"/>
       </Item3>
       <Item4>
         <PackageName Value="lmgenmath"/>

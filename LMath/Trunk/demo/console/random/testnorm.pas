@@ -11,11 +11,7 @@
 program testnorm;
 
 uses
-{$IFDEF USE_DLL}
-  dmath;
-{$ELSE}
   utypes, urandom, urangaus, umeansd;
-{$ENDIF}
 
 const
   Mu    = 10.0;  { Mean of Gaussian distribution }

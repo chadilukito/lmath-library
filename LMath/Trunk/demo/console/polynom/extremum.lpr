@@ -1,6 +1,6 @@
 program extremum;
 {$mode objfpc}{$H+}
-uses uTypes, ucrtptpol;
+uses uTypes, ucrtptpol, uStrings;
 const
   MaxS = '       Maximum: ';
   MinS = '       Minimum: ';
@@ -30,7 +30,7 @@ begin
            0: write(CrtS);
            1: write(MaxS);
         end;
-        writeln(CrtPoints[I].X,';',CrtPoints[I].Y);
+        writeln(FloatStr(CrtPoints[I].X),';',FloatStr(CrtPoints[I].Y));
       end;
   until Deg = -1;
 end.

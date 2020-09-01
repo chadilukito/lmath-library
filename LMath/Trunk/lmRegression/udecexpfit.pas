@@ -14,8 +14,6 @@
 
 unit udecexpfit;
 
-{$MODE DELPHI}
-
 interface
 
 uses
@@ -106,16 +104,14 @@ var
 begin
   E := Expo(- B[2] * X);  { exp(-k.x) }
   D[0] := 1.0;            { dy/dYmin = 1 }
-  //D[1] := 1.0 - E;        { dy/dA = 1 - exp(-k.x) }
   D[1] := E;              { dy/dA = exp(-k.x) }
-  //D[2] := B[1] * X * E;  { dy/dk = A.x.exp(-k.x) }
   D[2] := - B[1] * X * E;   { dy/dk = A * x * exp(-k * x) }
 end;
 
 procedure ApproxFit(Mode : TRegMode; X, Y, S : TVector;
                     Lb, Ub : Integer; B : TVector);
 { ------------------------------------------------------------------
-  Approximate fit of the increasing exponential by linear regression
+  Approximate fit of the decreasing exponential by linear regression
   Ln(1 - z/A) = -k.x with z = y - Ymin
   ------------------------------------------------------------------
   Input :  Mode   = OLS for unweighted regression, WLS for weighted
@@ -190,9 +186,9 @@ begin
   if MaxIter = 0 then Exit;
 
   case Mode of
-    OLS : NLFit(DecExpFit_Func, DecExpFit_Deriv, X, Y, Lb, Ub,
+    OLS : NLFit(@DecExpFit_Func, @DecExpFit_Deriv, X, Y, Lb, Ub,
                        MaxIter, Tol, B, FirstParam, LastParam, V);
-    WLS : WNLFit(DecExpFit_Func, DecExpFit_Deriv, X, Y, S, Lb, Ub,
+    WLS : WNLFit(@DecExpFit_Func, @DecExpFit_Deriv, X, Y, S, Lb, Ub,
                         MaxIter, Tol, B, FirstParam, LastParam, V);
   end;
 end;

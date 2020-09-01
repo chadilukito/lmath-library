@@ -5,12 +5,7 @@
 program student;
 
 uses
-{$IFDEF USE_DLL}
-  dmath;
-{$ELSE}
   utypes, umeansd, ustdpair, unonpar, uinvnorm, uinvbeta;
-{$ENDIF}
-
 const
   N     = 12;    { Number of values }
   Alpha = 0.05;  { Significance level }

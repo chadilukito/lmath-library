@@ -115,13 +115,10 @@
         <UnitName Value="uIntPoints"/>
       </Item22>
     </Files>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="1">
       <Item1>
-        <PackageName Value="LCL"/>
-      </Item1>
-      <Item2>
         <PackageName Value="FCL"/>
-      </Item2>
+      </Item1>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

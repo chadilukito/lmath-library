@@ -6,12 +6,7 @@
 program stat;
 
 uses
-{$IFDEF USE_DLL}
-  dmath;
-{$ELSE}
   utypes, umeansd, uskew, ustudind, usnedeco, unonpar, uinvnorm, uinvbeta;
-{$ENDIF}
-
 const
   N     = 30;    { Number of values }
   Alpha = 0.05;  { Significance level }
