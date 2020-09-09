@@ -52,7 +52,7 @@
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{1}
 \begin{document}
-\title{LMath 0.5: mathematical library for\\ Free Pascal --- Lazarus\\
+\title{LMath 0.5.1: mathematical library for\\ Free Pascal --- Lazarus\\
 {\Large Reference Guide}}
 
 \author{Edited by Viatcheslav V. Nesterov}
@@ -104,8 +104,9 @@ But in general, I did not modify existing algorithms, since Jean Debord did real
 \item Unit lmSorting written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
 \item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
 \item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
-  
+\item Unit uVecFileUtils written, which contains procedures for saving \code{TMatrix} or \code{TVector} to a file and read them from a file.   
 \end{enumerate}
+In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
 \section*{About the documentation} 
 DMath comes with very nice \href{DMath.pdf}{manual} which describes not only the library itself, but a lot of underlying theory. This document, written by Jean Debord, is included with LMath library. Practically everything what you find in this manual remains true for LMath as well. However, new code is, of course, not covered by DMath manual. 
 
@@ -116,16 +117,16 @@ All elements added or modified in LMath library are labeled in the margins, as s
 I find that huge packages with hundreds of units are inconvenient, therefore I organized the library into 12 relatively small packages:
 \begin{enumerate}
 	\item{\hyperref[package-lmGenMath]{lmGenMath}.} This package defines several important data structures, used later in the whole library, some utility functions, basic math functions and special functions. All other packages of the library depend on lmGenMath.
-	\item{\hyperref[package-lmLineAlgebra]{lmLineAlgebra}.} Operations over vectors and matrices. Depends on lmGenMath.
-	\item{\hyperref[package-lmPolynoms]{lmPolynoms}.} Evaluation of polynomials, polynomial roots finding, polynomial critical points finding. Depends on lmGenMath and lmLineAlgebra.
+	\item{\hyperref[package-lmMathUtil]{lmMathUtil}.} Various function for manipulations with arrays, sorting and formatting. Depends on lmGenMath.
+	\item{\hyperref[package-lmLinearAlgebra]{lmLinearAlgebra}.} Operations over vectors and matrices. Depends on lmMathUtil and lmGenMath.
+	\item{\hyperref[package-lmPolynoms]{lmPolynoms}.} Evaluation of polynomials, polynomial roots finding, polynomial critical points finding. Depends on lmGenMath and lmLinearAlgebra.
 	\item{\hyperref[package-lmIntegrals]{lmIntegrals}.} Numeric integrating and solving differential equations. Depends on lmGenMath.
 	\item{\hyperref[package-lmRandoms]{lmRandoms}.} Generation of random numbers. Depends on lmGenMath.
-	\item{\hyperref[package-lmMathStat]{lmMathStat}} Descriptive statistics, hypothesis testing, collection of various distributions. Depends on lmGenMath and lmLineAlgebra.
-	\item{\hyperref[package-lmOptimum]{lmOptimum}.} Algorithms of function minimization. Somewhat artificially, unit uEval for evaluation of an expression, is included into this package. Depends on lmGenMath, lmLineAlgebra, lmRandoms, lmMathStat.
-	\item{\hyperref[package-lmNonLinEq]{lmNonLinEq}.} Finding of roots of non-linear equations. Depends on lmGenMath, lmLineAlgebra, lmOptimum.
-	\item{\hyperref[package-lmRegression]{lmRegression}.} Algorithms for linear and non-linear regression, curve fitting. Collection of common models. Unit uFFT for fast Fourier Transform is located also here.  Depends on lmLineAlgebra, lmPolynoms, lmOptimum, lmMathUtil.
+	\item{\hyperref[package-lmMathStat]{lmMathStat}} Descriptive statistics, hypothesis testing, collection of various distributions. Depends on lmGenMath and lmLinearAlgebra.
+	\item{\hyperref[package-lmOptimum]{lmOptimum}.} Algorithms of function minimization. Somewhat artificially, unit uEval for evaluation of an expression, is included into this package. Depends on lmGenMath, lmLinearAlgebra, lmRandoms, lmMathStat.
+	\item{\hyperref[package-lmNonLinEq]{lmNonLinEq}.} Finding of roots of non-linear equations. Depends on lmGenMath, lmLinearAlgebra, lmOptimum.
+	\item{\hyperref[package-lmRegression]{lmRegression}.} Algorithms for linear and non-linear regression, curve fitting. Collection of common models. Unit uFFT for fast Fourier Transform is located also here.  Depends on lmLinearAlgebra, lmPolynoms, lmOptimum, lmMathUtil.
 	\item{\hyperref[package-lmSpecRegress]{lmSpecRegress}.} Collection of field-specific models for data fitting. Depends on lmGenMath and lmRegression.
-	\item{\hyperref[package-lmMathUtil]{lmMathUtil}.} Several sorting and formatting routines. Depends on lmGenMath.
 	\item{\hyperref[package-lmPlotter]{lmPlotter}.} Routines for data and functions plotting. Depends on lmGenMath, lmMathUtil and LCL.
 \end{enumerate}	
 All these packages are described in the following chapters. 
@@ -3041,7 +3042,7 @@ procedure AutoScale(X : TVector; Lb, Ub : Integer; Scale : TScale; out XMin, XMa
 Finds an appropriate scale for plotting the data in X[Lb..Ub]
 \end{itemize}
 
-\chapter[Package lmLineAlgebra]{Package lmLineAlgebra: Operations with Vectors and Matrices}\label{package-lmLineAlgebra}
+\chapter[Package lmLinearAlgebra]{Package lmLinearAlgebra: Operations with Vectors and Matrices}\label{package-lmLinearAlgebra}
 \section{Description}
 This package includes procedures for linear algebra: operations with vectors, matrices, systems of linear equations.
 \section{Unit uMatrix}\label{sec:unit-umatrix}
@@ -8917,6 +8918,83 @@ Elements of Source beginning from \code{Source[Lb]} to \code{Source[Ub]} are ins
      Sends string representation of the subarray \code{self[Lb]} to \code{self[Ub]} to \code{Dest}. If \code{Indices} is true, every string (for TVectorHelper) is formed as \\
      \code{IntStr(Index)+' '+Delimiter+FloatToStr(self[Index])}.
 \end{itemize}
+\section{Unit uVecFileUtils}\lmatha{-20pt}
+\label{sec:unit-uvecfileutils}\index[unit]{uVecFileUtils}
+\subsection{Desccription}
+This unit defines four routines for saving \code{TMatrix} or \code{TVector} to a file or reading from a file.
+\subsection{Functions and Procedures}
+\subsubsection{SaveVecToText}\label{uvecfileutils:savevectotext}
+\index[proc]{SaveVecToText}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{procedure SaveVecToText(FileName:string; V:TVector; Lb, Ub:integer);}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Saves \code{V:TVector} to a file with name \code{FileName}, beginning from \code{V[Lb]} up to \code{V[Ub]} as a column of numbers. If $Ub>High(V)$, the to the end is saved.
+	
+	Errors: if $Lb > Ub$ or $Lb < 0$, MatErrDim is set and no file written. If an error occurs at an opening or writing the file, lmFileError is set with additional information in a text message which can be retrieved with \code{MathErrMessage} function. 
+\end{itemize}	
+\subsubsection{LoadVecFromText}\label{uvecfileutils:loadvecfromtext}
+\index[proc]{LoadVecFromText}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{function LoadVecFromText(FileName:string; Lb:integer; out HighLoaded : integer) : TVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] This is a counterpart to \code{SaveVecToText}. This function reads a column of numbers from a file into \code{TVector}. \\ 
+	Input: \code{FileName}, name of a file to be read; \code{Lb}, index, from which the file contents is placed into \code{TVector}, typically 0 or 1. \\ 
+	The function counts number of lines in the file $(N)$ and allocates \code{TVector} with the length $Lb+N$ which is returned by the function. Further, it reads the values from the file. If a line does not contain valid number, it is silently skipped. Number of actually assigned values is returned in \code{HighLoaded}. Hence, the last meaningful element is $Lb+HighLoad$.
+	
+	Errors: if $Lb < 0$, MatErrDim is set \code{nil} is returned. If an error occurs at an opening or writing the file, lmFileError is set with additional information in a text message which can be retrieved with \code{MathErrMessage} function. If nothing was read before an error, \code{nil is returned}, otherwise partially filled vector returned with the number of actually read data in \code{HighLoaded}. 
+\end{itemize}	
+\subsubsection{SaveMatToText}\label{uvecfileutils:savemattotext}
+\index[proc]{SaveMatToText}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{procedure SaveMatToText(FileName: string; M: TMatrix; delimiter: char; FirstCol, LastCol, FirstRow, LastRow : integer);}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Saves slice of a matrix \code{M[FirstCol..LastCol,FirstRow...LastRow]} into a file as a delimited text (for example, CSV).\\ 
+	Input: \code{FileName:string}, name of a file to be saved;\code{M:TMatrix}, a matrix to be saved;\code{ delimiter:char} is a delimiter between values in a line of a file. It is not recommended to use a space as a delimiter, see \hyperref[uvecfileutils:LoadMatFromText]{LoadMatFromText} for explanation. \code{FirstCol, LastCol, FirstRow, LastRow : integer} are border indices of a slice to be saved. If \code{LastCol} is higher than the length of rows or \code{LastRow} is bigger than length of columns, they are adjusted accordingly such that the rows and/or the columns are saved completely.
+	
+	Errors: if indices given in \code{FirstRow, LastRow, FirstColumn, LastColumn} are impossible, MatErrDim is set and no file written. If an error occurs at an opening or writing the file, lmFileError is set with additional information in a text message which can be retrieved with \code{MathErrMessage} function.	  
+\end{itemize}	
+\subsubsection{LoadMatFromText}\label{uvecfileutils:LoadMatFromText}
+\index[proc]{LoadMatFromText}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	function LoadMatFromText(FileName: string; delimiter: char; Lb:integer; MD:Float): TMatrix;
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Allocates and loads a matrix from text file. Number of rows allocated is equal to the number of lines in the file; number of columns is found as a maximal number of delimiters in a line plus 1. One potential problem with this approach is that if a delimiter is space char, and spaces are used for formatting and alignment, then too many elements are allocated. Therefore, it is not recommended to use space as a delimiter. However, if there is only one space between values, everything works fine.\\
+	Input: \code{FileName: string}, name of a file to be read. Delimiter: char, symbol which delimits values within a line of a file (and, correspondingly, in a row of a matrix). \code{Lb:integer}, first row which is used to load the values and first index in each row, typically 0 or 1. If $Lb \ne 0$, rows and columns with indices $<Lb$ remain empty (filled with 0). \code{MD:Float}, code for missed value.\\
+	If a substring between two delimiters in a line of the file cannot be parsed (for example, it is an empty line), corresponding position in a matrix is filled with \code{MD}. If a line contains no valid values, it is supposed to be title or subtitle and is silently skipped. \\
+	Example:\\
+	If there is a file \code{example.csv} with content:
+	\begin{verbatim}
+	V1; V2; V3; V4; V5
+	3.1; 5.6; 7.4;;2.3
+	5.8; 9.6; 11.1;
+	7.6; 4.5; 45.2; 3.9; 7.5
+	\end{verbatim}
+	then call\\
+	\code{LoadMatFromText('example.csv',';',1,-10000);}\\ would produce following matrix: \\ \\
+	\begin{tabular}{c|cccccc}
+		ind & 0 & 1 & 2 & 3 & 4 & 5 \\
+		\hline 
+		0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+		
+		1 & 0 & 3.1 & 5.6 & 7.4 & -10000 & 2.3 \\ 
+		
+		2 & 0 & 5.8 & 9.6 & 11.1 & -10000 & -10000 \\ 
+		
+		3 & 0 & 7.6 & 4.5 & 45.2 & 3.9 & 7.5 \\ 
+	\end{tabular} \\  \vskip 2pt
+	\code{Lb = 1} causes column and row with indices ``0'' to remain empty, the matrix is filled from indices ``1''. Maximal number of delimiters ';' per line is 4, which defines 5 values pro line. Empty string between 3rd and 4th delimiters in the second line is not a valid float, it is substituted with \code{MD = -10000}; missing values at the end of next line are also substituted with \code{MD}. First line contains no valid floats at all, it is skipped.
+	
+	Errors: if \code{Lb} is negative, MatErrDim error is set; on file read failure, lmFileError is set. 
+\end{itemize}	
 
 \section{Unit uVecMatPrn}\lmath{-28pt}
 \label{uvecmatprn}\index[unit]{uvecmatprn}

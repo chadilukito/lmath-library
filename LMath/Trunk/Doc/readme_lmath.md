@@ -1,3 +1,17 @@
+#LMath and Components 0.5.1
+This is mostly bug fix release.
+
+##Bug fixes
+1. All packages are distributed now with very conservative optimization options to ensure compatibility with any system.
+2. Fixed bug in COBYLA implementation (package lmOptimum) which delayed convergence and in some cases lead to algorithm failure.
+3. Fixed bug in uGauss (package uSpecRegress) which sometimes lead to inaccurate model fit.
+4. Fixed errors in TVectorHelper.Remove and TVectorHelper.InsertFrom functions (uVectorHeplers, lmMathUtil).
+5. Note that lmLineAlgebra package renamed to lmLinearAlgebra.
+
+##New functionality
+6. For convenience, package LMath added, which depends on all packages. Hence, it is sufficient to add it into the dependencies of your project instead of every needed package of the library. Drawback is slightly longer compilation time.
+7. Unit uVecFileUtils added to lmMathUtil package. It implements procedures and functions for loading of TVector or TMatrix from a delimited text file, or for saving them into delimited files.
+ 
 #LMath and Components 0.5
 This is major release which contains many changes. Main of them are listed here. What was changed in LMath compared in DMath in more detail is described in New_in_LMath.pdf document. Besides, all procedures introduced in this version are labelled as LMath 0.5 in LMath0_5.pdf.
 

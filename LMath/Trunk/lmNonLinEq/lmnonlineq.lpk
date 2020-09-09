@@ -21,7 +21,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="4"/>
+    <Version Minor="5" Release="1"/>
     <Files Count="5">
       <Item1>
         <Filename Value="ubisect.pas"/>

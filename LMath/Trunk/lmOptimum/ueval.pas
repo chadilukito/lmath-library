@@ -13,7 +13,7 @@
   Pascal version by Jean Debord  for use with DMath
   Modified by Viatcheslav Nesterov for use with LMath
   -------------------------------------------------- }
-
+{$mode objfpc}{$H+}
 unit ueval;
 
 interface

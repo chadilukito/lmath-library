@@ -8,8 +8,8 @@ unit lmMathUtil;
 interface
 
 uses
-  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, 
-  uunitsformat, uVecFunc, uVecMatPrn, LazarusPackageIntf;
+  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, uunitsformat, uVecFunc, uVecMatPrn, 
+  uvecfileutils, LazarusPackageIntf;
 
 implementation
 

@@ -4,8 +4,7 @@ unit uMatrix;
 
 interface
 
-uses
-  uTypes, uMinMax, uErrors;
+uses uTypes, uMinMax, uErrors;
 operator + (V:TVector; R:Float) Res : TVector;
 operator - (V:TVector; R:Float) Res : TVector;
 operator / (V:TVector; R:Float) Res : TVector;
@@ -30,6 +29,7 @@ function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer;
 function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  
               Ziel : TVector = nil; ResLb : integer = 1): TVector;
 
+//Ub1 is number of rows, Ub2 is number of columns (same as row length)
 function MatFloatAdd(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 function MatFloatSubtr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 function MatFloatDiv(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
@@ -51,6 +51,8 @@ function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVec
 function MatMul(A, B : TMatrix; LB : integer; Ziel : TMatrix = nil) : TMatrix;
 
 function MatTranspose(M:TMatrix; LB: integer; Ziel: TMatrix = nil): TMatrix;
+
+// for quadratic matrix
 procedure MatTransposeInPlace(M:TMatrix; Lb, Ub : integer);
 
 implementation

@@ -21,8 +21,8 @@
         <RelocatableUnit Value="True"/>
       </CodeGeneration>
     </CompilerOptions>
-    <Version Minor="5"/>
-    <Files Count="10">
+    <Version Minor="5" Release="1"/>
+    <Files Count="11">
       <Item1>
         <Filename Value="ustrings.pas"/>
         <UnitName Value="ustrings"/>
@@ -63,6 +63,10 @@
         <Filename Value="uvecmatprn.pas"/>
         <UnitName Value="uVecMatPrn"/>
       </Item10>
+      <Item11>
+        <Filename Value="uvecfileutils.pas"/>
+        <UnitName Value="uvecfileutils"/>
+      </Item11>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

@@ -112,17 +112,19 @@ end;
 procedure TIntVectorHelper.InsertFrom(Source: TIntVector; Lb, Ub: integer;
   ind: integer);
 var
-  I, C: Integer;
+  I, C, H: Integer;
 begin
   if Self = nil then
     DimVector(Self, ind + Ub - Lb);
-  if (Lb > High(Source)) or (Ind > High(Self)) then
+  H := High(Self);
+  if (Lb > High(Source)) or (Ind > H) then
   begin
     SetErrCode(MatErrDim);
     Exit;
   end;
-  C := min(min(Ub,High(Source)) - Lb + 1, High(Self)-Ind);
-  for I := high(self) downto ind do
+  Ub := min(Ub,High(Source));
+  C := min(Ub - Lb + 1, H-Ind+1);
+  for I := high(self) downto ind + C do
     self[I] := self[I-C]; // moving existing values freeing place for newly inserted
   for I := Lb to Lb + C - 1 do
     self[ind+I-Lb] := source[I];
@@ -181,7 +183,7 @@ begin
     SetErrCode(MatErrDim);
     Exit;
   end;
-  for I := index to high(self)-2 do
+  for I := index to high(self)-1 do
     self[I] := self[I+1];
   self[high(self)] := 0;
 end;
@@ -228,18 +230,19 @@ end;
 
 procedure TVectorHelper.InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);
 var
-  I, C: Integer;
+  I, C, H: Integer;
   begin
     if Self = nil then
       DimVector(Self, ind + Ub - Lb);
-    if (Lb > High(Source)) or (Ind > High(Self)) then
+    H := High(Self);
+    if (Lb > High(Source)) or (Ind > H) then
     begin
       SetErrCode(MatErrDim);
       Exit;
     end;
     Ub := min(Ub,High(Source));
-    C := min(Ub - Lb + 1, High(Self)-Ind);
-    for I := high(self) downto ind do
+    C := min(Ub - Lb + 1, H-Ind+1);
+    for I := H downto ind + C do
       self[I] := self[I-C]; // moving existing values freeing place for newly inserted
     for I := Lb to Lb + C - 1 do
       self[ind+I-Lb] := source[I];

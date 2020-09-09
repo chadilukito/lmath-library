@@ -17,7 +17,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="5"/>
+    <Version Minor="5" Release="1"/>
     <Files Count="4">
       <Item1>
         <Filename Value="uhsvrgb.pas"/>

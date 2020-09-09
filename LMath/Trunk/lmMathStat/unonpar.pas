@@ -1,6 +1,6 @@
-{ ******************************************************************
-  Non-parametric tests
-  ****************************************************************** }
+ {******************************************************************
+ Non-parametric tests
+******************************************************************}
 
 unit unonpar;
 
@@ -100,7 +100,7 @@ begin
     end;
 
   { Replace values in array Obs by their ranks 
-    (algorithm adapted from `Numerical Recipes') }
+    (algorithm adapted from 'Numerical Recipes') }
   
   Corr := 0;
   I := 1;

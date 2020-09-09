@@ -16,7 +16,7 @@
         <RelocatableUnit Value="True"/>
       </CodeGeneration>
     </CompilerOptions>
-    <Version Minor="5"/>
+    <Version Minor="5" Release="1"/>
     <Files Count="17">
       <Item1>
         <Filename Value="ubalance.pas"/>

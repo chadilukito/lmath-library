@@ -46,7 +46,7 @@ function Extract(S : String; var Index : integer; Delim : Char) : String;
   separator. The number of fields is returned in N. The fields are
   returned in Field[0]..Field[N - 1]. Field must be dimensioned in
   the calling program.}
-procedure Parse(S : String; Delim : Char; Field : TStrVector; out N : integer);
+procedure Parse(S : String; Delim : Char; var Field : TStrVector; out N : integer);
 
 {Sets the numeric format
     NumLength  = Length of numeric field
@@ -191,7 +191,7 @@ var
     Index := I;
   end;
 
-  procedure Parse(S : String; Delim : Char; Field : TStrVector; out N : integer);
+  procedure Parse(S : String; Delim : Char; var Field : TStrVector; out N : integer);
   var
     I, Index, L : integer;
   begin

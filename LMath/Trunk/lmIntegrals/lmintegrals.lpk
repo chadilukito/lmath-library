@@ -12,7 +12,7 @@
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
-    <Version Minor="5"/>
+    <Version Minor="5" Release="1"/>
     <Files Count="3">
       <Item1>
         <Filename Value="ugausleg.pas"/>

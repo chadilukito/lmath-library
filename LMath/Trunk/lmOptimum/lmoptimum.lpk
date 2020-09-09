@@ -22,7 +22,7 @@
         <SmallerCode Value="True"/>
       </CodeGeneration>
     </CompilerOptions>
-    <Version Minor="5"/>
+    <Version Minor="5" Release="1"/>
     <Files Count="15">
       <Item1>
         <Filename Value="ubfgs.pas"/>
