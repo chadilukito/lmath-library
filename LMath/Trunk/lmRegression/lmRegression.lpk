@@ -17,7 +17,7 @@
       </CodeGeneration>
     </CompilerOptions>
     <Version Minor="5" Release="1"/>
-    <Files Count="18">
+    <Files Count="17">
       <Item1>
         <Filename Value="uevalfit.pas"/>
         <UnitName Value="uevalfit"/>
@@ -86,10 +86,6 @@
         <Filename Value="uconstrnlfit.pas"/>
         <UnitName Value="uConstrNLFit"/>
       </Item17>
-      <Item18>
-        <Filename Value="udft.pas"/>
-        <UnitName Value="uDFT"/>
-      </Item18>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
