@@ -145,7 +145,7 @@ begin
 
   PlotCurve(X, Y, 1, Npts, 1);
 
-  PlotFunc(PltFunc, Xmin, Xmax, 2);
+  PlotFunc(@PltFunc, Xmin, Xmax, 2);
 
   Readln;
 

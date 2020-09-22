@@ -20,7 +20,7 @@ uses
 {$IFDEF USE_DLL}
   dmath;
 {$ELSE}
-  utypes, ufft, uScaling, uplot;
+  utypes, uComplex, ufft, uScaling, uplot;
 {$ENDIF}   
 
 const
@@ -112,8 +112,8 @@ begin
 end;
 
 begin
-  DimCompVector(InArray, MaxIndex);
-  DimCompVector(OutArray, MaxIndex);
+  DimVector(InArray, MaxIndex);
+  DimVector(OutArray, MaxIndex);
   DimVector(T, MaxIndex);
   DimVector(Freq, MaxIndex);
 
@@ -124,8 +124,7 @@ begin
     begin
       T[I] := I * DT;
       Freq[I] := I * DF;
-      InArray[I].X := F(T[I]);
-      InArray[I].Y := 0.0;
+      InArray[I] := Cmplx(F(T[I]),0.0);
     end;
 
   ListData(InArray, 'Time domain data before transform');
@@ -138,10 +137,7 @@ begin
   SymIndex := NumSamples - FreqIndex;
 
   for I := FreqIndex to SymIndex do
-    begin
-      OutArray[I].X := 0.0;
-      OutArray[I].Y := 0.0;
-    end;
+    OutArray[I] := Cmplx(0.0,0.0);
 
   IFFT(NumSamples, OutArray, InArray);
 

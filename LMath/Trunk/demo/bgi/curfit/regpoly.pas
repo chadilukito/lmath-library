@@ -142,7 +142,7 @@ begin
   SetLineParam(1, 0, 0, 0);  { Don't connect points }
   PlotCurve(X, Y, 1, N, 1);
 
-  PlotFunc(PltFunc, Xmin, Xmax, 2);
+  PlotFunc(@PltFunc, Xmin, Xmax, 2);
 
   Readln;
 

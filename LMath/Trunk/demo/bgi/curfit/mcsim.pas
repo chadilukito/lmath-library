@@ -150,7 +150,7 @@ begin
   SetFormat(10, 4, False, True);
 
   { Perform simulation }
-  SimFit(RegFunc, XX, YY, 1, N, B, FirstPar, LastPar, V);
+  SimFit(@RegFunc, XX, YY, 1, N, B, FirstPar, LastPar, V);
 
   { Retrieve simulation results into vectors B1 and B2 }
   Assign(F, MCFile);
