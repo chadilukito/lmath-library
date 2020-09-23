@@ -183,17 +183,17 @@ begin
   { QSort(X, 1, N);        }
 
   { Compute an appropriate interval for the set of values }
-  Interval(X[1], X[N], 5, 10, XMin, XMax, XStep);
+  FindScale(X[1], X[N], 5, 10, XMin, XMax, XStep);
 
   { Compute number of classes and dimension arrays }
-  Ncls := Round((Xmax - Xmin) / XStep);
+//  Ncls := Round((Xmax - Xmin) / XStep);
 
-  DimStatClassVector(C, Ncls);
-  DimIntVector(Obs, Ncls);
+  Ncls := DimStatClassVector(C,Xmin,Xmax,XStep);
+  DimVector(Obs, Ncls);
   DimVector(Calc, Ncls);
 
   { Compute distribution }
-  Distrib(X, 1, N, Xmin, Xmax, XStep, C);
+  Distrib(X, 1, N, Xmin, XStep, C);
 
   { Compute mean and S.D. }
   M := Mean(X, 1, N);
