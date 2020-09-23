@@ -47,8 +47,10 @@ begin
   Khi2 := 0.0;
 
   for I := 1 to N_cls do
+  if Calc[I] = 0 then
+    Khi2 := Khi2 + Sqr(Obs[I])
+  else
     Khi2 := Khi2 + Sqr(Obs[I] - Calc[I]) / Calc[I];
-
   DoF := N_cls - N_estim - 1;
 end;
 
