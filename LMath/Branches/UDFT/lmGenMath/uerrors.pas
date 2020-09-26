@@ -7,7 +7,7 @@ unit uErrors;
 interface
 uses uTypes;
 const
-  MaxErrIndex = 22;
+  MaxErrIndex = 23;
 
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
@@ -42,7 +42,8 @@ const
   lpBadVariablesCount = 21;
 // File Operation Error
   lmFileError = 22;
-
+// DFT errors
+  lmDFTError = 23;
   ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
@@ -66,7 +67,8 @@ const
      'LinSimplex:bad input constraint counts',
      'Bad input tableau in LinSimplex',
      'LinSimplex: bad variables count',
-     'File input/output error'
+     'File input/output error',
+     'Internal DFT Error'
     );
   { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');

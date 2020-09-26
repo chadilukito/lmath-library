@@ -74,7 +74,7 @@ begin
 
   //LMath
   StartTime:=Time;
-  uDFT.FFTC1D(LMathInput,N);
+  uDFT.FFTC1D(LMathInput,0,High(LMathInput));
   EndTime := Time;
   LMathTime:=MilliSecondsBetween(EndTime,StartTime);
 
@@ -105,7 +105,7 @@ begin
     end;
   end;
 
-  uDFT.FFTC1DInv(LMathInput,N);  //<------ where is call to FFTW?
+  uDFT.FFTC1DInv(LMathInput,0,High(LMathInput));  //<------ where is call to FFTW?
   fft.FFTC1DInv(ALGLIBInput,N);
   for I := 0 to (N-1) do
   begin
