@@ -11,8 +11,8 @@ uses
 {1-dimensional complex FFT.
 INPUT PARAMETERS
     A   - complex Function to be transformed
- Lb,Ub  - Lower and upper bounds of array slice to be transformed. Typically, but 
-          not necessary, Lb is 0 or 1 and Ub is High(A).  
+ Lb,Ub  - Lower and upper bounds of array slice to be transformed.
+ Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
 OUTPUT PARAMETERS
     A   -   DFT of a input array; array[Lb..Ub] is transformed.
             A_out[j] = SUM(A_in[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
@@ -41,7 +41,7 @@ NOTE:
 of  array  is  usually needed. But for convinience subroutine returns full
 complex array (with frequencies above N/2), so its result may be  used  by
 other FFT-related subroutines. N = Ub-Lb.}
-Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; var F: TCompVector);
+Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);
 
 {1-dimensional real inverse FFT.
 INPUT PARAMETERS
@@ -49,7 +49,7 @@ INPUT PARAMETERS
 Lb,Ub   -   problem bounds
 OUTPUT PARAMETERS
     A   -   inverse DFT of a input array, array[Lb..Ub]}
-Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);
+Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; out A: TVector);
 
 implementation
 
@@ -67,7 +67,7 @@ Function FTBaseGetFLOPEstimate(N:Integer):Double;                               
 {//Internal-only procedures
 Procedure FFTR1DInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:FTPlan);
 Procedure FFTR1DInvInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:FTPlan); Never called }
-
+{$region internal definitions and procedures}
 type
   TFTPlan = record
     Plan: TIntVector;
@@ -1641,7 +1641,7 @@ end;
 //  end;
 //  A[N2]:=Buf[1]/N;
 //end;
-
+{$endregion}
 Procedure FFTC1D(var A: TCompVector; Lb, Ub: Integer);
 (*************************************************************************
 1-dimensional complex FFT.
@@ -1751,7 +1751,7 @@ begin
     A[I] := CConj(A[I])/N;
 end;
 
-Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; var F: TCompVector);
+Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);
 (*************************************************************************
 1-dimensional real FFT.
 
@@ -1805,10 +1805,8 @@ begin
   if N = 2 then
   begin
     SetLength(F, 2); //F must be zero-based
-    F[0].X := A[Lb] + A[Ub];
-    F[0].Y := 0;
-    F[1].X := A[Lb] - A[Ub];
-    F[1].Y := 0;
+    F[0] := Cmplx(A[Lb]+A[Ub],0);
+    F[1] := Cmplx(A[Lb] - A[Ub],0);
     Exit;
   end;
 
@@ -1862,14 +1860,14 @@ begin
   end;
 end;
 
-Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);
+Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; out A: TVector);
 (*************************************************************************
 1-dimensional real inverse FFT.
 
 Algorithm has O(N*logN) complexity for any N (composite or prime).
 
 INPUT PARAMETERS
-    F   -   array[0..floor(N/2)] - frequencies from forward real FFT
+    F   -   array[0..(N-1)] - frequencies from forward real FFT
     N   -   problem size
 
 OUTPUT PARAMETERS
