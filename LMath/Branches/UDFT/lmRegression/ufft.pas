@@ -9,8 +9,7 @@ unit ufft;
 
 interface
 
-uses
-  utypes, uErrors, umath;
+uses utypes, uErrors, umath, uComplex;
 
 { Calculates the Fast Fourier Transform of the array of complex
   numbers represented by 'InArray' to produce the output complex
@@ -110,67 +109,65 @@ var
                              InArray, OutArray : TCompVector);
   var
     NumBits, I, J, K, N, BlockSize, BlockEnd           : Integer;
-    Delta_angle, Delta_ar, Alpha, Beta, Tr, Ti, Ar, Ai : Float;
+    Delta_angle, Delta_ar, Alpha, Beta : Float;
+    A, T : complex;
   begin
     if not IsPowerOfTwo(NumSamples) or (NumSamples < 2) then
-      begin
-        SetErrCode(-1);
-        Exit;
-      end;
-
+    begin
+      SetErrCode(-1);
+      Exit;
+    end;
     SetErrCode(0);
 
+    // decomposition by bit reversal
     NumBits := NumberOfBitsNeeded(NumSamples);
     for I := 0 to NumSamples - 1 do
-      begin
-        J := ReverseBits(I, NumBits);
-        OutArray[J].X := InArray[I].X;
-        OutArray[J].Y := InArray[I].Y;
-      end;
+    begin
+      J := ReverseBits(I, NumBits);
+      OutArray[J] := InArray[I];
+    end;
 
     BlockEnd := 1;
     BlockSize := 2;
     while BlockSize <= NumSamples do
+    begin
+      Delta_angle := AngleNumerator / BlockSize;
+      Alpha := Sin(0.5 * Delta_angle);
+      Alpha := 2.0 * Alpha * Alpha;
+      Beta := Sin(Delta_angle);
+
+      I := 0;
+      while I < NumSamples do
       begin
-        Delta_angle := AngleNumerator / BlockSize;
-        Alpha := Sin(0.5 * Delta_angle);
-        Alpha := 2.0 * Alpha * Alpha;
-        Beta := Sin(Delta_angle);
+        A.X := 1.0;    (* cos(0) *)
+        A.Y := 0.0;    (* sin(0) *)
 
-        I := 0;
-        while I < NumSamples do
-          begin
-            Ar := 1.0;    (* cos(0) *)
-            Ai := 0.0;    (* sin(0) *)
+        J := I;
+        for N := 0 to BlockEnd - 1 do
+        begin
+          K := J + BlockEnd;
+          T := A*OutArray[K];
+          OutArray[K] := OutArray[J] - T;
+          OutArray[J] := OutArray[J] + T;
+          Delta_ar := Alpha * A.X + Beta * A.Y;
+          A.Y := A.Y - (Alpha * A.Y - Beta * A.X);
+          A.X := A.X - Delta_ar;
+          Inc(J);
+        end;
 
-            J := I;
-            for N := 0 to BlockEnd - 1 do
-              begin
-                K := J + BlockEnd;
-                Tr := Ar * OutArray[K].X - Ai * OutArray[K].Y;
-                Ti := Ar * OutArray[K].Y + Ai * OutArray[K].X;
-                OutArray[K].X := OutArray[J].X - Tr;
-                OutArray[K].Y := OutArray[J].Y - Ti;
-                OutArray[J].X := OutArray[J].X + Tr;
-                OutArray[J].Y := OutArray[J].Y + Ti;
-                Delta_ar := Alpha * Ar + Beta * Ai;
-                Ai := Ai - (Alpha * Ai - Beta * Ar);
-                Ar := Ar - Delta_ar;
-                Inc(J);
-              end;
-
-            I := I + BlockSize;
-          end;
-
-        BlockEnd := BlockSize;
-        BlockSize := BlockSize shl 1;
+        I := I + BlockSize;
       end;
+
+      BlockEnd := BlockSize;
+      BlockSize := BlockSize shl 1;
+    end;
   end;
 
   procedure FFT(NumSamples        : Integer;
                 InArray, OutArray : TCompVector);
   begin
-    FourierTransform(2 * PI, NumSamples, InArray, OutArray);
+    FourierTransform(-2 * PI, NumSamples, InArray, OutArray);
+    { Normalize the resulting time samples }
   end;
 
   procedure IFFT(NumSamples        : Integer;
@@ -178,15 +175,13 @@ var
   var
     I : Integer;
   begin
-    FourierTransform(- 2 * PI, NumSamples, InArray, OutArray);
+    FourierTransform(2 * PI, NumSamples, InArray, OutArray);
     if MathErr <> 0 then Exit;
-
-    { Normalize the resulting time samples }
     for I := 0 to NumSamples - 1 do
-      begin
-        OutArray[I].X := OutArray[I].X / NumSamples;
-        OutArray[I].Y := OutArray[I].Y / NumSamples;
-      end;
+    begin
+      OutArray[I].X := OutArray[I].X / NumSamples;
+      OutArray[I].Y := OutArray[I].Y / NumSamples;
+    end;
   end;
 
   procedure FFT_Integer(NumSamples     : Integer;

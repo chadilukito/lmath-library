@@ -22,7 +22,7 @@
       </CodeGeneration>
     </CompilerOptions>
     <Version Minor="5" Release="1"/>
-    <Files Count="11">
+    <Files Count="12">
       <Item1>
         <Filename Value="ustrings.pas"/>
         <UnitName Value="ustrings"/>
@@ -67,6 +67,10 @@
         <Filename Value="uvecfileutils.pas"/>
         <UnitName Value="uvecfileutils"/>
       </Item11>
+      <Item12>
+        <Filename Value="ucompvecutils.pas"/>
+        <UnitName Value="ucompvecutils"/>
+      </Item12>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

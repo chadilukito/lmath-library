@@ -1,3 +1,10 @@
+{**********************************************************************************
+ *     Translated and adapted by David Chen (陳昱志) for LMath from               *
+ *     ALGLIB 2.6 by Sergey Bochkanov                                             *
+ *     Important! Unlike the rest of LMath, this unit is distributed              *
+ *     under license  GPL  v. 2.0                                                 *
+ **********************************************************************************}
+
 unit uDFT;
 //This unit merged "ftbase.pas" and "fft.pas" of ALGLIB 2.6 and did some modification.
 
@@ -8,65 +15,82 @@ interface
 uses
   SysUtils, utypes, uMinMax, uMath, uErrors, ucomplex;
 
-{1-dimensional complex FFT.
+{1-dimensional complex DFT.
 INPUT PARAMETERS
-    A   - complex Function to be transformed
+    A   - Complex array to be transformed
  Lb,Ub  - Lower and upper bounds of array slice to be transformed.
- Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals to Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   DFT of a input array; array[Lb..Ub] is transformed.
-            A_out[j] = SUM(A_in[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
-            Size Ub-Lb may be arbitrary number }
+    A   - DFT result is written into the section [Lb..Ub] of array A.
+          If the input data need to be reserved, back it up before calling.
+          A_out[k] = SUM(A_in[n]*exp(-2*pi*sqrt(-1)*(n-Lb)*(k-Lb)/N), n=Lb..Ub)
+          where
+          Lb <= k <= Ub
+          N = Ub-Lb+1}
 Procedure FFTC1D(var A: TCompVector; Lb, Ub: Integer);
 
 {1-dimensional complex inverse FFT.
 INPUT PARAMETERS
-    A   -   complex array to be transformed
-Lb,Ub   -   problem bounds
+    A   - Complex array to be transformed
+Lb,Ub   - Lower and upper bounds of array slice to be transformed.
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals to Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   inverse DFT of a input array, array[Lb..Ub]
-            A_out[j] = SUM(A_in[k]/N*exp(+2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
-Array size Ub-Lb may be arbitrary number}
+    A   - Inverse DFT result is written into the section [Lb..Ub] of array A.
+          If the input data need to be reserved, back it up before calling.
+          A_out[k] = SUM(A_in[n]/N*exp(+2*pi*sqrt(-1)*(n-Lb)*(k-Lb)/N),n=Lb..Ub)
+          where
+          Lb <= k <= Ub
+          N = Ub-Lb+1}
 Procedure FFTC1DInv(var A: TCompVector; Lb, Ub: Integer);
 
 {1-dimensional real FFT.
 INPUT PARAMETERS
-    A   -   Array of Float to be transformed
-    Lb,Ub   -   problem bounds
+    A   - Array of Float to be transformed
+Lb,Ub   - Lower and upper bounds of array slice to be transformed.
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    F   -   DFT of a input array, array[Lb..Ub]
-            F[j] = SUM(A[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
+    F   - DFT result of input data. F is a complex array with range [0..(Ub-Lb)]
+          F[j] = SUM(A[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
 NOTE:
-    F[] satisfies symmetry property F[k] = conj(F[N-k]),  so just one half
-of  array  is  usually needed. But for convinience subroutine returns full
-complex array (with frequencies above N/2), so its result may be  used  by
-other FFT-related subroutines. N = Ub-Lb.}
+    F[] satisfies symmetry property F[k] = conj(F[N-k]), so just one half of
+array is usually needed. But for convinience, subroutine returns full complex
+array (with frequencies above N/2), so its result may be  used  by other
+FFT-related subroutines. N = Ub-Lb.}
 Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);
 
 {1-dimensional real inverse FFT.
 INPUT PARAMETERS
-    F   -   TCompVector: frequencies from forward real FFT
-Lb,Ub   -   problem bounds
+    F   - Frequencies from forward real FFT
+Lb,Ub   - Problem bounds. Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(F).
+          The problem size N, which equals Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   inverse DFT of a input array, array[Lb..Ub]}
-Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; out A: TVector);
+    A   - Inverse DFT of a input array, array[0..(Ub-Lb)]
+NOTE:
+    F[] should satisfy symmetry property F[k] = conj(F[N-k]). Only just one half
+of frequencies array, elements from Lb to floor(Lb + N/2), is used. However,
+this function doesn't check the symmetry of F[Lb..Ub], so the caller have to
+make sure it before use. F[0] is ALWAYS real. If N is even, F[floor(N/2)] is
+real too. If N is odd, then F[floor(N/2)] has no special properties. N = Ub-Lb.}
+Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);
 
 implementation
 
-{//FTBase procedures & functions(just for internal)
+{FTBase procedures & functions(just for internal)
 Procedure FTBaseGenerateComplexFFTPlan(N:Integer; var Plan:FTPlan);
-Procedure FTBaseGenerateRealFFTPlan(N:Integer; var Plan:FTPlan);                           // never called
-Procedure FTBaseGenerateRealFHTPlan(N:Integer; var Plan:FTPlan);                           // never called
 Procedure FTBaseExecutePlan(var A:TVector; AOffset,N:Integer; var Plan:FTPlan);
 Procedure FTBaseExecutePlanRec(var A:TVector; AOffset:Integer; var Plan:FTPlan; EntryOffset,StackPtr:Integer);
 Procedure FTBaseFactorize(N:Integer; var Factor1,Factor2:Integer);
-Function FTBaseIsSmooth(N:Integer):Boolean;                                               // never called
 Function FTBaseFindSmooth(N:Integer):Integer;
-Function FTBaseFindSmoothEven(N:Integer):Integer;
-Function FTBaseGetFLOPEstimate(N:Integer):Double;                                         // never called }
-{//Internal-only procedures
+
 Procedure FFTR1DInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:FTPlan);
-Procedure FFTR1DInvInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:FTPlan); Never called }
+ }
 {$region internal definitions and procedures}
 type
   TFTPlan = record
@@ -89,14 +113,10 @@ Const
   FFTRealCooleyTukeyPlan   = 5;
   FFTEmptyPlan             = 6;
   FHTN2Plan                = 999;
-  FTBaseUpdateTw           = 4;
   FTBaseCodeletRecommended = 5;
-  FTBaseInefficiencyFactor = 1.3;
-  FTBaseMaxSmoothFactor    = 5;
 
 Procedure FTBaseFactorize(N: Integer; var Factor1, Factor2: Integer);
 //Factorize an Integer N to Factor1*Factor2
-//The original Function uses "while loop" to do the "for loop" behavior. Rewrite it to "for loop".
 var
   J, J2: Integer;
 
@@ -148,37 +168,10 @@ begin
   end;
 end;
 
-//Function FTBaseIsSmooth(N:Integer):Boolean;
-//(*************************************************************************
-//Is number smooth?
-
-//  -- ALGLIB --
-//     Copyright 01.05.2009 by Bochkanov Sergey
-//*************************************************************************)
-////The original Function uses "while loop" to do the "for loop" behavior. Rewrite it to "for loop".
-//var
-//I:Integer;
-
-//begin
-//  Result:=False;
-//  for I := 2 to FTBaseMaxSmoothFactor do
-//  begin
-//    while ((N mod I)=0) do
-//    begin
-//      N:=N div I;
-//    end;
-//  end;
-//  if (N=1) then Result:=True;
-//end;
-
 Procedure FTBaseFindSmoothRec(N: Integer; Seed: Integer; LeastFactor: Integer;
   var Best: Integer);
-(*************************************************************************
-recurrent subroutine for FFTFindSmoothRec
+//recurrent subroutine for FFTFindSmoothRec
 
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
 //Find the Smallest(but greater than or equal to N) Integer, which is divisible only by 2, 3, or 5.
 //The original Procedure is recursive. For more understandable, redesign the workflow with "while loop".
 var
@@ -244,14 +237,7 @@ begin
 end;
 
 Function FTBaseFindSmooth(N: Integer): Integer;
-(*************************************************************************
-Returns smallest smooth (divisible only by 2, 3, 5) number that is greater
-than or equal to max(N,2)
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
-  //Returns smallest smooth (divisible only by 2, 3, 5) number that is greater than or equal to max(N,2)
+//Returns smallest smooth (divisible only by 2, 3, 5) number that is greater than or equal to max(N,2)
 var
   Best: Integer;
 
@@ -265,68 +251,10 @@ begin
   Result := Best;
 end;
 
-Function FTBaseFindSmoothEven(N: Integer): Integer;
-(*************************************************************************
-Returns  smallest  smooth  (divisible only by 2, 3, 5) even number that is
-greater than or equal to max(N,2)
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
-var
-  Best: Integer;
-
-begin
-  Best := 2;
-  while (Best < N) do
-  begin
-    Best := 2 * Best;
-  end;
-  FTBaseFindSmoothRec(N, 2, 2, Best);
-  Result := Best;
-end;
-
-//Function FTBaseGetFLOPEstimate(N:Integer):Float;
-//(*************************************************************************
-//Returns estimate of FLOP count for the FFT.
-
-//It is only an estimate based on operations count for the PERFECT FFT
-//and relative inefficiency of the algorithm actually used.
-
-//N should be power of 2, estimates are badly wrong for non-power-of-2 N's.
-
-//  -- ALGLIB --
-//     Copyright 01.05.2009 by Bochkanov Sergey
-//*************************************************************************)
-//begin
-//  Result:=FTBaseInefficiencyFactor*(4*N*Ln(N)/Ln(2)-6*N+8);
-//end;
-
-Procedure FFTArrayResize(var A: TIntVector; var ASize: Integer; NewASize: Integer);
-(*************************************************************************
-Internal subroutine: array resize
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
-//Rewrited with object pascal's api
-var
-  TMP: TIntVector;
-
-begin
-  SetLength(TMP, ASize);
-  //In FPC, the memory of elements in 1D dynamic array must be continuous.
-  Move(A[0], TMP[0], Asize * SizeOf(Integer));
-  SetLength(A, NewASize);
-  Move(TMP[0], A[0], Min(Asize, NewASize) * SizeOf(Integer));
-  ASize := NewASize;
-end;
-
 Procedure RefFHT(var A: TVector; N, Offs: Integer);
 (*************************************************************************
 Reference FHT stub
 *************************************************************************)
-//The original Procedure uses "while loop" to do the "for loop" behavior. Rewrite it to "for loop".
 var
   Buf: TVector;
   I:   Integer;
@@ -368,12 +296,7 @@ Write A^T to B, where:
 * B is n*m complex matrix stored in array B as pairs of real/image values,
   beginning from BStart position, with BStride stride
 stride is measured in complex numbers, i.e. in real/image pairs.
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
-//Comment out small matrix check to skip unknown-purpose recursion
-//The original Procedure uses "while loop" to do the "for loop" behavior. Rewrite it to "for loop".
+ *************************************************************************)
 var
   I, J, Idx1, Idx2, M2: Integer;
 
@@ -401,11 +324,7 @@ Procedure FFTIRLTRec(var A: TVector; AStart, AStride: Integer; var B: TVector;
   BStart, BStride, M, N: Integer);
 (*************************************************************************
 Recurrent subroutine for a InternalRealLinTranspose
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
 *************************************************************************)
-//Comment out small matrix check to skip unknown-purpose recursion
-//The original Procedure uses "while loop" to do the "for loop" behavior. Rewrite it to "for loop".
 var
   I, J, Idx1, Idx2: Integer;
 begin
@@ -429,9 +348,6 @@ Procedure InternalComplexLinTranspose(var A: TVector; M, N, AStart: Integer;
   var Buf: TVector);
 (*************************************************************************
 Linear transpose: transpose complex matrix stored in 1-dimensional array
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
 *************************************************************************)
 begin
   FFTICLTRec(A, AStart, N, Buf, 0, M, M, N);
@@ -441,9 +357,6 @@ end;
 Procedure InternalRealLinTranspose(var A: TVector; M, N, AStart: Integer; var Buf: TVector);
 (*************************************************************************
 Linear transpose: transpose real matrix stored in 1-dimensional array
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
 *************************************************************************)
 begin
   FFTIRLTRec(A, AStart, N, Buf, 0, M, M, N);
@@ -451,13 +364,9 @@ begin
 end;
 
 Procedure FFTTwCalc(var A: TVector; AOffset, N1, N2: Integer);
-//Translate from C# Code of ALGLIB v3.16
 (*************************************************************************
 Twiddle factors calculation
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   I, J2, N, HalfN1, Offs, UpdateTW2: Integer;
   X, Y, TwXM1, TwY, TwBaseXM1, TwBaseY, TwRowXM1, TwRowY, TmpX, TmpY, V, W : Float;
@@ -612,10 +521,7 @@ Recurrent subroutine for the FTBaseExecutePlan
 Parameters:
     A           FFT'ed array
     AOffset     offset of the FFT'ed part (distance is measured in Floats)
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   I, J, K, N1, N2, N, M, Offs, Offs1, Offs2, OffsA, OffsB, OffsP: Integer;
   HK, HNK, X, Y, BX, BY, A0X, A0Y, A1X, A1Y, A2X, A2Y, A3X, A3Y, V0, V1, V2, V3,
@@ -1095,10 +1001,7 @@ end;
 Procedure FTBasePrecomputePlanRec(var Plan: TFTPlan; EntryOffset, StackPtr: Integer);
 (*************************************************************************
 Recurrent subroutine for precomputing FFT plans
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   I, N1, N2, N, M, Offs: Integer;
   V, BX, BY: Float;
@@ -1187,10 +1090,7 @@ PARAMETERS:
     PlanArraySize       plan array size (actual)
     TmpMemSize          temporary memory required size
     BluesteinMemSize    temporary memory required size
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   K, M, N1, N2, ESize, EntryOffset: Integer;
 
@@ -1200,7 +1100,9 @@ begin
 
   if (PlanSize + FTBasePlanEntrySize) > PlanArraySize then
   begin
-    FFTArrayResize(Plan.Plan, PlanArraySize, 8 * PlanArraySize);
+    ESize := 8 * PlanArraySize;
+    SetLength(Plan.Plan,ESize);
+    PlanArraySize := ESize;
   end;
   EntryOffset := PlanSize;
   ESize    := FTBasePlanEntrySize;
@@ -1393,10 +1295,7 @@ If Plan is a:
                         A contains real values interleaved with zeros
 * real FHT plan     -   sizeof(A)=2*N,
                         A contains real values interleaved with zeros
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   StackPtr: Integer;
 
@@ -1416,9 +1315,6 @@ Subroutine parameters:
 
 Output parameters:
     Plan            plan
-
-  -- ALGLIB --
-     Copyright 01.05.2009 by Bochkanov Sergey
 *************************************************************************)
 var
   PlanArraySize, PlanSize, PrecomputedSize, TmpMemSize, StackMemSize, StackPtr: Integer;
@@ -1450,73 +1346,6 @@ begin
   end;
 end;
 
-//Procedure FTBaseGenerateRealFFTPlan(N:Integer; var Plan:TFTPlan);
-//(*************************************************************************
-//Generates real FFT plan
-//*************************************************************************)
-//var
-//  PlanArraySize,PlanSize,PrecomputedSize,TmpMemSize,StackMemSize,StackPtr:Integer;
-
-//begin
-//  PlanArraySize:=1;
-//  PlanSize:=0;
-//  PrecomputedSize:=0;
-//  StackMemSize:=0;
-//  StackPtr:=0;
-//  TmpMemSize:=2*N;
-//  SetLength(Plan.Plan,PlanArraySize);
-//  FTBaseGeneratePlanRec(N,FTBaseRFFTTask,Plan,PlanSize,PrecomputedSize,PlanArraySize,TmpMemSize,StackMemSize,StackPtr);
-//  if StackPtr <> 0 then
-//  begin
-//    SetErrCode(lmDFTError,'Internal error in FTBaseGenerateComplexFFTPlan: stack ptr!');
-//    Exit;
-//  end;
-//  SetLength(Plan.StackBuf,Max(StackMemSize,1));
-//  SetLength(Plan.TmpBuf,Max(TmpMemSize,1));
-//  SetLength(Plan.Precomputed,Max(PrecomputedSize,1));
-//  StackPtr:=0;
-//  FTBasePrecomputePlanRec(Plan,0,StackPtr);
-//   if StackPtr <> 0 then
-//  begin
-//    SetErrCode(lmDFTError,'Internal error in FTBaseGenerateComplexFFTPlan: stack ptr!');
-//    Exit;
-//  end;
-//end;
-
-//Procedure FTBaseGenerateRealFHTPlan(N:Integer; var Plan:TFTPlan);
-//(*************************************************************************
-//Generates real FHT plan
-//*************************************************************************)
-//var
-//  PlanArraySize,PlanSize,PrecomputedSize,TmpMemSize,StackMemSize,StackPtr:Integer;
-
-//begin
-//  PlanArraySize:=1;
-//  PlanSize:=0;
-//  PrecomputedSize:=0;
-//  StackMemSize:=0;
-//  StackPtr:=0;
-//  TmpMemSize:=N;
-//  SetLength(Plan.Plan,PlanArraySize);
-//  FTBaseGeneratePlanRec(N,FTBaseRFHTTask,Plan,PlanSize,PrecomputedSize,PlanArraySize,TmpMemSize,StackMemSize,StackPtr);
-//   if StackPtr <> 0 then
-//   begin
-//     SetErrCode(lmDFTError,'Internal error in FTBaseGenerateComplexFFTPlan: stack ptr!');
-//     Exit;
-//   end;
-//  SetLength(Plan.StackBuf,Max(StackMemSize,1));
-//  SetLength(Plan.TmpBuf,Max(TmpMemSize,1));
-//  SetLength(Plan.Precomputed,Max(PrecomputedSize,1));
-//  StackPtr:=0;
-//  FTBasePrecomputePlanRec(Plan,0,StackPtr);
-//   if StackPtr <> 0 then
-//   begin
-//     SetErrCode(lmDFTError,'Internal error in FTBaseGenerateComplexFFTPlan: stack ptr!');
-//     Exit;
-//   end;
-//end;
-
-
 //End of FTBase content---------------------------------------------------------
 
 
@@ -1524,11 +1353,7 @@ Procedure FFTR1DInternalEven(var A: TVector; N: Integer; var Buf: TVector;
   var Plan: TFTPlan);
 (*************************************************************************
 Internal subroutine. Never call it directly!
-
-
-  -- ALGLIB --
-     Copyright 01.06.2009 by Bochkanov Sergey
-*************************************************************************)
+ *************************************************************************)
 var
   X, Y: Float;
   I, N2, Idx: Integer;
@@ -1578,103 +1403,25 @@ begin
   A[1] := Buf[0] - Buf[1];
 end;
 
-//Procedure FFTR1DInvInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:TFTPlan);
-//(*************************************************************************
-//Internal subroutine. Never call it directly!
-
-
-//  -- ALGLIB --
-//     Copyright 01.06.2009 by Bochkanov Sergey
-//*************************************************************************)
-//var
-//  X,Y,T:Float;
-//  I,N2:Integer;
-
-//begin
-//  if (N <= 0) or ((N mod 2) <> 0) then
-//  begin
-//    SetErrMode(lmDFTError, 'FFTR1DEvenInplace: incorrect N!');
-//    Exit;
-//  end;
-//  //
-//  // Special cases:
-//  // * N=2
-//  //
-//  // After this block we assume that N is strictly greater than 2
-//  //
-//  if N=2 then
-//  begin
-//    X:=0.5*(A[0]+A[1]);
-//    Y:=0.5*(A[0]-A[1]);
-//    A[0]:=X;
-//    A[1]:=Y;
-//    Exit;
-//  end;
-//  //
-//  // inverse real FFT is reduced to the inverse real FHT,
-//  // which is reduced to the forward real FHT,
-//  // which is reduced to the forward real FFT.
-//  //
-//  // Don't worry, it is really compact and efficient reduction :)
-//  //
-//  N2:=N div 2;
-//  Buf[0]:=A[0];
-//  for I := 1 to (N2-1) do
-//  begin
-//    X:=A[2*I+0];
-//    Y:=A[2*I+1];
-//    Buf[I]:=X-Y;
-//    Buf[N-I]:=X+Y;
-//  end;
-//  Buf[N2]:=A[1];
-//  FFTR1DInternalEven(Buf,N,A,Plan);
-//  if MathErr <> MathOK then
-//    Exit;
-//  A[0]:=Buf[0]/N;
-//  T:=1/N;
-//  for I := 1 to (N2-1) do
-//  begin
-//    X:=Buf[2*I+0];
-//    Y:=Buf[2*I+1];
-//    A[I]:=T*(X-Y);
-//    A[N-I]:=T*(X+Y);
-//  end;
-//  A[N2]:=Buf[1]/N;
-//end;
 {$endregion}
 Procedure FFTC1D(var A: TCompVector; Lb, Ub: Integer);
-(*************************************************************************
-1-dimensional complex FFT.
-
-Array size N may be arbitrary number (composite or prime).  Composite  N's
-are handled with cache-oblivious variation of  a  Cooley-Tukey  algorithm.
-Small prime-factors are transformed using hard coded  codelets (similar to
-FFTW codelets, but without low-level  optimization),  large  prime-factors
-are handled with Bluestein's algorithm.
-
-Fastests transforms are for smooth N's (prime factors are 2, 3,  5  only),
-most fast for powers of 2. When N have prime factors  larger  than  these,
-but orders of magnitude smaller than N, computations will be about 4 times
-slower than for nearby highly composite N's. When N itself is prime, speed
-will be 6 times lower.
-
-Algorithm has O(N*logN) complexity for any N (composite or prime).
-
+{1-dimensional complex DFT.
 INPUT PARAMETERS
-    A   -   array[0..N-1] - complex Function to be transformed
-    N   -   problem size
-
+    A   - Complex array to be transformed
+ Lb,Ub  - Lower and upper bounds of array slice to be transformed.
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals to Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   DFT of a input array, array[0..N-1]
-            A_out[j] = SUM(A_in[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = 0..N-1)
-
-
-  -- ALGLIB --
-     Copyright 29.05.2009 by Bochkanov Sergey
-*************************************************************************)
+    A   - DFT result is written into the section [Lb..Ub] of array A.
+          If the input data need to be reserved, back it up before calling.
+          A_out[k] = SUM(A_in[n]*exp(-2*pi*sqrt(-1)*(n-Lb)*(k-Lb)/N), n=Lb..Ub)
+          where
+          Lb <= k <= Ub
+          N = Ub-Lb+1}
 var
   Plan: TFTPlan;
-  I, N: Integer;
+  N: Integer;
   Buf:  TVector;
 
 begin
@@ -1706,26 +1453,20 @@ begin
 end;
 
 Procedure FFTC1DInv(var A: TCompVector; Lb, Ub: Integer);
-(*************************************************************************
-1-dimensional complex inverse FFT.
-
-Array size N may be arbitrary number (composite or prime).  Algorithm  has
-O(N*logN) complexity for any N (composite or prime).
-
-See FFTC1D() description for more information about algorithm performance.
-
+{1-dimensional complex inverse FFT.
 INPUT PARAMETERS
-    A   -   array[0..N-1] - complex array to be transformed
-    N   -   problem size
-
+    A   - Complex array to be transformed
+Lb,Ub   - Lower and upper bounds of array slice to be transformed.
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals to Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   inverse DFT of a input array, array[0..N-1]
-            A_out[j] = SUM(A_in[k]/N*exp(+2*pi*sqrt(-1)*j*k/N), k = 0..N-1)
-
-
-  -- ALGLIB --
-     Copyright 29.05.2009 by Bochkanov Sergey
-*************************************************************************)
+    A   - Inverse DFT result is written into the section [Lb..Ub] of array A.
+          If the input data need to be reserved, back it up before calling.
+          A_out[k] = SUM(A_in[n]/N*exp(+2*pi*sqrt(-1)*(n-Lb)*(k-Lb)/N),n=Lb..Ub)
+          where
+          Lb <= k <= Ub
+          N = Ub-Lb+1}
 var
   I, N: Integer;
 begin
@@ -1752,29 +1493,21 @@ begin
 end;
 
 Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);
-(*************************************************************************
-1-dimensional real FFT.
-
-Algorithm has O(N*logN) complexity for any N (composite or prime).
-
+{1-dimensional real FFT.
 INPUT PARAMETERS
-    A   -   array[0..N-1] - real Function to be transformed
-    N   -   problem size
-
+    A   - Array of Float to be transformed
+Lb,Ub   - Lower and upper bounds of array slice to be transformed.
+          Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(A).
+          The problem size N, which equals Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    F   -   DFT of a input array, array[0..N-1]
-            F[j] = SUM(A[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = 0..N-1)
-
+    F   - DFT result of input data. F is a complex array with range [0..(Ub-Lb)]
+          F[j] = SUM(A[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = Lb..Ub)
 NOTE:
-    F[] satisfies symmetry property F[k] = conj(F[N-k]),  so just one half
-of  array  is  usually needed. But for convinience subroutine returns full
-complex array (with frequencies above N/2), so its result may be  used  by
-other FFT-related subroutines.
-
-
-  -- ALGLIB --
-     Copyright 01.06.2009 by Bochkanov Sergey
-*************************************************************************)
+    F[] satisfies symmetry property F[k] = conj(F[N-k]), so just one half of
+array is usually needed. But for convinience, subroutine returns full complex
+array (with frequencies above N/2), so its result may be  used  by other
+FFT-related subroutines. N = Ub-Lb.}
 var
   I, N2, Idx, N: Integer;
   Hn, HmnC, V: Complex;
@@ -1860,35 +1593,21 @@ begin
   end;
 end;
 
-Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; out A: TVector);
-(*************************************************************************
-1-dimensional real inverse FFT.
-
-Algorithm has O(N*logN) complexity for any N (composite or prime).
-
+Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);
+{1-dimensional real inverse FFT.
 INPUT PARAMETERS
-    F   -   array[0..(N-1)] - frequencies from forward real FFT
-    N   -   problem size
-
+    F   - Frequencies from forward real FFT
+Lb,Ub   - Problem bounds. Lb must be less or equal to Ub.
+          Typically, but not necessary, Lb is 0 or 1 and Ub is High(F).
+          The problem size N, which equals Ub-Lb+1, could be any natural number.
 OUTPUT PARAMETERS
-    A   -   inverse DFT of a input array, array[0..N-1]
-
+    A   - Inverse DFT of an input array, array[0..(Ub-Lb)]
 NOTE:
-    F[] should satisfy symmetry property F[k] = conj(F[N-k]), so just  one
-half of frequencies array is needed - elements from 0 to floor(N/2).  F[0]
-is ALWAYS real. If N is even F[floor(N/2)] is real too. If N is odd,  then
-F[floor(N/2)] has no special properties.
-
-Relying on properties noted above, FFTR1DInv subroutine uses only elements
-from 0th to floor(N/2)-th. It ignores imaginary part of F[0],  and in case
-N is even it ignores imaginary part of F[floor(N/2)] too.  So you can pass
-either frequencies array with N elements or reduced array with roughly N/2
-elements - subroutine will successfully transform both.
-
-
-  -- ALGLIB --
-     Copyright 01.06.2009 by Bochkanov Sergey
-*************************************************************************)
+    F[] should satisfy symmetry property F[k] = conj(F[N-k]). Only just one half
+of frequencies array, elements from Lb to floor(Lb + N/2), is used. However,
+this function doesn't check the symmetry of F[Lb..Ub], so the caller have to
+make sure it before use. F[0] is ALWAYS real. If N is even, F[floor(N/2)] is
+real too. If N is odd, then F[floor(N/2)] has no special properties. N = Ub-Lb.}
 var
   I, N: Integer;
   H:    TVector;

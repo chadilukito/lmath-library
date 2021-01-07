@@ -1,3 +1,96 @@
+#LMath and Cimponents 0.6.0
+We introduce new package: DSP, for Digital Signal Processing.
+For now:
+##lmGenMath package
+1. In uTypes.unit Euler constant added, e number (natural logarithms base.
+2. In uComplex unit, in one of the previous releases function CReal was erroneously renamed to CFloat. Now it is corrected.
+3. In uComplex unit, functions CToPolar and CToRect added, for conversions between polar and rectangular representations of complex numbers.
+
+##lmMathUtils package
+4. Unit uCompVecUtils added, similar to uVecUtils but for tCompVec. Following types are defined:
+ 
+ _TComplexTestFunc = function(Val:complex):boolean;_
+  General function for testing complex value for a condition.
+  
+ _TComplexFunc = function(Arg:Complex):complex;_
+General complex function of complex argument. 
+ 
+_TComplexComparator = function(Val, Ref:complex):boolean;_
+General function for comparison of complex numbers. 
+Functions _FirstElement_ and _SelElements_ ( see below) pass array elements to _Val_ and user-supplied Ref value to _Ref_.
+
+Functions and procedures:
+
+_function ExtractReal(CVec:TCompVector; Lb, Ub:integer):TVector;_
+Extracts real parts of TCompVector elements and strores them in TVector.
+ 
+_function ExtractImaginary(CVec:TCompVector; Lb, Ub:integer):TVector;_
+Extracts imaginary parts of TCompVector elements and strores them in TVector.
+
+_function CombineCompVec(VecRe, VecIm:TVector; Lb, Ub:integer):TCompVector;_
+Opposite to previous two, combines vector of complex numbers from two vectors of Float.
+
+_function CMakePolar(V:TCompVector; Lb, Ub:integer):TCompVector;_
+Transforms elements of TCompVector from rectangular form to polar.
+
+_function CMakeRectangular(V:TCompVector; Lb, Ub:integer):TCompVector;_
+Opposite to the previous one. Transforms elements of TCompVector from polar form to rectangular.
+
+_function MaxReLoc(CVec:TCompVector; Lb, Ub:integer):integer;_
+Returns the position of an element with the largest real part.
+
+_function MaxImLoc(CVec:TCompVector; Lb, Ub:integer):integer;_
+Returns the position of an element with the largest imaginary part.
+
+_function MinReLoc(CVec:TCompVector; Lb, Ub:integer):integer;_
+Returns the position of an element with the minimal real part.
+
+_function MinImLoc(CVec:TCompVector; Lb, Ub:integer):integer;_
+Returns the position of an element with the minimal imaginary part.
+
+_procedure Apply(V:TCompVector; Lb, Ub: integer; Func:TComplexFunc); overload;_
+Passes every element of _V_ to _Func_ and assignes returned value to the element.
+
+_function CompareCompVec(X, Xref : TCompVector; Lb, Ub  : Integer; Tol : Float) : Boolean; overload;_
+Returns _true_ if all elements of _X_ are equal to corresponding elements of _XRef_ to the _Tol_ accuracy.
+ 
+_function Any(Vector:TCompVector; Lb, Ub : integer; Test:TComplexTestFunc):boolean; overload;_
+Returns _True_ if any element of _Vector_ satisfies the condition defined by _Test_.
+ 
+_function FirstElement(Vector:TCompVector; Lb, Ub : integer; Ref:complex; Comparator:TComplexComparator):integer; overload;_
+Returns the position of the first element which satisfies the condition defined by _Comparator_ and _Ref_.
+
+_function ComplexSeq(Lb, Ub : integer; firstRe, firstIm, incrementRe, incrementIm:Float; Vector:TCompVector = nil):TCompVector;_
+Constructs a _TCompVector_, where real and imaginary parts constiute arithmetic progressions beginning with _fistRe_ and _firstIm_ and increments _incrementRe_ and _incrementIm_ correspondingly. If _Vector_ is supplied, its length must be more than Ub_, otherwise new vector with the length _Ub+1_ is created. In both cases _Lb_ is assigned to (firstRe, firstIm), following elements elements up to _Ub_ are (FirstRe + incrementRe*N, FirstM*IncrementIm*N).
+ 
+_function SelElements(Vector:TCompVector; Lb, Ub, ResLb : integer;
+         Ref:complex; Comparator:TComplexComparator):TIntVector; overload;_
+Returns TIntVector containing numbers of elements which satisfy a condition defined by _Comparator_ and _Ref_.
+
+_function ExtractElements(Vector:TCompVector; Mask:TIntVector; Lb:integer):TCompVector; overload;_
+Returns vector of complex containing elements of _Vector_ whose positions are contained in _Mask_. _Mask_ may be obtained for example with a preliminary call of _SelElements_.
+
+##lmOptimum package.
+5. uEval now initializes variables _Pi_ and _Euler_ with the values of corresponding constants, so they can be used in expressions. In principle, a user can modify them, but it is of course is not advisable.
+
+##lmRegression package.
+6. uDFT unit written for Fourier transform of arrays with arbitrary length, not necessary powers of two.
+It defines following procedures:
+
+_Procedure FFTC1D(var A: TCompVector; Lb, Ub: Integer);_
+for direct Fourier transform of a complex array. Transform result is placed in the same array which is therefore destroyed.
+
+_Procedure FFTC1DInv(var A: TCompVector; Lb, Ub: Integer);_
+for inverse transform of a complex array. Similar, transform result is placed in the same array.
+
+_Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);_
+This procedure takes as input a real array _A_ and puts result of direct Fourier transform into a complex array _F_ of the same length.
+
+_Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);_
+This procedure is opposite of the previous one: it taked as an input a complex array _F_, makes inverse Fourier transform and puts its result into a real array _A_.
+
+7. Bug with an erroneous signe in uFFT unit was corrected. 
+
 #LMath and Components 0.5.1
 This is mostly bug fix release.
 

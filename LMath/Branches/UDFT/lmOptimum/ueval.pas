@@ -1127,6 +1127,9 @@ begin
   SetFunction('InvSnedecor', @StandardSEEFunctions);  
 
   InitEval := NFunc;
+
+  SetVariable('Pi',Pi);
+  SetVariable('euler', Euler);
 end;
 
 function Eval(ExpressionString : String) : Float;

@@ -48,8 +48,8 @@ function Cmplx(X, Y : Float) : Complex;
 { Returns the complex number R * [cos(Theta) + i * sin(Theta)] }
 function Polar(R, Theta : Float) : Complex;
 
-{ Returns the Float part of Z }
-function CFloat(Z : Complex) : Float;
+{ Returns the real part of Z }
+function CReal(Z : Complex) : Float;
 
 { Returns the imaginary part of Z }
 function CImag(Z : Complex) : Float;
@@ -83,6 +83,12 @@ function CInv(Z : Complex) : Complex;
 
 {Principal part of complex square root }
 function CSqrt(Z : Complex) : Complex;
+
+{converts complex number from rectangular to polar form}
+function CToPolar(Z : Complex):complex;
+
+{converts complex number from polar to rectangular form}
+function CToRect(Z : Complex):complex;
 
 { ------------------------------------------------------------------
   Logarithm, Exponential, Powers
@@ -339,7 +345,7 @@ begin
   Result.Y := R * Sin(Theta);
 end;
 
-function CFloat(Z : Complex) : Float;
+function CReal(Z : Complex) : Float;
 begin
   Result := Z.X;
 end;
@@ -494,7 +500,39 @@ begin
   
   Result.X := U;
   Result.Y := V;
-end;   
+end;
+
+function CToPolar(Z: Complex): complex;
+var
+   Buf:complex;
+begin
+  Buf.X := Sqrt(Z.X*Z.X+Z.Y*Z.Y);
+  if not IsZero(Z.X) then
+    Buf.Y := arctan(Z.Y/Z.X)
+  else begin
+    if Z.Y > 0 then
+      Result.Y := Pi/2
+    else
+      Result.Y := -Pi/2;
+  end;
+  if Z.X < 0  then
+  begin
+    if Z.Y < 0 then
+      Buf.Y := Buf.Y - Pi
+    else
+      Buf.Y := Buf.Y + Pi;
+  end;
+  Result := Buf;
+end;
+
+function CToRect(Z: Complex): complex;
+var
+  C:Complex;
+begin
+  C.X := Z.X*cos(Z.Y);
+  C.Y := Z.X*sin(Z.Y);
+  Result := C;
+end;
 
 function CLn(Z : Complex) : Complex;
 var

@@ -1,4 +1,4 @@
-program GUITEST;
+program Fourier;
 
 {$mode objfpc}{$H+}
 
@@ -7,15 +7,16 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, MainForm, uFFTFort
+  Forms, main, lmcomponents, Transforms
   { you can add units after this };
 
 {$R *.res}
 
 begin
-  RequireDerivedFormResource:=True;
+  RequireDerivedFormResource := True;
+  Application.Scaled := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
 

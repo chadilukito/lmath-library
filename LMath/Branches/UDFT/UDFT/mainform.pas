@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls, DateUtils,
-  fftw_, //FFTW
+  fftw_, uFFT, uFFTFort,//FFTW
   ap, fft, //ALGLIB v2.6
   uDFT, //DFT for LMath
   utypes, //type definition of LMath
@@ -47,7 +47,8 @@ var
 begin
   Button1.Enabled:=False;
   Randomize();
-  N:=Random(100000);
+  // N:=Random(100000);
+  N := 16;
   ResultsMemo.Append('Executing test. Data length: '+IntToStr(N));
   SetLength(LMathInput,N);
   SetLength(LMathOutput,N);
@@ -74,8 +75,12 @@ begin
 
   //LMath
   StartTime:=Time;
-  uDFT.FFTC1D(LMathInput,0,High(LMathInput));
+  // uDFT.FFTC1D(LMathInput,0,High(LMathInput));
+  // uFFT.FFT(16,LMathInput,LMathOutput);
+  uFFTFort.FFT(LMathInput,LMathOutput,0,High(LMathInput));
   EndTime := Time;
+  for I := 0 to N-1 do
+    LMathOutput[I] := LMathOutput[I+1];
   LMathTime:=MilliSecondsBetween(EndTime,StartTime);
 
   //AlgLib

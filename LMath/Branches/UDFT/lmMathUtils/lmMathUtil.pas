@@ -9,7 +9,7 @@ interface
 
 uses
   ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, uunitsformat, uVecFunc, uVecMatPrn, 
-  uvecfileutils, LazarusPackageIntf;
+  uVecFileUtils, uCompVecUtils, LazarusPackageIntf;
 
 implementation
 
