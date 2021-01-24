@@ -2,14 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit lmRegression;
+unit lmDSP;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  uevalfit, uexlfit, uexpfit, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
-  usvdfit, uSpline, uregtest, uConstrNLFit, LazarusPackageIntf;
+  uConvolutions, uFilters, uDFT, ufft, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('lmRegression', @Register);
+  RegisterPackage('lmDSP', @Register);
 end.

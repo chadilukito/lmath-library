@@ -4,8 +4,12 @@ interface
 uses uTypes, uErrors, uMinMax;
 
 type
-  TTestFunc    = function(X:Float):boolean;
-  TIntTestFunc = function(X:Integer):boolean;
+  TTestFunc       = function(X:Float):boolean;
+  TIntTestFunc    = function(X:Integer):boolean;
+  TIntFloatFunc   = function(X:integer):float;
+  TIntArrayFunc   = function(X:array of integer):float;
+  TFloatArrayFunc = function(X:array of float):float;
+  TIntArrayIntFunc   = function(X:array of integer):integer;
 
   TMatCoords = record
     Row, Col :integer;
@@ -13,6 +17,8 @@ type
   
 function tmCoords(ARow,ACol:integer):TMatCoords;
 
+// this group of Apply functions passes existing value of an array element to a function and assigns
+// back the returned value
 procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
 procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
 procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
@@ -20,6 +26,15 @@ procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); o
 
 procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
 procedure Apply(V:TIntVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TIntFunc); overload;
+
+//InitWithFunc function passes to the function index of an array element and assigns returned value to it
+function InitWithFunc(Lb, Ub: integer; Func:TIntFloatFunc; Ziel:TVector = nil):TVector; overload;
+function InitWithFunc(Lb, Ub: integer; Func:TIntFunc; Ziel:TIntVector = nil):TIntVector; overload;
+
+function ApplyRecursive(Func:TFloatArrayFunc; InitValues:array of Float;
+         Lb, Ub : integer; Ziel:TVector = nil):TVector; overload;
+function ApplyRecursive(Func:TIntArrayIntFunc; InitValues:array of Integer;
+         Lb, Ub : integer; Ziel:TIntVector = nil):TIntVector; overload;
 
 { Checks if each component of vector X is within a fraction Tol of
 the corresponding component of the reference vector Xref. In this
@@ -192,6 +207,95 @@ begin
   end;
 end;
 
+function ApplyRecursive(Func: TFloatArrayFunc; InitValues: array of Float; Lb, Ub: integer; Ziel: TVector): TVector;
+var
+  I,L:integer;
+begin
+  if Ziel <> nil then
+  begin
+    Ub := min(High(Ziel),Ub);
+    Result := Ziel;
+  end else
+    DimVector(Result,Ub);
+  if (Lb > Ub) or (High(InitValues) > (Ub-Lb)) or (High(initValues) = -1) then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
+
+  L := High(InitValues);
+  for I := 0 to L do
+    Result[Lb+I] := InitValues[I];
+  for I := Lb+L+1 to High(Result) do
+    Result[I] := Func(Result[I-L-1..I-1]);
+end;
+
+function ApplyRecursive(Func: TIntArrayIntFunc; InitValues: array of Integer; Lb, Ub: integer; Ziel: TIntVector
+  ): TIntVector;
+var
+  I,L:integer;
+begin
+  if Ziel <> nil then
+  begin
+    Ub := min(High(Ziel),Ub);
+    Result := Ziel;
+  end else
+    DimVector(Result,Ub);
+  if (Lb > Ub) or (High(InitValues) > (Ub-Lb)) or (High(initValues) = -1) then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
+
+  L := High(InitValues);
+  for I := 0 to L do
+    Result[Lb+I] := InitValues[I];
+  for I := Lb+L+1 to High(Result) do
+    Result[I] := Func(Result[I-L-1..I-1]);
+end;
+
+function InitWithFunc(Lb, Ub: integer; Func: TIntFloatFunc; Ziel:TVector):TVector;
+var
+  I:integer;
+begin
+  if Ziel <> nil then
+  begin
+    Ub := min(High(Ziel),Ub);
+    Result := Ziel;
+  end else
+    DimVector(Result,Ub);
+  Ub := min(High(Result),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := Lb to Ub do
+    Result[I] := Func(I);
+end;
+
+function InitWithFunc(Lb, Ub: integer; Func: TIntFunc; Ziel:TIntVector):TIntVector;
+var
+  I:integer;
+begin
+  if Ziel <> nil then
+  begin
+    Ub := min(High(Ziel),Ub);
+    Result := Ziel;
+  end else
+    DimVector(Result,Ub);
+  Ub := min(High(Result),Ub);
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := Lb to Ub do
+    Result[I] := Func(I);
+end;
+
 function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;
 var
   I    : Integer;
@@ -204,6 +308,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
   Ok := True;
@@ -226,6 +331,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
   for I := Lb to Ub do
@@ -246,6 +352,7 @@ begin
   if (LRow > URow) or (LCol > UCol) then
   begin
     SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
  for I := LRow to URow do
@@ -266,6 +373,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
   for I := Lb to Ub do
@@ -286,6 +394,7 @@ begin
   if (LRow > URow) or (LCol > UCol) then
   begin
     SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
   for I := LRow to URow do
@@ -306,6 +415,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := -1;
     Exit;
   end;
   for I := Lb to Ub do
@@ -346,7 +456,8 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
-    Exit;
+    Result := -1;
+   Exit;
   end;
   for I := Lb to Ub do
     if Comparator(Vector[I],Ref) then
@@ -797,6 +908,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);
@@ -821,6 +933,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);
@@ -837,7 +950,7 @@ begin
     SetLength(Result,0);
 end;
 
-function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref: Integer; CompType:TCompOperator):TIntVector; overload;
+function SelElements(Vector:TIntVector; Lb, Ub, ResLb : integer; Ref: Integer; CompType:TCompOperator):TIntVector;
 var
   I,N:integer;
   Cmp:boolean;
@@ -846,6 +959,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);
@@ -880,6 +994,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);
@@ -904,6 +1019,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);

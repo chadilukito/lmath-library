@@ -13,7 +13,7 @@ unit uDFT;
 interface
 
 uses
-  SysUtils, utypes, uMinMax, uMath, uErrors, ucomplex;
+  SysUtils, utypes, uMinMax, uErrors, ucomplex;
 
 {1-dimensional complex DFT.
 INPUT PARAMETERS

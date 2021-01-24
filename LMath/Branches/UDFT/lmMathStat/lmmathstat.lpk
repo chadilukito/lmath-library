@@ -15,11 +15,6 @@
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="False"/>
-        </Debugging>
-      </Linking>
     </CompilerOptions>
     <Version Minor="5" Release="1"/>
     <Files Count="26">

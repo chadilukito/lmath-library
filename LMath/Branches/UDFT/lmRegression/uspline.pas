@@ -65,7 +65,7 @@ end;
 
 function SplInt(X:Float; Xv, Yv, Ydv: TVector; Lb,Ub:integer):Float;
 var
-  K, Hi, Lo, J : integer;
+  K, Hi, Lo : integer;
   A, t, B, L, H: float;
 begin
   Lo := Lb;

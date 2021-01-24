@@ -17,7 +17,7 @@
       </CodeGeneration>
     </CompilerOptions>
     <Version Minor="5" Release="1"/>
-    <Files Count="18">
+    <Files Count="16">
       <Item1>
         <Filename Value="uevalfit.pas"/>
         <UnitName Value="uevalfit"/>
@@ -31,65 +31,57 @@
         <UnitName Value="uexpfit"/>
       </Item3>
       <Item4>
-        <Filename Value="ufft.pas"/>
-        <UnitName Value="ufft"/>
-      </Item4>
-      <Item5>
         <Filename Value="ufracfit.pas"/>
         <UnitName Value="ufracfit"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="ugamfit.pas"/>
         <UnitName Value="ugamfit"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="uiexpfit.pas"/>
         <UnitName Value="uiexpfit"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="ulinfit.pas"/>
         <UnitName Value="ulinfit"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="ulogifit.pas"/>
         <UnitName Value="ulogifit"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="umulfit.pas"/>
         <UnitName Value="umulfit"/>
-      </Item10>
-      <Item11>
+      </Item9>
+      <Item10>
         <Filename Value="unlfit.pas"/>
         <UnitName Value="unlfit"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="upolfit.pas"/>
         <UnitName Value="upolfit"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="upowfit.pas"/>
         <UnitName Value="upowfit"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="usvdfit.pas"/>
         <UnitName Value="usvdfit"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="uspline.pas"/>
         <UnitName Value="uSpline"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="uregtest.pas"/>
         <UnitName Value="uregtest"/>
-      </Item16>
-      <Item17>
+      </Item15>
+      <Item16>
         <Filename Value="uconstrnlfit.pas"/>
         <UnitName Value="uConstrNLFit"/>
-      </Item17>
-      <Item18>
-        <Filename Value="udft.pas"/>
-        <UnitName Value="uDFT"/>
-      </Item18>
+      </Item16>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
