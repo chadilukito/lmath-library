@@ -19,6 +19,8 @@ procedure NotchFilter(var Data:TVector; ASamplingRate: Float; AFreqReject: Float
 // notch filter passes AFreqReject, aBW is rejected bandwidth, measured at 0.5 power (0.7 amplitude)
 procedure BandPassFilter(var Data:TVector; ASamplingRate: Float; AFreqPass: Float; ABW: Float; Lb, Ub : integer);
 
+procedure HighPassFilter(var Data:TVector; ASamplingRate: Float; ACutFreq: Float; Lb, Ub: integer);
+
 //finds effective cutoff frequency of cascade of 2 gaussian filters
 function GaussCascadeFreq(Freq1, Freq2:Float):Float;
 
@@ -52,6 +54,8 @@ var
   F:Float;
 begin
   F := CutOffFreq/SamplingRate;
+  if F > 0.5 then
+    SetErrCode(lmTooHighFreqError);
   Result := Round(Sqrt(0.196196+F*F)/F);
 end;
 
@@ -173,6 +177,8 @@ var
      Bs : TPTarray;
      BL : Float;
 begin
+  if ACutFreq / ASamplingRate > 0.5 then
+    SetErrCode(lmTooHighFreqError);
   GSFindParams(ASamplingRate,ACutFreq,Sigma,BL,Q,Bs);
   GSForwardFilter(Data,Bs,BL,Lb,Ub);
   GSBackwardFilter(Data,Bs,BL,Lb,Ub);
@@ -221,6 +227,7 @@ end;
 {%ENDREGION}
 
 {%REGION NARROWBAND Filters}
+
 type
   TRecursCoeffs = array[1..2] of Float;
   TInCoeffs = array[0..2] of Float;
@@ -261,8 +268,6 @@ var
 begin
   for I := -2 to 0 do
     Old[I] := Data[I+2];
-  Data[Lb] := Data[Lb]*A[2]+Data[Lb]*A[1]+Data[Lb]*A[0]+Data[Lb]*B[1]+Data[Lb]*B[2];
-  Data[Lb+1] := Data[Lb+1]*A[0]+Data[Lb]*A[1]+Data[Lb]*A[2]+Data[Lb]*B[1]+Data[Lb]*B[2];
   for I := Lb+2 to Ub do
   begin
     for J := -2 to -1 do
@@ -278,7 +283,9 @@ var
   A: TInCoeffs;
   B: TRecursCoeffs;
 begin
-  FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF,B);
+    if AFreqReject / ASamplingRate > 0.5 then
+    SetErrCode(lmTooHighFreqError);
+FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF,B);
   FindNotchCoeffs(K,R,CoF,A,B);
   ApplyNarrowBandFilter(Data,Lb,Ub,A,B);
 end;
@@ -290,10 +297,34 @@ var
   A: TInCoeffs;
   B: TRecursCoeffs;
 begin
+  if AFreqPass / ASamplingRate > 0.5 then
+    SetErrCode(lmTooHighFreqError);
   FindNarrowBandParams(AFreqPass,ABW,ASamplingRate,K,R,CoF,B);
   FindBandPassCoeffs(K,R,CoF,A,B);
   ApplyNarrowBandFilter(Data,Lb,Ub,A,B);
 end;
 {%ENDREGION}
+
+procedure HighPassFilter(var Data: TVector; ASamplingRate: Float; ACutFreq: Float; Lb, Ub: integer);
+var
+  X, Old0, Old1: float;
+  A0, A1 : float;
+  I : integer;
+begin
+  if ACutFreq / ASamplingRate > 0.5 then
+  SetErrCode(lmTooHighFreqError);
+  X := exp(-TwoPi*ACutFreq/ASamplingRate);
+  A0 := (1+X)/2;
+  A1 := -A0;
+  Old0 := Data[Lb];
+  for I := Lb+1 to Ub do
+  begin
+    Old1 := Old0;
+    Old0 := Data[I];
+    Data[I] := Data[I]*A0 + Old1*A1 + Data[I-1]*X;
+  end;
+end;
+
+
 end.
 

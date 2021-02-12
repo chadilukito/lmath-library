@@ -7,7 +7,7 @@ unit uErrors;
 interface
 uses uTypes;
 const
-  MaxErrIndex = 24;
+  MaxErrIndex = 26;
 
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
@@ -45,6 +45,8 @@ const
 // DFT errors
   lmDFTError = 23;
   lmDSPFilterWinError = 24;
+  lmTooHighFreqError = 25;
+  lmPolesNumError = 26;
   ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
@@ -70,7 +72,9 @@ const
      'LinSimplex: bad variables count',
      'File input/output error',
      'Internal DFT Error',
-     'Filter window is longer than data'
+     'Filter window is longer than data',
+     'Cutoff frequency must not exceed 0.5 of sampling rate',
+     'Number of poles must be even'
     );
   { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');

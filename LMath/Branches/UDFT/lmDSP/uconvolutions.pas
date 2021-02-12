@@ -8,31 +8,29 @@ uses
   uTypes, uMinMax, uErrors;
 
 //Convolutes Signal[Lb..Ub] with FIR[Flb..High(Fir)] in time domain.
-function Convolve(var Signal:TVector; FIR:TVector; Lb, Ub: integer;
+function Convolve(Signal:array of Float; FIR:array of float; Lb, Ub: integer;
          FLb : integer = 0; Ziel : TVector= nil):TVector;
 
 implementation
 
-function Convolve(var Signal:TVector; FIR:TVector; Lb, Ub: integer;
+function Convolve(Signal:array of float; FIR:array of float; Lb, Ub: integer;
          FLb : integer = 0; Ziel : TVector= nil):TVector;
-
 var
   I, J, LS, LR, LF, Ind, Indc, HF, HFLb : integer;
 begin
 
-  LS := Ub - Lb + 1;
-  LF := length(FIR) - Flb;
-  LR := LF + LS - 1;
+  LS := Ub - Lb + 1;       // length of signal
+  LF := length(FIR) - Flb; // length of FIR
+  LR := LF + LS - 1;       // length of Result
   HF := High(FIR);
   if Ziel <> nil then
   begin
+    Result := Ziel;
     if length(Ziel) < LR then
     begin
-      Result := nil;
       SetErrCode(MatErrDim);
       Exit;
-    end else
-      Result := Ziel;
+    end;
   end else
   begin
     DimVector(Result,LR-1);
