@@ -1,11 +1,11 @@
 unit uConvolutions;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}
 
 interface
 
 uses
-  uTypes, uMinMax, uErrors;
+  uTypes, uMinMax, uErrors, uMatrix;
 
 //Convolutes Signal[Lb..Ub] with FIR[Flb..High(Fir)] in time domain.
 function Convolve(Signal:array of Float; FIR:array of float; Lb, Ub: integer;
@@ -17,8 +17,8 @@ function Convolve(Signal:array of float; FIR:array of float; Lb, Ub: integer;
          FLb : integer = 0; Ziel : TVector= nil):TVector;
 var
   I, J, LS, LR, LF, Ind, Indc, HF, HFLb : integer;
+  B:Float;
 begin
-
   LS := Ub - Lb + 1;       // length of signal
   LF := length(FIR) - Flb; // length of FIR
   LR := LF + LS - 1;       // length of Result
@@ -37,10 +37,17 @@ begin
     if Result = nil then
     begin
       SetErrCode(MatErrDim,'Too long array or no memory');
+      Result := nil;
       Exit;
     end;
   end;
-
+  if LS = 1 then
+  begin
+    B := Signal[Lb];
+    for I := Flb to HF do
+      Result[I-Flb] := Fir[I]*B;
+    Exit;
+  end;
   Indc := Lb - LF + 1 - FLb;
   HFLb := HF + Lb;
   for I := 0 to LF - 1 do

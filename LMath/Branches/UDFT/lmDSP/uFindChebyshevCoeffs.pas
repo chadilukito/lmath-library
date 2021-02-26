@@ -1,20 +1,14 @@
  //CHEBYSHEV FILTER- RECURSION COEFFICIENT CALCULATION
 unit uFindChebyshevCoeffs;
 interface
-uses uTypes, uErrors, uMath, uMeanSD, uTrigo, uConvolutions, uVectorHelper;
-type
-  TAOne = array[0..2] of Float;
-  TBOne = array[0..2] of Float;
-
-procedure ChebyshevParams(FC, PR : float; P, NP : integer; AHighPass: boolean; out AOne:TAOne; out BOne:TBOne);
+uses uTypes, uErrors, uMath, uTrigo, uMeanSD, uMatrix, uConvolutions, uVectorHelper;
 
 procedure FindChebyshevCoeffs(ASamplingRate, ACutFreq: float; AHighPass : boolean; PR: float;
    NPoles: integer; out A,B:TVector);
 
 implementation
-//type
-//  TAOne = array[0..2] of Float;
-//  TBOne = array[0..2] of Float;
+type
+  TOne = array[0..2] of Float;
 
 {THIS SUBROUTINE IS CALLED FROM TABLE 20-4, LINE 340
 Variables entering subroutine: PI, FC, LH, PR, HP, P%
@@ -22,7 +16,7 @@ Variables exiting subroutine: AOne, BOne
 Variables used internally: RP, IP, ES, VX, KX, T, W, M, D, K,
 X0, X1, X2, Y1, Y2
 }
-procedure ChebyshevParams(FC, PR : float; P, NP : integer; AHighPass: boolean; out AOne:TAOne; out BOne:TBOne);
+procedure ChebyshevParams(FC, PR : float; P, NP : integer; AHighPass: boolean; out AOne:TOne; out BOne:TOne);
 var
   RP, IP, ES, VX, KX, T, W, M, D, K, X0, X1, X2, Y1, Y2 : float;
   Tquad : float;
@@ -80,8 +74,9 @@ var
   FC: Float;
   I,J:integer;
   SA, SB, Gain: float;
-  AOne:TAOne;
-  BOne:TBOne;
+  AOne:TOne;
+  BOne:TOne;
+  NP2:integer;
 begin
   if NPoles Mod 2 <> 0 then
   begin
@@ -90,45 +85,33 @@ begin
     SetErrCode(lmPolesNumError);
     exit;
   end;
-  //DimVector(A,NPoles); DimVector(TA,NPoles);
-  //DimVector(B,NPoles); DimVector(TB,NPoles);
-  DimVector(A,22); DimVector(TA,22);
-  DimVector(B,22); DimVector(TB,22);
-  //A[0] := 1.0;
-  //B[0] := 1.0;
-  A[2] := 1.0;
-  B[2] := 1.0;
+  DimVector(A,NPoles); DimVector(TA,NPoles);
+  DimVector(B,NPoles); DimVector(TB,NPoles);
+  NP2 := NPoles + 2;
+  A[0] := 1.0;
+  B[0] := 1.0;
 
   FC := ACutFreq/ASamplingRate;
   FOR I := 1 to NPoles div 2 do //LOOP FOR EACH POLE-PAIR
   begin
     ChebyshevParams(FC, PR, I, NPoles, AHighPass, AOne, BOne);
+    for J := 1 to 2 do
+      BOne[J] := -BOne[J];
     TA.FillWithArr(0,A);
     TB.FillWithArr(0,B);
-    //Convolve(TA,AOne,0,NPoles,0,A);
-    //Convolve(TB,BOne,0,I*3-1,0,B);
-    for J := 2 to 22 do
-    begin
-      A[J] := AOne[0]*TA[J] + AOne[1]*TA[J-1] + AOne[2]*TA[J-2];
-      B[J] := TB[J] - BOne[1]*TB[J-1] - BOne[2]*TB[J-2];
-    end;
+    Convolve(TA,AOne,0,(I-1)*2,0,A);
+    Convolve(TB,BOne,0,(I-1)*2,0,B);
   end;
 
-  B[2] := 0; //Finish combining coefficients
-  FOR I := 0 TO 20 do
-  begin
-    A[I] := A[I+2];
-    B[I] := -B[I+2];
-  end;
-  //SA := Sum(A,0,20); //NORMALIZE THE GAIN
-  //SB := Sum(B,0,20);
+  B[0] := 0; //Finish combining coefficients B[0] := 0;
+  B := B*(-1);
   SA := 0; SB := 0;
-  FOR I := 0 TO 20 do
+  FOR I := 0 to NPoles do
   begin
     if AHighPass and ((I mod 2) = 1) then
     begin
       SA := SA - A[I];
-      SB := SB - A[I];
+      SB := SB - B[I];
     end else
     begin
       SA := SA + A[I];
@@ -136,7 +119,7 @@ begin
     end;
   end;
   GAIN := SA / (1 - SB);
-  FOR I := 0 TO 20 do
+  FOR I := 0 TO NPoles do
     A[I] := A[I] / GAIN;
 //The final recursion coefficients are in A[ ] and B[ ]
 end;
