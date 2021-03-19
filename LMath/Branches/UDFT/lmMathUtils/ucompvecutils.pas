@@ -16,28 +16,35 @@ type
   // function(Arg:complex):Complex
   TComplexFunc = function(Arg:Complex):complex;
 
+  //general complex function of real argument
+  //function(Arg:real):Complex
+  TIntComplexFunc = function(Arg:Integer):complex;
+
   // general function for comparison of complex
   // function(Val, Ref:complex):boolean
   // FirstElement and SelElements pass array elements to Val and
   // user-supplied Ref value to Ref
   TComplexComparator = function(Val, Ref:complex):boolean;
 
-function ExtractReal(CVec:TCompVector; Lb, Ub:integer):TVector;
-function ExtractImaginary(CVec:TCompVector; Lb, Ub:integer):TVector;
-function CombineCompVec(VecRe, VecIm:TVector; Lb, Ub:integer):TCompVector;
+function ExtractReal(const CVec:array of complex):TVector;
+function ExtractImaginary(const CVec:array of complex):TVector;
+function CombineCompVec(const VecRe, VecIm:array of float):TCompVector;
 
-function CMakePolar(V:TCompVector; Lb, Ub:integer):TCompVector;
-function CMakeRectangular(V:TCompVector; Lb, Ub:integer):TCompVector;
+function CMakePolar(const V:array of complex):TCompVector;
+function CMakeRectangular(const V:array of complex):TCompVector;
 
-function MaxReLoc(CVec:TCompVector; Lb, Ub:integer):integer;
-function MaxImLoc(CVec:TCompVector; Lb, Ub:integer):integer;
-function MinReLoc(CVec:TCompVector; Lb, Ub:integer):integer;
-function MinImLoc(CVec:TCompVector; Lb, Ub:integer):integer;
+function MaxReLoc(CVec: TCompVector; Lb, Ub: integer):integer;
+function MaxImLoc(CVec: TCompVector; Lb, Ub: integer):integer;
+function MinReLoc(CVec: TCompVector; Lb, Ub: integer):integer;
+function MinImLoc(CVec: TCompVector; Lb, Ub: integer):integer;
 
-procedure Apply(V:TCompVector; Lb, Ub: integer; Func:TComplexFunc); overload;
-function CompareCompVec(X, Xref : TCompVector; Lb, Ub  : Integer; Tol : Float) : Boolean; overload;
-function Any(Vector:TCompVector; Lb, Ub : integer; Test:TComplexTestFunc):boolean; overload;
-function FirstElement(Vector:TCompVector; Lb, Ub : integer; Ref:complex; Comparator:TComplexComparator):integer; overload;
+procedure Apply(var V:array of Complex; Func:TComplexFunc); overload;
+procedure Apply(var V:array of Complex; Func:TIntComplexFunc); overload;
+
+// returns True if both vectors have same length and all elements are equal to the MachEp accuracy
+function CompareCompVec(const X, Xref : array of Complex; Tol : Float) : Boolean; overload;
+function Any(const Vector:array of Complex; Test:TComplexTestFunc):boolean; overload;
+function FirstElement(Vector: TCompVector; Lb, Ub: integer; Ref: complex; Comparator: TComplexComparator): integer; overload;
 function ComplexSeq(Lb, Ub : integer; firstRe, firstIm, incrementRe, incrementIm:Float; Vector:TCompVector = nil):TCompVector;
 function SelElements(Vector:TCompVector; Lb, Ub, ResLb : integer;
          Ref:complex; Comparator:TComplexComparator):TIntVector; overload;
@@ -45,30 +52,38 @@ function ExtractElements(Vector:TCompVector; Mask:TIntVector; Lb:integer):TCompV
 
 implementation
 
-function ExtractReal(CVec: TCompVector; Lb, Ub: integer): TVector;
+function ExtractReal(const CVec: array of complex): TVector;
 var
   I:integer;
 begin
-  DimVector(Result, Ub);
-  for I := Lb to Ub do
+  DimVector(Result, High(CVec));
+  for I := 0 to High(CVec) do
     Result[I] := CVec[I].X;
 end;
 
-function ExtractImaginary(CVec: TCompVector; Lb, Ub: integer): TVector;
+function ExtractImaginary(const CVec: array of complex): TVector;
 var
   I:integer;
 begin
-  DimVector(Result, Ub);
-  for I := Lb to Ub do
+  DimVector(Result, High(CVec));
+  for I := 0 to High(CVec) do
     Result[I] := CVec[I].Y;
 end;
 
-function CombineCompVec(VecRe, VecIm: TVector; Lb, Ub: integer): TCompVector;
+function CombineCompVec(const VecRe, VecIm:array of float): TCompVector;
 var
   I:integer;
+  Ub: integer;
 begin
+  Ub := High(VecRe);
+  if Ub <> High(VecIm) then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   DimVector(Result, Ub);
-  for I := Lb to Ub do
+  for I := 0 to Ub do
   begin
     Result[I].X := VecRe[I];
     Result[I].Y := VecIm[I];
@@ -159,35 +174,36 @@ begin
     end;
 end;
 
-procedure Apply(V: TCompVector; Lb, Ub: integer; Func: TComplexFunc);
+procedure Apply(var V:array of Complex; Func:TComplexFunc);
 var
   I:integer;
 begin
-  Ub := min(High(V),Ub);
-  if Lb > Ub then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
-  for I := Lb to Ub do
+  for I := 0 to High(V) do
     V[I] := Func(V[I]);
 end;
 
-function CompareCompVec(X, Xref: TCompVector; Lb, Ub: Integer; Tol: Float): Boolean;
+procedure Apply(var V:array of Complex; Func:TIntComplexFunc);
 var
-  I    : Integer;
+  I:integer;
+begin
+  for I := 0 to High(V) do
+    V[I] := Func(I);
+end;
+
+function CompareCompVec(const X, Xref: array of complex; Tol: Float): Boolean;
+var
+  I,H    : Integer;
   Ok   : Boolean;
   ReTol, ImTol : Float;
 begin
-  I := Lb;
-  Ub := min(Ub,High(X));
-  Ub := min(Ub,High(XRef));
-  if Lb > Ub then
+  Ok := True;
+  H := High(XRef);
+  if High(X) <> H then
   begin
-    SetErrCode(MatErrDim);
+    Result := false;
     Exit;
   end;
-  Ok := True;
+  I := 0;
   repeat
     ReTol := Tol * Abs(XRef[I].X);
     ImTol := Tol * Abs(Xref[I].Y);
@@ -195,21 +211,15 @@ begin
     if ImTol < MachEp then ImTol := MachEp;
     Ok := Ok and (Abs(X[I].Y - Xref[I].Y) < ImTol) and (Abs(X[I].X - Xref[I].X) < ReTol);
     Inc(I);
-  until (not Ok) or (I > Ub);
+  until (not Ok) or (I > H);
   Result := Ok;
 end;
 
-function Any(Vector: TCompVector; Lb, Ub: integer; Test: TComplexTestFunc): boolean;
+function Any(const Vector: array of Complex; Test: TComplexTestFunc): boolean;
 var
   I:Integer;
 begin
-  Ub := min(Ub,High(Vector));
-  if Lb > Ub then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
-  for I := Lb to Ub do
+  for I := 0 to High(Vector) do
     if Test(Vector[I]) then
     begin
       Result := true;
@@ -226,6 +236,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := -1;
     Exit;
   end;
   for I := Lb to Ub do
@@ -241,16 +252,18 @@ function ComplexSeq(Lb, Ub: integer; firstRe, firstIm, incrementRe, incrementIm:
 var
   I:integer;
 begin
+  if Lb > Ub then
+  begin
+    SetErrCode(MatErrDim);
+    Result := nil;
+    Exit;
+  end;
   if Vector = nil then
     DimVector(Vector, Ub)
   else
     Ub := min(Ub,High(Vector));
-  if Lb <= Ub then
-  begin
-    Vector[Lb].X := 0;
-    Vector[Lb].Y := 0;
-  end else
-    Exit;
+  Vector[Lb].X := 0;
+  Vector[Lb].Y := 0;
   for I := Lb+1 to Ub do
   begin                                          // 2 cycles to avoid rounding error if
     Vector[I].X := Vector[I-1].X + incrementRe;  //First is very large and increment small
@@ -273,6 +286,7 @@ begin
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
+    Result := nil;
     Exit;
   end;
   DimVector(Result,Ub-Lb+ResLb);
@@ -298,35 +312,21 @@ begin
     Result[I] := Vector[Mask[I]];
 end;
 
-function CMakePolar(V:TCompVector; Lb, Ub:integer):TCompVector;
+function CMakePolar(const V:array of complex):TCompVector;
 var
   I:integer;
 begin
-  if Ub > High(V) then
-    Ub := High(V);
-  if Ub < Lb then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
-  DimVector(Result,Ub);
-  for I := Lb to Ub do
+  DimVector(Result,High(V));
+  for I := 0 to High(V) do
     Result[I] := CToPolar(V[I]);
 end;
 
-function CMakeRectangular(V:TCompVector; Lb, Ub:integer):TCompVector;
+function CMakeRectangular(const V:array of Complex):TCompVector;
 var
   I:integer;
 begin
-  if Ub > High(V) then
-    Ub := High(V);
-  if Ub < Lb then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
-  DimVector(Result,Ub);
-  for I := Lb to Ub do
+  DimVector(Result,High(V));
+  for I := 0 to High(V) do
     Result[I] := CToRect(V[I]);
 end;
 

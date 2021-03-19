@@ -68,11 +68,11 @@
       </Item10>
       <Item11>
         <Filename Value="uvecfileutils.pas"/>
-        <UnitName Value="uvecfileutils"/>
+        <UnitName Value="uVecFileUtils"/>
       </Item11>
       <Item12>
         <Filename Value="ucompvecutils.pas"/>
-        <UnitName Value="ucompvecutils"/>
+        <UnitName Value="uCompVecUtils"/>
       </Item12>
     </Files>
     <RequiredPkgs Count="3">

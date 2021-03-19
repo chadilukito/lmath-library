@@ -5,21 +5,27 @@ unit uFilters;
 interface
 
 uses
-  uTypes, uErrors, uMedian, uMeanSD, uIntervals, uVectorHelper;
+  uTypes, uErrors, uMedian, uMeanSD, uIntervals, uVectorHelper, uMatrix;
 
-procedure GaussFilter(var Data:TVector; ASamplingRate: Float;  ACutFreq: Float; Lb, Ub: integer);
+procedure GaussFilter(var Data:array of float; ASamplingRate: Float;  ACutFreq: Float);
 
-procedure MovingAverageFilter(var Data:TVector; WinLength:integer; Lb, Ub: integer);
+procedure MovingAverageFilter(var Data:array of float; WinLength:integer);
 
-procedure MedianFilter(var Data:TVector; WinLength:integer; Lb, Ub: integer);
+procedure MedianFilter(var Data:array of float; WinLength:integer);
 
 // notch filter rejects AFreqReject, aBW is rejected bandwidth, measured at 0.5 power (0.7 amplitude)
-procedure NotchFilter(var Data:TVector; ASamplingRate: Float; AFreqReject: Float; ABW: Float;Lb, Ub : integer);
+procedure NotchFilter(var Data:array of float; ASamplingRate: Float; AFreqReject: Float; ABW: Float);
 
 // notch filter passes AFreqReject, aBW is rejected bandwidth, measured at 0.5 power (0.7 amplitude)
-procedure BandPassFilter(var Data:TVector; ASamplingRate: Float; AFreqPass: Float; ABW: Float; Lb, Ub : integer);
+procedure BandPassFilter(var Data:array of float; ASamplingRate: Float; AFreqPass: Float; ABW: Float);
 
-procedure HighPassFilter(var Data:TVector; ASamplingRate: Float; ACutFreq: Float; Lb, Ub: integer);
+procedure HighPassFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float);
+
+// NPoles is number of Poles, for stability we do not recomment values > 6; PRipple is allowed value of ripple
+// in the passband in %, may be 0 (which means that Chebyshev filter becomes Butterworth filter) or
+// 0.5 <= PRipple <= 30.
+procedure ChebyshevFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float;
+                              NPoles: integer; PRipple: float; AHighPass:boolean);
 
 //finds effective cutoff frequency of cascade of 2 gaussian filters
 function GaussCascadeFreq(Freq1, Freq2:Float):Float;
@@ -37,6 +43,7 @@ function MoveAvCutOffFreq(SamplingRate:Float; WLength:integer):Float;
 function MoveAvFindWindow(SamplingRate, CutOffFreq:Float):Integer;
 
 implementation
+uses uFindChebyshevCoeffs;
 
 {%REGION Moving Average}
 function MovAvRiseTime(SamplingRate: Float; WLength: integer): Float;
@@ -59,22 +66,22 @@ begin
   Result := Round(Sqrt(0.196196+F*F)/F);
 end;
 
-procedure MovingAverageFilter(var Data:TVector; WinLength:integer; Lb, Ub: integer);
+procedure MovingAverageFilter(var Data:array of float; WinLength:integer);
 var
   Buffer : Float;
   First  :float;
   IndNext: integer;
   I      :integer;
+  Ub : integer;
 begin
-  if Lb >= Ub then
-    SetErrCode(MatErrDim);
-  if WinLength > Ub - Lb then
+  Ub := high(Data);
+  if WinLength > Ub then
     SetErrCode(lmDSPFilterWinError);
   if MathErr <> MatOK then
     Exit;
-  IndNext := Lb + WinLength;  // points on first element after window
-  Buffer := Sum(Data,Lb,IndNext-1);
-  for I := Lb to Ub - WinLength do
+  IndNext := WinLength;  // points on first element after window
+  Buffer := Sum(Data[0..IndNext-1]);
+  for I := 0 to Ub - WinLength do
   begin
     First := Data[I];
     Data[I] := Buffer / WinLength;
@@ -116,21 +123,21 @@ begin
   BL    := 1 - (Bs[1] + Bs[2] + Bs[3])/Bs[0];
 end;
 
-procedure GSForwardFilter(var Data:TVector; Bs:TPTArray; Bl:Float; Lb, Ub:integer);
+procedure GSForwardFilter(var Data:array of float; Bs:TPTArray; Bl:Float);
 var
   WD : TPTArray;
   Pt : array [TPT] of TPT;
   I  : integer;
   J  : TPT;
 begin
-  WD[0] := Data[Lb];
+  WD[0] := Data[0];
   Pt[0] := 0;
   for I := 1 to 3 do
   begin
-    WD[I] := WD[0];  //data are padded before beginning with Data[Lb]
+    WD[I] := WD[0];  //data are padded before beginning with Data[0]
     Pt[I] := I;
   end;
-  for I := Lb to Ub - 1 do
+  for I := 0 to High(Data) - 1 do
   begin
     Data[I] := WD[Pt[3]];
     WD[Pt[3]] := BL*Data[I+1]+(WD[Pt[2]]*Bs[1]+WD[Pt[1]]*Bs[2]+Bs[3]*WD[Pt[0]])/Bs[0];
@@ -140,16 +147,18 @@ begin
       else
         Pt[J] := 0;
   end;
-  Data[Ub] := WD[Pt[3]];
+  Data[High(Data)] := WD[Pt[3]];
 end;
 
-procedure GSBackwardFilter(var Data:TVector; Bs:TPTArray; BL: Float; Lb, Ub:integer);
+procedure GSBackwardFilter(var Data:array of float; Bs:TPTArray; BL: Float);
 var
   WD : TPTArray;
   Pt : array [TPT] of TPT;
   I  : integer;
   J  : TPT;
+  Ub : integer;
 begin
+  Ub := High(Data);
   WD[0] := Data[Ub];
   Pt[0] := 0;
   for J := 1 to 3 do
@@ -157,7 +166,7 @@ begin
     Pt[J] := J;
     WD[J] := WD[0];
   end;
-  for I := Ub downto Lb+1 do
+  for I := Ub downto 1 do
   begin
     Data[I] := WD[Pt[3]];
     WD[Pt[3]] := BL*Data[I-1]+(WD[Pt[2]]*Bs[1]+WD[Pt[1]]*Bs[2]+Bs[3]*WD[Pt[0]])/Bs[0];
@@ -167,10 +176,10 @@ begin
       else
         Pt[J] := Low(TPT);
   end;
-  Data[Lb] := WD[Pt[3]];
+  Data[0] := WD[Pt[3]];
 end;
 
-procedure GaussFilter(var Data:TVector; ASamplingRate: Float;  ACutFreq: Float; Lb, Ub: integer);
+procedure GaussFilter(var Data:array of float; ASamplingRate: Float;  ACutFreq: Float);
 var
   Sigma : Float;
       Q : Float;
@@ -178,10 +187,13 @@ var
      BL : Float;
 begin
   if ACutFreq / ASamplingRate > 0.5 then
+  begin
     SetErrCode(lmTooHighFreqError);
+    exit;
+  end;
   GSFindParams(ASamplingRate,ACutFreq,Sigma,BL,Q,Bs);
-  GSForwardFilter(Data,Bs,BL,Lb,Ub);
-  GSBackwardFilter(Data,Bs,BL,Lb,Ub);
+  GSForwardFilter(Data,Bs,BL);
+  GSBackwardFilter(Data,Bs,BL);
 end;
 
 function GaussCascadeFreq(Freq1, Freq2: Float): Float;
@@ -204,22 +216,22 @@ end;
 {%ENDREGION}
 
 {%REGION Median Filter}
-procedure MedianFilter(var Data:TVector; WinLength:integer; Lb, Ub: integer);
+procedure MedianFilter(var Data:array of float; WinLength:integer);
 var
   I,HighWin : integer;
+  Ub : integer;
   Buffer:TVector;
 begin
+  Ub := High(Data);
   HighWin := WinLength-1;
-  for I := Lb to Ub-WinLength do
-  begin
-    Buffer := copy(Data,I,WinLength);
-    Data[I] := Median(Buffer,0,HighWin);
-  end;
+  SetLength(Buffer,WinLength);
+  for I := 0 to Ub-WinLength do
+    Data[I] := Median(Data[I..I+HighWin]);
   for I := Ub-WinLength+1 to Ub do
   begin
-    Buffer.InsertFrom(Data,I,Ub,0);
+    Buffer.FillWithArr(0,Data[I..Ub]);
     Buffer.Fill(Ub-I,HighWin,Data[Ub]);
-    Data[I] := Median(Buffer,0,HighWin);
+    Data[I] := Median(Buffer);
   end;
 end;
 
@@ -261,14 +273,14 @@ begin
   B[2] := -R*R;
 end;
 
-procedure ApplyNarrowBandFilter(var Data: TVector;  Lb: integer; Ub: integer; const A: TInCoeffs; const B: TRecursCoeffs);
+procedure ApplyNarrowBandFilter(var Data:array of float; const A: TInCoeffs; const B: TRecursCoeffs);
 var
   I,J: integer;
   Old: array[-2..0] of Float;
 begin
   for I := -2 to 0 do
     Old[I] := Data[I+2];
-  for I := Lb+2 to Ub do
+  for I := 2 to high(Data) do
   begin
     for J := -2 to -1 do
       Old[J] := Old[J+1];
@@ -277,47 +289,56 @@ begin
   end;
 end;
 
-procedure NotchFilter(var Data:TVector; ASamplingRate: Float; AFreqReject: Float; ABW: Float;Lb, Ub : integer);
+procedure NotchFilter(var Data:array of float; ASamplingRate: Float; AFreqReject: Float; ABW: Float);
 var
   K, R, CoF : Float;
   A: TInCoeffs;
   B: TRecursCoeffs;
 begin
-    if AFreqReject / ASamplingRate > 0.5 then
+  if AFreqReject / ASamplingRate > 0.5 then
+  begin
     SetErrCode(lmTooHighFreqError);
-FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF,B);
+    Exit;
+  end;
+  FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF,B);
   FindNotchCoeffs(K,R,CoF,A,B);
-  ApplyNarrowBandFilter(Data,Lb,Ub,A,B);
+  ApplyNarrowBandFilter(Data,A,B);
 end;
 
 // notch filter passes AFreqReject, aBW is rejected bandwidth, measured at 0.5 power (0.7 amplitude)
-procedure BandPassFilter(var Data:TVector; ASamplingRate: Float; AFreqPass: Float; ABW: Float; Lb, Ub : integer);
+procedure BandPassFilter(var Data:array of float; ASamplingRate: Float; AFreqPass: Float; ABW: Float);
 var
   K, R, CoF : Float;
   A: TInCoeffs;
   B: TRecursCoeffs;
 begin
   if AFreqPass / ASamplingRate > 0.5 then
+  begin
     SetErrCode(lmTooHighFreqError);
+    Exit;
+  end;
   FindNarrowBandParams(AFreqPass,ABW,ASamplingRate,K,R,CoF,B);
   FindBandPassCoeffs(K,R,CoF,A,B);
-  ApplyNarrowBandFilter(Data,Lb,Ub,A,B);
+  ApplyNarrowBandFilter(Data,A,B);
 end;
 {%ENDREGION}
 
-procedure HighPassFilter(var Data: TVector; ASamplingRate: Float; ACutFreq: Float; Lb, Ub: integer);
+procedure HighPassFilter(var Data: array of float; ASamplingRate: Float; ACutFreq: Float);
 var
   X, Old0, Old1: float;
   A0, A1 : float;
   I : integer;
 begin
   if ACutFreq / ASamplingRate > 0.5 then
-  SetErrCode(lmTooHighFreqError);
+  begin
+    SetErrCode(lmTooHighFreqError);
+    Exit;
+  end;
   X := exp(-TwoPi*ACutFreq/ASamplingRate);
   A0 := (1+X)/2;
   A1 := -A0;
-  Old0 := Data[Lb];
-  for I := Lb+1 to Ub do
+  Old0 := Data[0];
+  for I := 1 to high(Data) do
   begin
     Old1 := Old0;
     Old0 := Data[I];
@@ -325,6 +346,48 @@ begin
   end;
 end;
 
+procedure ChebyshevFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float;
+                              NPoles: integer; PRipple: float; AHighPass:boolean);
+var
+  A, B, BR: TVector;
+  I, J, K: integer;
+  Old : TVector;
+  SumA: Float;
+begin
+  if not (NPoles in [2,4,6,8,10]) then
+    SetErrCode(lmPolesNumError);
+  if ACutFreq > 0.5*ASamplingRate then
+    SetErrCode(lmTooHighFreqError);
+  if MathErr <> matOK then
+    Exit;
+  DimVector(Old,NPoles);
+  DimVector(BR,NPoles);
+  FindChebyshevCoeffs(ASamplingRate, ACutFreq, AHighPass, PRipple, NPoles, A, B);
+  J := NPoles;
+  for I := 0 to NPoles do
+  begin                   // reverse B
+    BR[J] := B[I];
+    Dec(J);
+  end;
+  J := NPoles-1;
+  for I := 0 to NPoles-1 do
+  begin
+    Old[J] := Data[I];
+    Dec(J);  // now Old contains beginning of Data in reversed order
+  end;
+  for I := 0 to NPoles - 1 do
+  begin
+    Data[I] := 0;
+  end;
+  for I := NPoles to High(Data) do
+  begin
+    Old.Insert(Data[I],0); // value is inserted into beginning of Old, others are shifted to the right; last lost
+    K := I - NPoles;
+    Data[I] := 0;
+    for J := 0 to NPoles do
+      Data[I] := Data[I] + Old[J]*A[J] + Data[K+J]*BR[J];
+  end;
+end;
 
 end.
 

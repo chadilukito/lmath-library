@@ -19,9 +19,15 @@ function tmCoords(ARow,ACol:integer):TMatCoords;
 
 // this group of Apply functions passes existing value of an array element to a function and assigns
 // back the returned value
-procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
+procedure Apply(var V:array of Float; Func:TFunc); overload;
+procedure Apply(var V:array of Integer; Func:TIntFunc); overload;
+function CompVec(const X, Xref : array of float; Tol : Float) : Boolean; overload;
+function Any(const Vector:array of Float; Test:TTestFunc):boolean; overload;
+function Any(const Vector:array of integer; Test:TIntTestFunc):boolean; overload;
+
+procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload; deprecated 'Use version with open array instead.';
 procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
-procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
+procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload; deprecated 'Use version with open array instead.';
 procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
 
 procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
@@ -39,13 +45,13 @@ function ApplyRecursive(Func:TIntArrayIntFunc; InitValues:array of Integer;
 { Checks if each component of vector X is within a fraction Tol of
 the corresponding component of the reference vector Xref. In this
 case, the function returns True, otherwise it returns False}
-function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;
+function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean; overload;  deprecated 'Use version with open array instead.';
 
 // applies Test function to every enement in [Lb..Ub] and returns true
 // if for any of them Test returns true
-function Any(Vector:TVector; Lb, Ub : integer; Test:TTestFunc):boolean; overload;
+function Any(Vector:TVector; Lb, Ub : integer; Test:TTestFunc):boolean; overload; deprecated 'Use version with open array instead.';
 function Any(M:TMatrix; LRow, URow, LCol, UCol : integer; Test:TTestFunc):boolean; overload;
-function Any(Vector:TIntVector; Lb, Ub : integer; Test:TIntTestFunc):boolean; overload;
+function Any(Vector:TIntVector; Lb, Ub : integer; Test:TIntTestFunc):boolean; overload; deprecated 'Use version with open array instead.';
 function Any(M:TIntMatrix; LRow, URow, LCol, UCol : integer; Test:TIntTestFunc):boolean; overload;
 
 
@@ -124,6 +130,14 @@ begin
     V[I] := Func(V[I]);
 end;
 
+procedure Apply(var V:array of Float; Func:TFunc); overload;
+var
+  I:integer;
+begin
+  for I := 0 to high(V) do
+    V[I] := Func(V[I]);
+end;
+
 procedure Apply(M: TMatrix; LRow, URow, LCol, UCol: integer; Func: TFunc);
 var
   I,J:integer;
@@ -151,6 +165,14 @@ begin
     Exit;
   end;
   for I := Lb to Ub do
+    V[I] := Func(V[I]);
+end;
+
+procedure Apply(var V:array of Integer; Func:TIntFunc); overload;
+var
+  I:integer;
+begin
+  for I := 0 to High(V) do
     V[I] := Func(V[I]);
 end;
 
@@ -321,6 +343,31 @@ begin
   CompVec := Ok;
 end;
 
+function CompVec(const X, Xref : array of float; Tol : Float) : Boolean; overload;
+var
+  I    : Integer;
+  Ok   : Boolean;
+  ITol : Float;
+  Ub   : integer;
+begin
+  I := 0;
+  Ub := High(X);
+  if High(XRef) <> Ub then
+  begin
+    Result := false;
+    Exit;
+  end;
+  Ok := True;
+  repeat
+    ITol := Tol * Abs(Xref[I]);
+    if ITol < MachEp then ITol := MachEp;
+    Ok := Ok and (Abs(X[I] - Xref[I]) < ITol);
+    I := I + 1;
+  until (not Ok) or (I > Ub);
+  Result := Ok;
+end;
+
+
 // applies Test function to any enement in [Lb..Ub] and returns true
 // if for any of them Test returns true
 function Any(Vector:TVector; Lb, Ub : integer; Test:TTestFunc):boolean;
@@ -340,6 +387,19 @@ begin
       Result := true;
       Exit;
     end; 
+  Result := false;
+end;
+
+function Any(const Vector:array of Float; Test:TTestFunc):boolean;
+var
+  I:Integer;
+begin
+  for I := 0 to High(Vector) do
+    if Test(Vector[I]) then
+    begin
+      Result := true;
+      Exit;
+    end;
   Result := false;
 end;
 
@@ -382,6 +442,19 @@ begin
       Result := true;
       Exit;
     end; 
+  Result := false;
+end;
+
+function Any(const Vector:array of integer; Test:TIntTestFunc):boolean;
+var
+  I:Integer;
+begin
+  for I := 0 to High(Vector) do
+    if Test(Vector[I]) then
+    begin
+      Result := true;
+      Exit;
+    end;
   Result := false;
 end;
 

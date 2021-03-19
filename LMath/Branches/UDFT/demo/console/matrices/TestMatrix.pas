@@ -1,7 +1,7 @@
 program TestMatrix;
 uses uTypes, uErrors, uMatrix, uVecUtils, uVectorHelper, uVecMatPrn, sysutils, dateutils;
 const
-  LB = 1;
+  LB = 0;
 
 var
   M1, M2, M3, M4, Res : TMatrix;
@@ -13,7 +13,7 @@ begin
   {%region Initializing matrices}
   Rows1 := LB+1; Cols1 := LB+2; // Ro* is highest index of rows and Col* is highest index of columns
   Cols2 := LB+2;
-
+  vprnLB := LB;
   DimMatrix(M1, Rows1, Cols1);
   DimMatrix(M2, Cols1, Cols2);
 
@@ -41,30 +41,30 @@ begin
   PrintMatrix(Res);
   {%endregion}
   {%region Timing}
-  writeln('Now testing matrix multiplication timing.');
-  writeln('First, multiply same matrices 1000000 times.');
-  writeln('Press [enter] to begin test.');
-  readln;
-  time1 := time;
-  DimMatrix(Res,Rows1,Cols2);
-  for I := 1 to 1000000 do
-    MatMul(M1, M2, LB, Res);
-  finalize(res);
-  time2 := time;
-  writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
-
-  write('Now big matrices, 1500x1500...');
-  Rows1 := LB+1500; Cols1 := Rows1; Cols2 := Rows1;
-  DimMatrix(M3, Rows1, Cols1);
-  DimMatrix(M4, Cols1, Cols2);
-  time1 := time;
-  DimMatrix(Res,Rows1,Cols2);
-  MatMul(M3,M4,LB,Res);
-
-  time2 := time;
-  writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
-  write('Press [Enter] to continue...');
-  readln;
+  //writeln('Now testing matrix multiplication timing.');
+  //writeln('First, multiply same matrices 1000000 times.');
+  //writeln('Press [enter] to begin test.');
+  //readln;
+  //time1 := time;
+  //DimMatrix(Res,Rows1,Cols2);
+  //for I := 1 to 1000000 do
+  //  MatMul(M1, M2, LB, Res);
+  //finalize(res);
+  //time2 := time;
+  //writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
+  //
+  //write('Now big matrices, 1500x1500...');
+  //Rows1 := LB+1500; Cols1 := Rows1; Cols2 := Rows1;
+  //DimMatrix(M3, Rows1, Cols1);
+  //DimMatrix(M4, Cols1, Cols2);
+  //time1 := time;
+  //DimMatrix(Res,Rows1,Cols2);
+  //MatMul(M3,M4,LB,Res);
+  //
+  //time2 := time;
+  //writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
+  //write('Press [Enter] to continue...');
+  //readln;
  {%endregion}
   {%region Transpose and TransposeInPlace}
   Rows1 := LB+1; Cols1 := LB+2;
@@ -149,6 +149,17 @@ begin
   writeln('Substract:');
   ResV3 := ResV-ResV2;
   printvector(ResV3);
+  writeln('Testing operations on vector sections');
+  ResV := Seq(1,8,1,1);
+  ResV2 := Seq(1,8,10,1);
+  writeln('First vector:');
+  printVector(ResV);
+  writeln('Second Vector');
+  printVector(ResV2);
+  writeln('Now add elements 2 to 6 from first and 4 to 8 of second');
+  Resv3 := ResV[2..6]+ResV2[4..8];
+  printVector(ResV3);
+  readln;
   {%endregion}
   writeln('multiply:');
   VecElemMul(ResV,ResV2,ResV3);
