@@ -14,8 +14,8 @@ const
 var
   vprnLB : integer = 1;
 
-procedure PrintVector(V:TIntVector); overload;
-procedure PrintVector(V:TVector); overload;
+procedure PrintVector(V:array of integer); overload;
+procedure PrintVector(V:array of float); overload;
 
 procedure PrintMatrix(A:TMatrix);
 
@@ -33,16 +33,16 @@ begin
   end;
 end;
 
-procedure PrintVector(V:TIntVector);
+procedure PrintVector(V:array of integer);
 var
   J:integer;
 begin
-    for J := vprnLB to High(V) do
+    for J := 0 to High(V) do
       write(Format(vprnIntFmtStr,[V[j]]));
     writeln;
 end;
 
-procedure PrintVector(V:TVector);
+procedure PrintVector(V:array of float);
 var
   J:integer;
 begin
