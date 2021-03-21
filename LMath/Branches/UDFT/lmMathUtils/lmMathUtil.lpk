@@ -19,9 +19,6 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
-        <Optimizations>
-          <OptimizationLevel Value="4"/>
-        </Optimizations>
       </CodeGeneration>
     </CompilerOptions>
     <Version Minor="5" Release="1"/>

@@ -29,7 +29,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="lmRegression"/>
+        <PackageName Value="lmDSP"/>
       </Item1>
       <Item2>
         <PackageName Value="lmgenmath"/>

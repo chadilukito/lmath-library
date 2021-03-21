@@ -2,7 +2,7 @@
  *     Translated and adapted by David Chen (陳昱志) for LMath from               *
  *     ALGLIB 2.6 by Sergey Bochkanov                                             *
  *     Important! Unlike the rest of LMath, this unit is distributed              *
- *     under license  GPL  v. 2.0                                                 *
+ *     under GPL  v. 2.0                                                          *
  **********************************************************************************}
 
 unit uDFT;
@@ -82,15 +82,6 @@ Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);
 
 implementation
 
-{FTBase procedures & functions(just for internal)
-Procedure FTBaseGenerateComplexFFTPlan(N:Integer; var Plan:FTPlan);
-Procedure FTBaseExecutePlan(var A:TVector; AOffset,N:Integer; var Plan:FTPlan);
-Procedure FTBaseExecutePlanRec(var A:TVector; AOffset:Integer; var Plan:FTPlan; EntryOffset,StackPtr:Integer);
-Procedure FTBaseFactorize(N:Integer; var Factor1,Factor2:Integer);
-Function FTBaseFindSmooth(N:Integer):Integer;
-
-Procedure FFTR1DInternalEven(var A:TVector; N:Integer; var Buf:TVector; var Plan:FTPlan);
- }
 {$region internal definitions and procedures}
 type
   TFTPlan = record

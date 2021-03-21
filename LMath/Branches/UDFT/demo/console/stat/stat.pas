@@ -6,7 +6,7 @@
 program stat;
 
 uses
-  utypes, umeansd, uskew, ustudind, usnedeco, unonpar, uinvnorm, uinvbeta;
+  utypes, umeansd, uskew, ustudind, usnedeco, unonpar, uinvnorm, uinvbeta, uVectorHelper;
 const
   N     = 30;    { Number of values }
   Alpha = 0.05;  { Significance level }
@@ -35,37 +35,29 @@ var
   Tc, Fc, Ec       : Float;    { Critical values }
   P                : Float;    { Probability }
 
-procedure GetData(XX, YY : TVector);
+procedure GetData(var XX, YY : TVector);
 { Get data into arrays }
-var
-  I : Integer;
 begin
-  for I := 1 to N do
-    begin
-      XX[I] := HbM[I];
-      YY[I] := HbW[I];
-    end;
+  XX.FillWithArr(1,HbM);
+  YY.FillWithArr(1,HbW);
 end;
 
 begin
-  DimVector(XX, N);
-  DimVector(YY, N);
-
   GetData(XX, YY);
 
   { Compute statistical parameters }
 
-  MinM := Min(XX, 1, N);
-  MinW := Min(YY, 1, N);
+  MinM := Min(XX[1..N]);
+  MinW := Min(YY[1..N]);
 
-  MaxM := Max(XX, 1, N);
-  MaxW := Max(YY, 1, N);
+  MaxM := Max(XX[1..N]);
+  MaxW := Max(YY[1..N]);
 
-  MM := Mean(XX, 1, N);
-  MW := Mean(YY, 1, N);
+  MM := Mean(XX[1..N]);
+  MW := Mean(YY[1..N]);
 
-  SM := StDev(XX, 1, N, MM);
-  SW := StDev(YY, 1, N, MW);
+  SM := StDev(XX[1..N], MM);
+  SW := StDev(YY[1..N], MW);
 
   SkM := Skewness(XX, 1, N, MM, SM);
   SkW := Skewness(YY, 1, N, MW, SW);

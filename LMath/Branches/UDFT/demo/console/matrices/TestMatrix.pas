@@ -41,30 +41,30 @@ begin
   PrintMatrix(Res);
   {%endregion}
   {%region Timing}
-  //writeln('Now testing matrix multiplication timing.');
-  //writeln('First, multiply same matrices 1000000 times.');
-  //writeln('Press [enter] to begin test.');
-  //readln;
-  //time1 := time;
-  //DimMatrix(Res,Rows1,Cols2);
-  //for I := 1 to 1000000 do
-  //  MatMul(M1, M2, LB, Res);
-  //finalize(res);
-  //time2 := time;
-  //writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
-  //
-  //write('Now big matrices, 1500x1500...');
-  //Rows1 := LB+1500; Cols1 := Rows1; Cols2 := Rows1;
-  //DimMatrix(M3, Rows1, Cols1);
-  //DimMatrix(M4, Cols1, Cols2);
-  //time1 := time;
-  //DimMatrix(Res,Rows1,Cols2);
-  //MatMul(M3,M4,LB,Res);
-  //
-  //time2 := time;
-  //writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
-  //write('Press [Enter] to continue...');
-  //readln;
+  writeln('Now testing matrix multiplication timing.');
+  writeln('First, multiply same matrices 1000000 times.');
+  writeln('Press [enter] to begin test.');
+  readln;
+  time1 := time;
+  DimMatrix(Res,Rows1,Cols2);
+  for I := 1 to 1000000 do
+    MatMul(M1, M2, LB, Res);
+  finalize(res);
+  time2 := time;
+  writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
+
+  write('Now big matrices, 1500x1500...');
+  Rows1 := LB+1500; Cols1 := Rows1; Cols2 := Rows1;
+  DimMatrix(M3, Rows1, Cols1);
+  DimMatrix(M4, Cols1, Cols2);
+  time1 := time;
+  DimMatrix(Res,Rows1,Cols2);
+  MatMul(M3,M4,LB,Res);
+
+  time2 := time;
+  writeln('it takes ',inttostr(millisecondsbetween(time2, time1)), ' ms.');
+  write('Press [Enter] to continue...');
+  readln;
  {%endregion}
   {%region Transpose and TransposeInPlace}
   Rows1 := LB+1; Cols1 := LB+2;

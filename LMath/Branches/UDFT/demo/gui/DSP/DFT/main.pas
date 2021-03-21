@@ -73,7 +73,7 @@ var
   TransArray : TCompVector;
   InvTransArray : TCompVector;
   Expression : string;
-
+  ExpressionIm : string;
   // 0 FFT, 1 DFT, 2 FFTFort
   SelectedMethod, SelectedMethodInv : integer;
 
@@ -85,6 +85,7 @@ procedure TMainForm.SetData;
 begin
   N := NEdit.Value;
   Expression := ExpressionEdit.text;
+  ExpressionIm := ImExpressionEdit.text;
   Range.Lo := MinEdit.Value;
   Range.Hi := MaxEdit.Value;
   SelectedMethod := MethodCombo.ItemIndex;
@@ -165,24 +166,24 @@ var
   RT,IT:TVector;
 begin
   SetData;
-  GenerateData(Expression,N,Range,TimeVector, InArray);
+  GenerateData(Expression,ExpressionIm, N, Range, TimeVector, InArray);
   K := N-1;
-  RT := ExtractReal(InArray,0,K);
-  IT := ExtractImaginary(InArray,0,K);
+  RT := ExtractReal(InArray);
+  IT := ExtractImaginary(InArray);
   TimePoints := TPoints.Combine(TimeVector,RT,0,K);
   SetNewCoords(TimeReCoords,TimePoints);
   ImTimePoints := TPoints.Combine(TimeVector,IT,0,K);
   SetNewCoords(TimeImCoords,ImTimePoints);
   Execute(InArray,N,SelectedMethod,SelectedMethodInv,TransArray,InvTransArray);
   if PolarToggle.Checked then
-    apply(TransArray,0,K,@CToPolar);
+    apply(TransArray,@CToPolar);
   FreqVector := Seq(0,K,-0.5,1.0/N);
-  RT := ExtractReal(TransArray,0,K);
-  IT := ExtractImaginary(TransArray,0,K);
+  RT := ExtractReal(TransArray);
+  IT := ExtractImaginary(TransArray);
   TransRePoints := TPoints.Combine(FreqVector,RT,0,K);
   TransImPoints := TPoints.Combine(FreqVector,IT,0,K);
-  RT := ExtractReal(InvTransArray,0,K);
-  IT := ExtractImaginary(InvTransArray,0,K);
+  RT := ExtractReal(InvTransArray);
+  IT := ExtractImaginary(InvTransArray);
   InvTimePoints := TPoints.Combine(TimeVector,RT,0,K);
   InvImTimePoints := TPoints.Combine(TimeVector,IT,0,K);
   SetNewCoords(MagCoords,TransRePoints);

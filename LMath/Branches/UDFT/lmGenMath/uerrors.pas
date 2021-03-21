@@ -7,7 +7,7 @@ unit uErrors;
 interface
 uses uTypes;
 const
-  MaxErrIndex = 26;
+  MaxErrIndex = 27;
 
   MathOK = 0; {< No error }
   //  Error codes for mathematical functions
@@ -47,6 +47,7 @@ const
   lmDSPFilterWinError = 24;
   lmTooHighFreqError = 25;
   lmPolesNumError = 26;
+  lmFFTError = 27;
   ErrorMessage : array[0..MaxErrIndex] of String =
     ('No error',
      'Argument domain error',
@@ -74,7 +75,8 @@ const
      'Internal DFT Error',
      'Filter window is longer than data',
      'Cutoff frequency must not exceed 0.5 of sampling rate',
-     'Number of poles must be even'
+     'Number of poles must be even',
+     'FFT: number of samples must be power of two'
     );
   { Sets the error code. }
 procedure SetErrCode(ErrCode : Integer; EMessage:string = '');

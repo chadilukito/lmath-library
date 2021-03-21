@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 609
+  Left = 488
   Height = 650
-  Top = 135
+  Top = 31
   Width = 692
   Caption = 'Fourier Transform Demo'
   ClientHeight = 650

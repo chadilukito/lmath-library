@@ -8,7 +8,7 @@ const
   mFFT = 0;
   mDFT = 1;
 
-procedure GenerateData(Expr: string; N : integer; Range:TInterval;
+procedure GenerateData(ExprRe, ExprIm: string; N : integer; Range:TInterval;
                              out TimeLine:TVector; out Data: TCompVector);
 
 procedure Execute(InData: TCompVector; N, Method, MethodInv: integer;
@@ -16,7 +16,7 @@ procedure Execute(InData: TCompVector; N, Method, MethodInv: integer;
 
 implementation
 
-procedure GenerateData(Expr: string; N : integer; Range: TInterval;
+procedure GenerateData(ExprRe, ExprIm: string; N : integer; Range: TInterval;
                              out TimeLine:TVector; out Data: TCompVector);
 var
   Step: Float;
@@ -28,7 +28,8 @@ begin
   for I := 0 to N - 1 do
   begin
     SetVariable('X',TimeLine[I]);
-    Data[I] := Eval(Expr);
+    Data[I].X := Eval(ExprRe);
+    Data[I].Y := Eval(ExprIm);
   end;
 end;
 
