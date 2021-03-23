@@ -8,7 +8,7 @@ uses
 {$IFDEF USE_DLL}
   dmath;
 {$ELSE}
-  utypes, uScaling, ulinfit, unlfit,
+  utypes, uErrors, uScaling, ulinfit, unlfit,
   uregtest, uinvbeta, ustrings, uplot;
 {$ENDIF}  
 
@@ -202,7 +202,7 @@ begin
   SetLineParam(1, 0, 0, 0);  { Don't connect points }
   PlotCurve(X, Y, 1, N, 1);
 
-  PlotFunc(PltFunc, Xmin, Xmax, 2);
+  PlotFunc(@PltFunc, Xmin, Xmax, 2);
 
   Readln;
 
@@ -234,7 +234,7 @@ begin
 
   ApproxFit(B);
 
-  NLFit(RegFunc, DerivProc, XX, YY, 1, N, MaxIter, Tol,
+  NLFit(@RegFunc, @DerivProc, XX, YY, 1, N, MaxIter, Tol,
         B, FirstPar, LastPar, V);
 
   if MathErr = MatOk then

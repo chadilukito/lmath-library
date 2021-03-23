@@ -143,9 +143,9 @@ begin
   AutoScale(X, 0, MidIndex, LinScale, Yr_min, Yr_max, Yr_step);
   AutoScale(Y, 0, MidIndex, LinScale, Yi_min, Yi_max, Yi_step);
 
-  Ymin  := FMin(Yr_min, Yi_min);
-  Ymax  := FMax(Yr_max, Yi_max);
-  Ystep := FMin(Yr_step, Yi_step);
+  Ymin  := Min(Yr_min, Yi_min);
+  Ymax  := Max(Yr_max, Yi_max);
+  Ystep := Min(Yr_step, Yi_step);
 
   SetOxScale(LinScale, Xmin, Xmax, Xstep);
   SetOyScale(LinScale, Ymin, Ymax, Ystep);
@@ -178,8 +178,8 @@ begin
 end;
 
 begin
-  DimCompVector(InArray, MaxIndex);
-  DimCompVector(OutArray, MaxIndex);
+  DimVector(InArray, MaxIndex);
+  DimVector(OutArray, MaxIndex);
   DimVector(T, MaxIndex);
   DimVector(Freq, MaxIndex);
 

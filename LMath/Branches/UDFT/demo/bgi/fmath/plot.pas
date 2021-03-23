@@ -37,7 +37,7 @@ begin
 
   SetClipping(True);
 
-  PlotFunc(Func, 0.0, 1.0, 1);
+  PlotFunc(@Func, 0.0, 1.0, 1);
 
   ReadLn;
 
@@ -64,7 +64,7 @@ begin
 
   SetClipping(True);
 
-  PlotFunc(Func, 0.01, 100, 2);
+  PlotFunc(@Func, 0.01, 100, 2);
 
   ReadLn;
 

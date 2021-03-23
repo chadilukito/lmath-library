@@ -23,7 +23,7 @@ uses
   dmath, regutils;
 {$ELSE}
   utypes, uScaling, unlfit, uhillfit,
-  uregtest, uinvbeta, uplot, regutils;
+  uregtest, uinvbeta, uplot, regutils, uErrors;
 {$ENDIF}
 
 const
@@ -130,7 +130,7 @@ begin
                    B, V, FirstPar, LastPar, Test, Alpha, Tc, Fc);
 
       { Plot curve }
-      PlotGraph(PltFunc, Title, N, X, Y);
+      PlotGraph(@PltFunc, Title, N, X, Y);
     end
   else
     Writeln('Unable to fit curve!');

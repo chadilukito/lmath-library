@@ -141,7 +141,7 @@ begin
 
   PlotCurveWithErrorBars(X, Y, S, 1, 1, N, 1);
 
-  PlotFunc(PltFunc, Xmin, Xmax, 1);
+  PlotFunc(@PltFunc, Xmin, Xmax, 1);
 
   Readln;
 

@@ -28,7 +28,7 @@ function DimStatClassVector(out C : TStatClassVector; A, B, H : float):integer;
 procedure Distrib(X       : TVector;
                   Lb, Ub  : Integer;
                   A       : Float; // A:lower border of histogram. Upper one is found from length of C.
-                  H       : Float; // H is bin width. Number of bins is calculated
+                  H       : Float; // H is bin width.
                   C       : TStatClassVector);
 
 // Extacts from StatClassVector a vector of X-values for a histogram (middles of each bin)

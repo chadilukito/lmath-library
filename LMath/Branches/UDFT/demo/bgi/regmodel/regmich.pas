@@ -22,7 +22,7 @@ uses
 {$IFDEF USE_DLL}
   dmath, regutils;
 {$ELSE}
-  utypes, uScaling, unlfit, umichfit,
+  utypes, uErrors, uScaling, unlfit, umichfit,
   uregtest, uinvbeta, uplot, regutils;
 {$ENDIF}
 
@@ -129,7 +129,7 @@ begin
                    B, V, FirstPar, LastPar, Test, Alpha, Tc, Fc);
 
       { Plot curve }
-      PlotGraph(PltFunc, Title, N, X, Y);
+      PlotGraph(@PltFunc, Title, N, X, Y);
     end
   else
     Writeln('Unable to fit curve!');

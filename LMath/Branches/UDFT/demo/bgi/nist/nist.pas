@@ -58,7 +58,7 @@ uses
 {$IFDEF USE_DLL}
   dmath;
 {$ELSE}
-  utypes, umath, uScaling, unlfit, umodels, ustrings, uplot;
+  utypes, umath, uErrors, uScaling, unlfit, umodels, ustrings, uplot;
 {$ENDIF} 
 
 const
@@ -451,7 +451,7 @@ begin
   SetLineParam(1, 0, 0, 0);  { Don't connect points }
   PlotCurve(X, Y, 1, N, 1);
 
-  PlotFunc(PlotRegFunc, Xmin, Xmax, 2);
+  PlotFunc(@PlotRegFunc, Xmin, Xmax, 2);
 
   Readln;
 
