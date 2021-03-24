@@ -8,7 +8,7 @@ unit lmRegression;
 interface
 
 uses
-  uevalfit, uexlfit, uexpfit, ufft, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
+  uevalfit, uexlfit, uexpfit, ufracfit, ugamfit, uiexpfit, ulinfit, ulogifit, umulfit, unlfit, upolfit, upowfit, 
   usvdfit, uSpline, uregtest, uConstrNLFit, LazarusPackageIntf;
 
 implementation

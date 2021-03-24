@@ -17,6 +17,7 @@ PFloat = ^Float;
 {  Mathematical constants } 
 const
   Pi         = 3.14159265358979323846;  {< Pi }
+  Euler      = 2.71828182845904523536;  {< Euler's number (logarithm base)}
   Ln2        = 0.69314718055994530942;  {< Ln(2) }
   Ln10       = 2.30258509299404568402;  {< Ln(10) }
   LnPi       = 1.14472988584940017414;  {< Ln(Pi) }

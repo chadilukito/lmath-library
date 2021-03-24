@@ -2,14 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit lmMathUtil;
+unit lmDSP;
 
 {$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  ustrings, uwinstr, uqsort, uVectorHelper, uVecUtils, usearchtrees, usorting, uunitsformat, uVecFunc, uVecMatPrn, 
-  uVecFileUtils, uCompVecUtils, LazarusPackageIntf;
+  uConvolutions, uFilters, uDFT, ufft, uFindChebyshevCoeffs, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +17,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('lmMathUtil', @Register);
+  RegisterPackage('lmDSP', @Register);
 end.
