@@ -1,7 +1,7 @@
 { ******************************************************************
   Mean and standard deviations
   ****************************************************************** }
-
+{$mode objfpc}
 unit umeansd;
 
 interface
@@ -11,26 +11,26 @@ uses
 
 { Minimum of sample X }
 function Min(X : TVector; Lb, Ub : Integer) : Float; overload;
-function Min(const X:array of float) : float; overload;
+function Min(constref X:array of float) : float; overload;
 
 { Maximum of sample X }
 function Max(X : TVector; Lb, Ub : Integer) : Float; overload;
-function Max(const X : array of float) : Float; overload;
+function Max(constref X : array of float) : Float; overload;
 
 function Sum(X:TVector; Lb, Ub : integer) : Float; overload;
-function Sum(const X:array of float) : Float; overload;
+function Sum(constref X:array of float) : Float; overload;
 
 { Mean of sample X }
 function Mean(X : TVector; Lb, Ub : Integer) : Float; overload;
-function Mean(const X : array of float) : Float; overload;
+function Mean(constref X : array of float) : Float; overload;
 
 { Standard deviation estimated from sample X }
 function StDev(X : TVector; Lb, Ub : Integer; M : Float) : Float; overload;
-function StDev(const X : array of float; M : Float) : Float; overload;
+function StDev(constref X : array of float; M : Float) : Float; overload;
 
 { Standard deviation of population }
 function StDevP(X : TVector; Lb, Ub : integer; M : Float) : Float; overload;
-function StDevP(const X : array of float; M : Float) : Float; overload;
+function StDevP(constref X : array of float; M : Float) : Float; overload;
 
 
 implementation
@@ -46,7 +46,7 @@ begin
   Min := Xmin;
 end;
 
-function Min(const X: array of float): float;
+function Min(constref X: array of float): float;
 var
   Xmin : Float;
   I    : Integer;
@@ -68,7 +68,7 @@ begin
   Max := Xmax;
 end;
 
-function Max(const X: array of float): Float;
+function Max(constref X: array of float): Float;
 var
   Xmax : Float;
   I    : Integer;
@@ -88,7 +88,7 @@ begin
     Result := Result +X[I];
 end;
 
-function Sum(const X: array of float): Float;
+function Sum(constref X: array of float): Float;
 var
   I:Integer;
 begin
@@ -107,7 +107,7 @@ begin
   Mean := Result / (Ub - Lb + 1);
 end;
 
-function Mean(const X: array of float): Float;
+function Mean(constref X: array of float): Float;
 var
   I  : Integer;
 begin
@@ -138,7 +138,7 @@ begin
   StDev := Sqrt(V);
 end;
 
-function StDev(const X: array of float; M: Float): Float;
+function StDev(constref X: array of float; M: Float): Float;
 var
   D, SD, SD2, V : Float;
   I, N          : Integer;
@@ -159,7 +159,7 @@ begin
   StDev := Sqrt(V);
 end;
 
-function StDevP(const X: array of float; M: Float): Float;
+function StDevP(constref X: array of float; M: Float): Float;
 var
   D, SD, SD2, V : Float;
   I, N          : Integer;

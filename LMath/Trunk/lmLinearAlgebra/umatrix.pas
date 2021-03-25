@@ -5,18 +5,18 @@ unit uMatrix;
 interface
 
 uses uTypes, uMinMax, uErrors;
-operator + (V:array of float; R:Float) Res : TVector;
-operator - (V:array of float; R:Float) Res : TVector;
-operator / (V:array of float; R:Float) Res : TVector;
-operator * (V:array of float; R:Float) Res : TVector;
+operator + (const V:array of float; R:Float) Res : TVector;
+operator - (const V:array of float; R:Float) Res : TVector;
+operator / (const V:array of float; R:Float) Res : TVector;
+operator * (const V:array of float; R:Float) Res : TVector;
 
-operator + (M:TMatrix; R:Float) Res : TMatrix;
-operator - (M:TMatrix; R:Float) Res : TMatrix;
-operator / (M:TMatrix; R:Float) Res : TMatrix;
-operator * (M:TMatrix; R:Float) Res : TMatrix;
+operator + (const M:TMatrix; R:Float) Res : TMatrix;
+operator - (const M:TMatrix; R:Float) Res : TMatrix;
+operator / (const M:TMatrix; R:Float) Res : TMatrix;
+operator * (const M:TMatrix; R:Float) Res : TMatrix;
 
-operator + (V1:array of float; V2:array of float) Res : TVector; // element-wise
-operator - (V1:array of float; V2:array of float) Res : TVector;
+operator + (const V1:array of float; const V2:array of float) Res : TVector; // element-wise
+operator - (const V1:array of float; const V2:array of float) Res : TVector;
 
 
 {These functions use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
@@ -415,7 +415,7 @@ begin
         Swap(M[I,J],M[J,I]);
 end;
 
-operator+(V: array of float; R: Float)Res: TVector;
+operator+(const V: array of float; R: Float)Res: TVector;
 var
   I,L:integer;
   Ziel: TVector;
@@ -427,7 +427,7 @@ begin
   Result := Ziel;
 end;
 
-operator-(V: array of float; R: Float)Res: TVector;
+operator-(const V: array of float; R: Float)Res: TVector;
 var
   I,L:integer;
   Ziel: TVector;
@@ -439,7 +439,7 @@ begin
   Result := Ziel;
 end;
 
-operator/(V: array of float; R: Float)Res: TVector;
+operator/(const V: array of float; R: Float)Res: TVector;
 var
   I,L:integer;
   Ziel: TVector;
@@ -451,7 +451,7 @@ begin
   Result := Ziel;
 end;
 
-operator*(V: array of float; R: Float)Res: TVector;
+operator*(const V: array of float; R: Float)Res: TVector;
 var
   I,L:integer;
   Ziel: TVector;
@@ -463,7 +463,7 @@ begin
   Result := Ziel;
 end;
 
-operator+(M: TMatrix; R: Float)Res: TMatrix;
+operator+(const M: TMatrix; R: Float)Res: TMatrix;
 var
   I,J,Ub1,Ub2:integer;
   Ziel: TMatrix;
@@ -477,7 +477,7 @@ begin
   Result := Ziel;
 end;
 
-operator-(M: TMatrix; R: Float)Res: TMatrix;
+operator-(const M: TMatrix; R: Float)Res: TMatrix;
 var
   I,J,Ub1,Ub2:integer;
   Ziel: TMatrix;
@@ -491,7 +491,7 @@ begin
   Result := Ziel;
 end;
 
-operator/(M: TMatrix; R: Float)Res: TMatrix;
+operator/(const M: TMatrix; R: Float)Res: TMatrix;
 var
   I,J,Ub1,Ub2:integer;
   Ziel: TMatrix;
@@ -505,7 +505,7 @@ begin
   Result := Ziel;
 end;
 
-operator*(M: TMatrix; R: Float)Res: TMatrix;
+operator*(const M: TMatrix; R: Float)Res: TMatrix;
 var
   I,J,Ub1,Ub2:integer;
   Ziel: TMatrix;
@@ -519,7 +519,7 @@ begin
   Result := Ziel;
 end;
 
-operator+(V1: array of float; V2: array of float)Res: TVector;
+operator+(const V1: array of float; const V2: array of float)Res: TVector;
 var
   I,L:integer;
   Ziel:TVector;
@@ -537,7 +537,7 @@ begin
   Result := Ziel;
 end;
 
-  operator-(V1: array of float; V2: array of float)Res: TVector;
+  operator-(const V1: array of float; const V2: array of float)Res: TVector;
   var
     I,L:integer;
     Ziel:TVector;

@@ -20,7 +20,7 @@ TVectorHelper = type helper for TVector
   procedure Sort(Descending:boolean);
   //inserts Source[Lb,Ub] into self beginning from Ind position.
   procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer); overload;
-  procedure InsertFrom(source: array of float; ind: integer); overload;
+  procedure InsertFrom(constref source: array of float; ind: integer); overload;
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
   //indices as well
@@ -38,7 +38,7 @@ TIntVectorHelper = type helper for TIntVector
   procedure Fill(Lb, Ub : integer; Val:Integer);
   procedure FillWithArr(Lb : integer; Vals:array of Integer);
   procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer); overload;
-  procedure InsertFrom(source: array of integer; ind: integer); overload;
+  procedure InsertFrom(constref source: array of integer; ind: integer); overload;
   function ToString(Index:integer):string;
   //Sends string representation of the subarray to Dest. If Indices, sends
   //indices as well
@@ -138,7 +138,7 @@ begin
   Move(Source[Lb],Self[Ind],C*SizeOf(Integer));
 end;
 
-procedure TIntVectorHelper.InsertFrom(source: array of integer; ind: integer);
+procedure TIntVectorHelper.InsertFrom(constref source: array of integer; ind: integer);
 var
   I, C, H, Ub: Integer;
   begin
@@ -281,7 +281,7 @@ var
     Move(Source[Lb],Self[Ind],C*SizeOf(Float));
   end;
 
-procedure TVectorHelper.InsertFrom(source: array of float; ind: integer);
+procedure TVectorHelper.InsertFrom(constref source: array of float; ind: integer);
 var
   I, C, H, Ub: Integer;
   begin

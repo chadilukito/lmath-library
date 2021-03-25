@@ -21,13 +21,13 @@ function tmCoords(ARow,ACol:integer):TMatCoords;
 // back the returned value
 procedure Apply(var V:array of Float; Func:TFunc); overload;
 procedure Apply(var V:array of Integer; Func:TIntFunc); overload;
-function CompVec(const X, Xref : array of float; Tol : Float) : Boolean; overload;
-function Any(const Vector:array of Float; Test:TTestFunc):boolean; overload;
-function Any(const Vector:array of integer; Test:TIntTestFunc):boolean; overload;
+function CompVec(constref X, Xref : array of float; Tol : Float) : Boolean; overload;
+function Any(constref Vector:array of Float; Test:TTestFunc):boolean; overload;
+function Any(constref Vector:array of integer; Test:TIntTestFunc):boolean; overload;
 
-procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload; deprecated 'Use version with open array instead.';
+procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
 procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
-procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload; deprecated 'Use version with open array instead.';
+procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
 procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
 
 procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
@@ -343,7 +343,7 @@ begin
   CompVec := Ok;
 end;
 
-function CompVec(const X, Xref : array of float; Tol : Float) : Boolean; overload;
+function CompVec(constref X, Xref : array of float; Tol : Float) : Boolean; overload;
 var
   I    : Integer;
   Ok   : Boolean;
@@ -390,7 +390,7 @@ begin
   Result := false;
 end;
 
-function Any(const Vector:array of Float; Test:TTestFunc):boolean;
+function Any(constref Vector:array of Float; Test:TTestFunc):boolean;
 var
   I:Integer;
 begin
@@ -445,7 +445,7 @@ begin
   Result := false;
 end;
 
-function Any(const Vector:array of integer; Test:TIntTestFunc):boolean;
+function Any(constref Vector:array of integer; Test:TIntTestFunc):boolean;
 var
   I:Integer;
 begin
