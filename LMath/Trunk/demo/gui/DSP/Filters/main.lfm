@@ -124,6 +124,7 @@ object MainForm: TMainForm
       Width = 48
       TabOrder = 6
       DecimalPlaces = 3
+      Value = 0
       ValueEmpty = True
     end
     object Freq2Edit: TFloatEdit
@@ -133,6 +134,7 @@ object MainForm: TMainForm
       Width = 48
       TabOrder = 7
       DecimalPlaces = 3
+      Value = 0
       ValueEmpty = True
     end
     object Freq3Edit: TFloatEdit
@@ -142,6 +144,7 @@ object MainForm: TMainForm
       Width = 48
       TabOrder = 8
       DecimalPlaces = 3
+      Value = 0
       ValueEmpty = True
     end
     object Label1: TLabel
@@ -167,6 +170,7 @@ object MainForm: TMainForm
       Width = 47
       TabOrder = 9
       DecimalPlaces = 3
+      Value = 0
       ValueEmpty = True
     end
     object Label3: TLabel
@@ -184,6 +188,7 @@ object MainForm: TMainForm
       Width = 56
       TabOrder = 10
       DecimalPlaces = 3
+      Value = 0
       ValueEmpty = True
     end
     object Label4: TLabel
@@ -220,6 +225,7 @@ object MainForm: TMainForm
       Width = 58
       Increment = 0.1
       MaxValue = 30
+      MinValue = 0
       TabOrder = 13
       Value = 0.5
     end
@@ -236,6 +242,7 @@ object MainForm: TMainForm
       Height = 25
       Top = 40
       Width = 75
+      Anchors = [akTop, akRight]
       Caption = 'Refilter'
       OnClick = RefilterBtnClick
       TabOrder = 14
@@ -271,6 +278,8 @@ object MainForm: TMainForm
         MinY = -1.1
         MaxX = 12.384
         MaxY = 2.2
+        XPos = 0
+        YPos = 0
         OutputPen.Color = clBlue
         GridPen.Color = clSilver
         GridPen.Style = psDot
@@ -352,6 +361,8 @@ object MainForm: TMainForm
         MinY = -1.1
         MaxX = 12.384
         MaxY = 2.2
+        XPos = 0
+        YPos = 0
         OutputPen.Color = clBlue
         GridPen.Color = clSilver
         GridPen.Style = psDot
@@ -429,6 +440,8 @@ object MainForm: TMainForm
         MinY = -3.15
         MaxX = 500
         MaxY = 3.15
+        XPos = 0
+        YPos = 0
         OutputPen.Color = clBlue
         GridPen.Color = clSilver
         GridPen.Style = psDot
@@ -503,6 +516,8 @@ object MainForm: TMainForm
         MinY = -1.1
         MaxX = 500
         MaxY = 1.1
+        XPos = 0
+        YPos = 0
         OutputPen.Color = clBlue
         GridPen.Color = clSilver
         GridPen.Style = psDot

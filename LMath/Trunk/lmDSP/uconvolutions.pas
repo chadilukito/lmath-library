@@ -5,7 +5,7 @@ unit uConvolutions;
 interface
 
 uses
-  uTypes, uMinMax, uErrors, uMatrix;
+  uTypes, uMinMax, uErrors;
 
 //Convolutes Signal[Lb..Ub] with FIR[Flb..High(Fir)] in time domain.
 function Convolve(constref Signal:array of Float; constref FIR:array of float; Ziel : TVector= nil):TVector;
@@ -40,7 +40,7 @@ begin
     end;
   end;
 
-  Ind := 1 - LF;
+  Ind := -HF;
   I := 0;
   while I <= HF do
   begin

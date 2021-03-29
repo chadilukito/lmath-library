@@ -276,7 +276,7 @@ type
   TRecursCoeffs = array[1..2] of Float;
   TInCoeffs = array[0..2] of Float;
 
-procedure FindNarrowBandParams(CentralFreq, BW, SamplingRate : Float; out K, R, CoF : float; out B:TRecursCoeffs);
+procedure FindNarrowBandParams(CentralFreq, BW, SamplingRate : Float; out K, R, CoF : float);
 var
   FrRatio, BWRatio: float;
 begin
@@ -333,7 +333,7 @@ begin
     SetErrCode(lmTooHighFreqError);
     Exit;
   end;
-  FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF,B);
+  FindNarrowBandParams(AFreqReject,ABW,ASamplingRate,K,R,CoF);
   FindNotchCoeffs(K,R,CoF,A,B);
   ApplyNarrowBandFilter(Data,A,B);
 end;
@@ -350,7 +350,7 @@ begin
     SetErrCode(lmTooHighFreqError);
     Exit;
   end;
-  FindNarrowBandParams(AFreqPass,ABW,ASamplingRate,K,R,CoF,B);
+  FindNarrowBandParams(AFreqPass,ABW,ASamplingRate,K,R,CoF);
   FindBandPassCoeffs(K,R,CoF,A,B);
   ApplyNarrowBandFilter(Data,A,B);
 end;
@@ -385,7 +385,6 @@ var
   A, B, BR: TVector;
   I, J, K: integer;
   Old : TVector;
-  SumA: Float;
 begin
   if not (NPoles in [2,4,6,8,10]) then
     SetErrCode(lmPolesNumError);

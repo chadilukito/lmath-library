@@ -24,6 +24,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
+    <Version Minor="6"/>
     <Files Count="5">
       <Item1>
         <Filename Value="uconvolutions.pas"/>
