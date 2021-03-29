@@ -44,6 +44,12 @@
 			LMath 0.5
 	\end{flushright} }
 }
+\newcommand{\lmathsix}[1]{   % picture in margin
+	\marginpar{\vspace{#1} 
+		\begin{flushright}
+			LMath 0.6
+	\end{flushright} }
+}
 \newcommand{\euler}{\mathrm{e}}
 \newcommand{\keyword}[1]{\textbf{#1}}
 \newcommand{\declarationitem}[1]{\textbf{#1}}
@@ -52,7 +58,7 @@
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{1}
 \begin{document}
-\title{LMath 0.5.1: mathematical library for\\ Free Pascal --- Lazarus\\
+\title{LMath 0.6.0: mathematical library for\\ Free Pascal --- Lazarus\\
 {\Large Reference Guide}}
 
 \author{Edited by Viatcheslav V. Nesterov}
@@ -64,57 +70,23 @@
 \newlength{\tmplength}
 
 
-\chapter*{Preface}
+\chapter{About the library}
 \addcontentsline{toc}{chapter}{Preface}
-\section*{Motivation}
-For few years I was using the brilliant DMath library from Jean Debord. In the course of its use I have added several new procedures and units; in some cases I adapted it to more modern syntax. Initially I did it only for my own use, mostly in my \href{https://sourceforge.net/projects/nestopatch/}{Nest-O-Patch} project, but finally, since DMath is not developing after 2012, I thought that my small modifications can be useful for a community and released the modified work as a fork. 
+LMath, further development of DMath library from Jean Debord, is a general purpose mathematical library for FreePascal (FPC) and Lazarus. LMath provides routines and demo programs for numerical analysis, including
+mathematical functions, probabilities, matrices, optimization, linear and
+nonlinear equations, integration, Fast Fourier Transform, random numbers,
+curve fitting, statistics and graphics.
+It is organized as a set of lazarus packages. Such organization makes it easily extensible and helps to include only really needed features in your project.
 
-DMath stands for Delphi Math, and is a continuation of an earlier work which was named TPMath, for Turbo Pascal Math. Continuing this tradition, I named this work LMath: Lazarus Math.
-
-My initial intent was to integrate LMath into Free Pascal system and make use of built-in Math unit. However, after close look at the code of both, I found that DMath had very thoughtful and consistent error handling mechanism which would be broken by such integration, and abandoned this idea. Besides that, I was not sure how well handling of different float types in DMath and in Math would fit each other. After these considerations, I preferred to implement some functions from Math unit and to leave LMath self-contained.
-\section*{Changes in LMath Compared to DMath}
-\subsection*{Modifications of Existing Code}  
-These are not numerous. 
-\begin{enumerate}
-\item In many cases, I have changed \code{var} descriptor to \code{out} for output parameters in function calls, to avoid getting tons of unmeaningful warnings. So, now a user must take seriously compiler complaints on possibly uninitialized variables. However, I do not guarantee that I did it everywhere.
-\item Instead of many various \code{Dim*Vector} and \code{Dim*Matrix}, overloaded \hyperref[utypes-DimVector]{DimVector} and \hyperref[utypes-DimMatrix]{DimMatrix} procedures for all types of vectors and matrices were defined.
-\item Similarly, changed \code{FSwap} and \code{ISwap} to universal \hyperref[uminmax-Swap]{Swap}; \hyperref[uminmax-Min]{Min} and \hyperref[uminmax-Min]{Max} are overloaded as well.
-\item In \hyperref[ueval]{uEval} unit, \hyperref[ueval-parsingerror]{ParsingError} variable was made public, to enable a calling program to react adequately if an invalid expression was passed for evaluation. Names of the variables may be of any length and, unlike DMath, the whole name is meaningful. Previously, only first letter was meaningful for expression parser.
-\item Converted into Lazarus and recompiled all GUI demo programs.
-\end{enumerate}
-But in general, I did not modify existing algorithms, since Jean Debord did really very good job and they function nicely.
-\subsection*{Additions}
-\begin{enumerate}
-\item Added \hyperref[types:trealpoint]{TRealPoint} type which represents a point on a cartesian plane and defined several procedures and operators over it (see \ref{uRealPoints}).
-\item Defined \hyperref[utypes-IsZero]{IsZero}, \hyperref[utypes-IsNan]{IsNAN} and \hyperref[utypes-SameValue]{SameValue} functions together with accompanying \hyperref[utypes-SetEpsilon]{SetEpsilon} and \hyperref[utypes-SetZeroEpsilon]{SetZeroEpsilon} functions.
-\item Improvements in error handling: \hyperref[uErrors-SetErrCode]{SetErrCode} function allows to set not only numeric error code, but text message as well. Consequently, \hyperref[uErrors-MathErrMessage]{MathErrMessage} function allows to read it.  Standard error messages for standard error defined. See \ref{uErrors} for details.
-\item In the unit \code{uMinMax}, function \code{Sign} was added with the same semantics as in Math unit, for compatibility reasons.
-\item In \code{uMath}, operator \code{**} was defined.
-\item In \code{uCompex} unit, opreators over complex numbers defined (inspired by \\ \code{uComplex} unit from Free Pascal RTL).
-\item uIntervals unit was written where TInterval type is defined which represents an interval between two real numbers, several procedures with it are defined. See \ref{uIntervals} for details.
-\item Unit uMatrix (\ref{sec:unit-umatrix}) was written which defines some basic operation of linear algebra.
-\item uCrtPtPol unit written, with the procedures to find critical points of a polynomial, see \ref{unit-ucrtptpol}.
-\item Unit uMeanSD{\_}MD written which defines functions of descriptive statistics over array containing missed values. By default, missed value is represented as NAN, but any code can be defined.
-\item In the unit uNormal, function DGaussian added to evaluate a normal distribution with arbitrary $\mu$ and $\sigma$.
-\item Unit uSpline written, for cubic spline interpolation of a set of points and to investigate the resulting spline function, finding roots and extremums.
-\item Goldman-Hodgkin-Katz equation for current and Sum of Gaussians distribution were added to the library of fitting models (see \ref{ugauss}, \ref{ugaussf} and \ref{ugoldman}).
-\item Estimates and models of exponential, hyperexponential and hypoexponential distributions added (see \ref{udistribs}).
-\item Optimization algorithm innitially written by COBYLA by Michael J. D. Powell was implemented and used for constrained non-linear regression (see \ref{sec:unit-ucobyla} and \ref{sec:unit-uconstrnlfit}).
-\item Unit uLinSimplex which solves linear programming problems with simplex method was written \ref{sec:unit-ulinsimplex}.
-\item Unit lmSorting written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
-\item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
-\item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
-\item Unit uVecFileUtils written, which contains procedures for saving \code{TMatrix} or \code{TVector} to a file and read them from a file.   
-\end{enumerate}
-In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
+DMath stands for Delphi Math, and is a continuation of an earlier work which was named TPMath, for Turbo Pascal Math. Continuing this tradition, this this library is called LMath: Lazarus Math.
 \section*{About the documentation} 
 DMath comes with very nice \href{DMath.pdf}{manual} which describes not only the library itself, but a lot of underlying theory. This document, written by Jean Debord, is included with LMath library. Practically everything what you find in this manual remains true for LMath as well. However, new code is, of course, not covered by DMath manual. 
 
-Therefore, I created the document which you are reading now. It was generated using \href{https://sourceforge.net/projects/pasdoc/}{PasDoc} program from the comments contained in the source files and later manually edited and extended. It contains rather formal and terse description of every routine, variable or constant found in the library and may serve as a brief reference. It covers both old and new procedures. Each chapter describes one package so you can easily find where needed function is located. I suggest that DMath.pdf is used to study the most of the library, and this document for the aquaintance with new possibilities and for quick reference.
+This Reference Guide is relatively terse, but complete. It contains formal descriptions of every routine, variable or constant found in the library and may serve as a brief reference. It covers both old and new procedures. Each chapter describes one package so you can easily find where needed function is located. I suggest that DMath.pdf is used to study the most of the library, and this document for the acquaintance with new possibilities and for quick reference.
 
-All elements added or modified in LMath library are labeled in the margins, as shown here.\lmath{-28pt} If this symbol is related to a unit identifier, it means that the entire unit is new. Accompanying \href{LMath_NewFunc_guide}{Guide to New Functions in LMath} provides more detailed introduction to new functions written for LMath. 
-\chapter{Structure of the Library}
-I find that huge packages with hundreds of units are inconvenient, therefore I organized the library into 12 relatively small packages:
+All elements added or modified in LMath library are labelled in the margins, as shown here.\lmath{-28pt} If this symbol is related to a unit identifier, it means that the entire unit is new. Accompanying \href{LMath_NewFunc_guide}{Guide to New Functions in LMath} provides more detailed introduction to new functions written for LMath. 
+\section{Structure of the Library}
+The library is organized as 13 relatively small packages:
 \begin{enumerate}
 	\item{\hyperref[package-lmGenMath]{lmGenMath}.} This package defines several important data structures, used later in the whole library, some utility functions, basic math functions and special functions. All other packages of the library depend on lmGenMath.
 	\item{\hyperref[package-lmMathUtil]{lmMathUtil}.} Various function for manipulations with arrays, sorting and formatting. Depends on lmGenMath.
@@ -125,11 +97,21 @@ I find that huge packages with hundreds of units are inconvenient, therefore I o
 	\item{\hyperref[package-lmMathStat]{lmMathStat}} Descriptive statistics, hypothesis testing, collection of various distributions. Depends on lmGenMath and lmLinearAlgebra.
 	\item{\hyperref[package-lmOptimum]{lmOptimum}.} Algorithms of function minimization. Somewhat artificially, unit uEval for evaluation of an expression, is included into this package. Depends on lmGenMath, lmLinearAlgebra, lmRandoms, lmMathStat.
 	\item{\hyperref[package-lmNonLinEq]{lmNonLinEq}.} Finding of roots of non-linear equations. Depends on lmGenMath, lmLinearAlgebra, lmOptimum.
-	\item{\hyperref[package-lmRegression]{lmRegression}.} Algorithms for linear and non-linear regression, curve fitting. Collection of common models. Unit uFFT for fast Fourier Transform is located also here.  Depends on lmLinearAlgebra, lmPolynoms, lmOptimum, lmMathUtil.
+	\item{\hyperref[package-lmDSP]{lmDSP}.Functions for digital signal processing. Collection of filters and Fourier Transform procedures.}
+	\item{\hyperref[package-lmRegression]{lmRegression}.} Functions for linear and non-linear regression, curve fitting. Collection of common models. Unit uFFT for fast Fourier Transform is located also here.  Depends on lmLinearAlgebra, lmPolynoms, lmOptimum, lmMathUtil.
 	\item{\hyperref[package-lmSpecRegress]{lmSpecRegress}.} Collection of field-specific models for data fitting. Depends on lmGenMath and lmRegression.
 	\item{\hyperref[package-lmPlotter]{lmPlotter}.} Routines for data and functions plotting. Depends on lmGenMath, lmMathUtil and LCL.
 \end{enumerate}	
 All these packages are described in the following chapters. 
+\section{Installation, Compilation and use of the library}
+Download and unpack file \textit{LMath\_and\_Components06.zip}. Open and compile packages lmGenMath, lmMathUtil, lmLinearAlgebra, lmPolynoms, lmIntegrals, lmRandoms, lmMathStat, lmOptimum, lmNonLinEq, lmRegression, lmSpecRegress, lmDSP, lmPlotter, in this order. After it you may compile LMath.pkg, which simply depends on all these packages. Therefore, if you add dependency on LMath to your project, it is not necessary to add every single package.
+
+Alternatively, if you have Project Groups package installed in your Lazarus IDE, you can open and compile LMath project group, select LMath target and compile it.
+
+If you are going to use LMComponents, open LMComponents package, compile and install it.
+
+LMComponents is an object-oriented extension of LMath. It contains TCoordSys component which serves for graphical representation of functions or data, several dialogs and input controls, as well as DSP filters implemented as components.
+    
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[RO]{\rightmark}
@@ -678,20 +660,26 @@ Vector of \hyperref[sec:statclass]{''StatClass''}. Used in \hyperref[udistrib]{'
 \end{itemize}
 
 \subsection{Constants}
+\subsubsection{Euler}
+\label{utypes-Euler}\lmathsix{-24pt}
+\index[const]{Euler}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		Euler = 2.71828182845904523536;
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Euler's number (logarithm base)
+\end{itemize}
 \subsubsection{Pi}
-\label{utypes-Pi}\index[const]{Pi}
+\label{utypes-Pi}	
 \index[const]{Pi}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			Pi         = 3.14159265358979323846;}
-		
+		\code{Pi = 3.14159265358979323846;}
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
 	$\pi$
-	
 \end{itemize}
 \subsubsection{Ln2}\index[const]{Ln2}
 \label{utypes-Ln2}
@@ -702,7 +690,6 @@ Vector of \hyperref[sec:statclass]{''StatClass''}. Used in \hyperref[udistrib]{'
 			Ln2        = 0.69314718055994530942;}
 		
 	\end{flushleft}
-	
 	\par
 	\item[\descriptiontitle{Description}]
 	$\ln(2)$
@@ -1300,7 +1287,7 @@ Error codes for mathematical functions:
 	\item[FTLoss] Total loss of precision \label{uErrors-FTLoss}
 	\item[FPLoss] Partial loss of precision \label{uErrors-FPLoss}
 \end{description}
-Error codes for mathematical functions:
+Error codes for matrix operations:
 \begin{description}
 	\item[MatNonConv] Non{-}convergence \label{uErrors-MatNonConv}
 	\item[MatSing]	Quasi{-}singular matrix \label{uErrors-MatSing}
@@ -1330,6 +1317,20 @@ Error codes for linear programming:
 	\item[lpBadSimplexTableau] Bad input tableau
 	\item[lpBadVariablesCount] Bad variables count
 \end{description}
+File operations error:
+\begin{description}
+	\item[lmFileError] File input/output error
+\end{description}
+DFT errors:
+\begin{description}
+\item[lmDFTError] Internal DFT Error
+\item[lmDSPFilterWinError] Filter window is longer than data
+\item[lmTooHighFreqError] Cutoff frequency exceeds 0.5 of sampling rate
+\item[lmPolesNumError] Number of poles for Chebyshev filter not in [2,4,6,8,10]
+\item[lmFFTError] FFT: number of samples is not power of two
+\item[lmFFTBadRipple] Ripple setting for Chebyshev filter is not in allowed range (must be 0 to 29\%)
+\end{description}
+
 \subsubsection{ErrorMessage}
 \lmath{-24pt}
 \label{uErrors-ErrorMessage}
@@ -1359,7 +1360,13 @@ Error codes for linear programming:
 			'Degenerate gradient',\\
 			'LinSimplex:bad input constraint counts',\\
 			'Bad input tableau in LinSimplex',\\
-			'LinSimplex: bad variables count'\\
+			'LinSimplex: bad variables count',\\
+			     'Internal DFT Error',\\
+			'Filter window is longer than data',\\
+			'Cutoff frequency must not exceed 0.5 of sampling rate',\\
+			'Number of poles must be even',\\
+			'FFT: number of samples must be power of two',\\
+			'Ripple must be 0 to 29\%'\\
 			);}
 	\end{flushleft}
 \item[\descriptiontitle{Description}] Array of messages corresponding to standard error codes defined in this unit. Elements of this array are returned by \hyperref[uErrors-MathErrMessage]{MathErrMessage} function.	
@@ -1386,8 +1393,6 @@ defined in this unit, corresponding standard message from \hyperref[uErrors-Erro
 			function DefaultVal(ErrCode : Integer; DefVal : Float; EMessage:string = '') : Float;}
 		
 	\end{flushleft}
-	
-	\par
 	\item[\descriptiontitle{Description}]
 	Sets error code and default function value. Optional argument EMessage introduced in LMath.
 \end{itemize}
@@ -6348,8 +6353,241 @@ Secant method for nonlinear equation.
 	function Func(X : Float) : Float; the maximum number of iterations MaxIter; Initial values of X and Y; the maximum number of iterations MaxIter; the tolerance Tol with which the root must be located.
 	
 \end{itemize}
+
+\chapter[Package lmDSP]{Package lmDSP:\\ Digital Signal Processing}\label{package-lmDSP}
+\section{Description}
+This package contains common routines for digital signal processing: Fast Fourier Transform (unit uFFT), Digital Fourier Transform, which does not require that input signal has length of power of two (unit uDSP; note however that this unit is distributed under GPL license, and not LGPL), and several signal filters (unit uFilters). Unit uFFT was moved here from lmRegression package, othersw were written for LMath ver 0.6.0. 
+\section{Unit ufft}
+\label{ufft}
+\index[unit]{ufft}
+\subsection{Description}
+Direct and inverse Fast Fourier Transform.
+
+\paragraph*{Note on API changes in LMath 0.6.0.} In previous versions, \code{FFT}, \code{IFFT} and \code{FFT{\_}Integer} were procedures and accepted both \code{InArray} and \code{OutArray} as \code{TCompVector}. In ver. 0.6.0 they were made functions, parameter \code{OutArray} is optional, and \code{InArray} is now open array of \hyperref[utypes-complex]{\code{Complex}}  instead of \hyperref[utypes-TCompVector]{\code{TCompVector}}. This makes these functions much more flexible, but supports backward compatibility, because when formal parameter has open array type, \code{TCompVector} can be passed as well.
+
+Call of \code{FFT{\_}Integer{\_}Cleanup} is not necessary anymore. This function does nothing and is supported only for backward compatibility.
+
+Modified from Don Cross:\\ \href{http://groovit.disjunkt.com/analog/time-domain/fft.html}{http://groovit.disjunkt.com/analog/time-domain/fft.html}
+
+\subsection{Functions and Procedures}
+\subsubsection{FFT}
+\label{ufft-FFT}
+\index[proc]{FFT}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function FFT(NumSamples : Integer; constref InArray : array of Complex; OutArray : TCompVector = nil):TCompVector;}
+		\end{flushleft}
+	\par
+	\item[\descriptiontitle{Description}]
+	Calculates the Fast Fourier Transform of the array of complex numbers ('InArray') and returns result of transform.  \code{NumSamples} is number of samples; length of \code{InArray} must be \code{NumSamples}. 
+	If \code{OutArray} is assigned, its dimensions must be \code{[0..NumSamples-1]}. In this case, transform result is put into \code{OutArray} and pointer to it is returned, if \code{OutArray = nil}, \code{Result} is allocated by function itself.
+\end{itemize}
+\subsubsection{IFFT}
+\label{ufft-IFFT}
+\index[proc]{IFFT}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			function IFFT(       NumSamples : Integer;
+			constref InArray : array of Complex; 
+			OutArray : TCompVector = nil) : TCompVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calculates the Inverse Fast Fourier Transform of the array of complex numbers ('InArray') and returns result of transform.  \code{NumSamples} is number of samples; length of \code{InArray} must be \code{NumSamples}. 
+    If \code{OutArray} is assigned, its dimensions must be \code{[0..NumSamples-1]}. In this case, transform result is put into \code{OutArray} and pointer to it is returned, if \code{OutArray = nil}, \code{Result} is allocated by function itself.
+\end{itemize}
+\subsubsection{FFT{\_}Integer}
+\label{ufft-FFT_Integer}
+\index[proc]{FFT{\_}Integer}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function FFT{\_}Integer(NumSamples               : Integer;
+			constref RealIn, ImagIn : array of Integer;
+			OutArray          : TCompVector = nil) : TCompVector;
+		}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Same as procedure FFT, but takes as input two open arrays of Integer (One for real, one for imaginary components) instead of one complex array. Similarly, lengths of RealIn and ImagIn must be equal to NumSampleslength of \code{InArray} must be \code{NumSamples}. 
+	If \code{OutArray} is assigned, its dimensions must be \code{[0..NumSamples-1]}. In this case, transform result is put into \code{OutArray} and pointer to it is returned, if \code{OutArray = nil}, \code{Result} is allocated by function itself.
+\end{itemize}
+\subsubsection{FFT{\_}Integer{\_}Cleanup}
+\label{ufft-FFT_Integer_Cleanup}
+\index[proc]{FFT{\_}Integer{\_}Cleanup}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			procedure FFT{\_}Integer{\_}Cleanup; deprecated;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Call of this procedure is not necessary anymore, it is kept only for backward compatibility.
+\end{itemize}
+\subsubsection{CalcFrequency}
+\label{ufft-CalcFrequency}
+\index[proc]{CalcFrequency}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			function CalcFrequency(NumSamples, FrequencyIndex : Integer; InArray : TCompVector) : Complex;}
+		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	This function returns the complex frequency sample at a given index directly. Use this instead of 'FFT' when you only need one or two frequency samples, not the whole spectrum.
+	
+	It is also useful for calculating the Discrete Fourier Transform (DFT) of a number of data which is not an integer power of 2. For example, you could calculate the DFT of 100 points instead of rounding up to 128 and padding the extra 28 array slots with zeroes.
+\end{itemize}
+\section{Unit uFilters}\label{sec:uFilters}\lmathsix{-24pt}
+\subsection{Description}\label{ufilters-description}
+This unit implements several digital filters: low pass moving average and gaussian filters, one-pole stop-band (notch) and pass band filters, one-pole high-pass filter, Chebyshev filter, which can be used both as low- and high-pass; with ripple = 0 setting it is a Butterworth filter; median filter. Besides that, the unit contains several functions for calculation of filter parameter. \code{GaussCascadeFreq} allows to find effective cut-off frequency for a case when two Gaussian filters were used one after another (and, because cascade of gaussian filters is also gaussian filters, repeatitive use of this function allows to find effective frequency of a cascade of any arbitrary length). \code{GaussRiseTime} allows to find a rise time of a step response of gaussian filter with a given cut-off frequency. Rise time is defined as time of the rize from 10{\%} to 90{\%} of complete amplitude. \code{MoveAvRiseTime} finds a rise time of moving average filter with a given window length. \code{MoveAvCutOffFreq} finds the cut-off frequency of Moving Average Filter with a given window length. \code{MoveAvFindWindow} solves the opposite task: finds window length for a given cut-off frequency. Cut-off frequency of all filters is defined as a frequency at which power of signal is reduced to 50{\%} of initial value, which corresponds to amplitude reduction by $\sqrt{2}/2 \approx 0.7$. Most of filter procedures require sampling rate and cut-off frequency. If sampling frequency is not defined in your allipcation, you may set it to 1 and define cut-off frequency as its fraction. Note also that typically cut-off frequency cannot be higher than half of sampling rate.
+
+Gaussian and moving average filters efficiently remove high frequency noise preserving form of signal in time domain and serve as excellent smoothing filters. However, they have relatively poor performance in the frequency domain. In contrast, Chebyshev filter has a steep frequency response, but causes large ringing in time domain. Therefore it may be an excellent analytical frequency domain filter, but is not recommended for curve smoothing for data viewed in time domain.
+Gaussian filter is implemented as described in:\\
+Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // Signal
+Processing, 44 (1995) 139-151.\\
+Chebyshev filter and one-pole recursive filters implement algorithms from \\
+\href{http://www.dspguide.com/pdfbook.htm}{Smith, S. W. The Scientist and Engineer's Guide to Digital Signal Processing}
+\subsection{Functions and Procedures}
+\subsubsection{GaussFilter}
+\label{ufilters-gaussfilter}
+\index[proc]{GaussFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{procedure GaussFilter(var Data:array of float; ASamplingRate: Float;  ACutFreq: Float);}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Implements low-pass gaussian filter. Open array \code{Data} on input contains initial signal, on output, filtered signal. \code{ASampling rate} is sampling rate, \code{ACutFreq} is cut-off frequency. Errors:\code{lmTooHighFreqError} is set if \code{ACutFreq} $>$ \code{ASamlingRate/2} and \code{Data} remains unchanged. See \ref{ufilters-description} for definition of cut-off frequency.
+\end{itemize}	
+\subsubsection{MovingAverageFilter}
+\label{ufilters-movingaveragefilter}
+\index[proc]{MovingAverageFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure MovingAverageFilter(var Data:array of float; WinLength:integer);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Performs smoothing of \code{Data} array of Float with moving average filter. \code{Data} on input contains initial signal, on output, filtered signal. \code{WinLength} is length of averaged window. Errors: lmDSPFilterWinError is set if \code{WinLength} $>$ \code{length(Data)} and \code{Data} remains unchanged. If you want to define moving average filter in terms of cut-off frequency, desired window length may be found with a call to \code{MovAvFindWindow} (\ref{ufilters-movavfindwindow}). Conversly, to find cut-off frequency corresponding to known window length, use \code{MoveAvCutOffFreq}, \ref{ufilters-moveavcutofffreq}.  See \ref{ufilters-description} for definition of cut-off frequency.
+\end{itemize}	
+\subsubsection{MedianFilter}
+\label{ufilters-MedianFilter}
+\index[proc]{MedianFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure MedianFilter(var Data:array of float; WinLength:integer);		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Median filter is ideal to remove short spikes preserving sharp edges. Window length must be set to spike length + 1. \code{Data} on input contains initial signal, on output, filtered signal. \code{WinLength} is length of averaged window. Errors: lmDSPFilterWinError is set if \code{WinLength} $>$ \code{length(Data)} and \code{Data} remains unchanged. 
+\end{itemize}	
+\subsubsection{NotchFilter}
+\label{ufilters-notchfilter}
+\index[proc]{NotchFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+procedure NotchFilter(var Data:array of float; ASamplingRate: Float; AFreqReject: Float; ABW: Float);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Notch filter rejects \code{AFreqReject}. It may be useful for example to remove hum, originating from a power network 50 ( in USA 60) Hz frequency. \code{ABW} is rejected bandwidth, measured at 0.5 power (0.7 amplitude). Increasing this value increases amplitude and decreases length of ringing after steps in filtered signal. \code{Data} contains initial signal on input and filtered on output. Errors: \code{lmTooHighFreqError} is set if ACutFreq $>$ ASamlingRate/2 and \code{Data} remains unchanged. See \ref{ufilters-description} for definition of cut-off frequency. 
+\end{itemize}	
+\subsubsection{BandPassFilter}
+\label{bandpassfilter}
+\index[proc]{BandPassFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure BandPassFilter(var Data:array of float; ASamplingRate: Float; AFreqPass: Float; ABW: Float);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Opposite to \code{NotchFilter}. Passes \code{AFreqPass} and rejects everything else. \code{Data} contains initial signal on input and filtered on output. \code{ABW} is rejected the width of passed band, measured at 0.5 power (0.7 amplitude). Errors: \code{lmTooHighFreqError} is set if ACutFreq $>$ \code{ASamlingRate/2} and \code{Data} remains unchanged. 
+\end{itemize}	
+\subsubsection{HighPassFilter}
+\label{ufilter-highpassfilter}
+\index[proc]{HighPassFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure HighPassFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float);		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	One pole highpass filter. \code{Data} contains initial signal on input and filtered on output. \code{ASampling rate} is sampling rate, \code{ACutFreq} is cut-off frequency. See \ref{ufilters-description} for definition of cut-off frequency.
+	Errors: if \code{ACutFreq} $>$ \code{ASamplingRate/2}, lmTooHighFreqError is set and \code{Data} remains unchanged.
+\end{itemize}	
+\subsubsection{ChebyshevFilter}
+\label{chebyshevfilter}
+\index[proc]{ChebyshevFilter}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure ChebyshevFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float;
+		NPoles: integer; PRipple: float; AHighPass:boolean);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Defines Chebyshev filter, which may be high or low pass. Chebyshev filters have steep frequency response, but distort data shape in time domain. Increase of poles number makes the frequency response steeper, but decreases filter stability and of course increases calculation load. Typically, it is good idea to keep $NPoles \leq 6$ if $Float = Single$. \code{NPoles} cannot be greater than 10. Generally, Chebyshev filters have ripple in pass band; higher is this ripple, steeper is the signal attenuation. Value of ripple as \%{} of passband amplitude is controlled by \code{PRipple} parameter; $0 \leq PRipple \leq 29.0$. Setting \code{PRipple} to 0 converts Chebyshev filter to Butterworth filter. 
+	
+	On input: \code{Data} is initial signal; \code{ASamplingRate} is sampling rate; \code{ACutFreq} is cut-off frequency; \code{NPoles} is number of poles. It must be positive even less or equal to 10. \code{PRipple} is allowed value of ripple	in the passband as \%. $0 \geq PRipple\geq 29$. Setting \code{PRipple} to 0 converts Chebyshev filter to Butterworth filter. AHighPass: if true, highpass filtering will be done, lowpass otherwise. Output: filtered array in \code{Data}. Errors: \code{lmTooHighFreqError} is set if \code{ACutFreq} $>$ \code{ASamlingRate/2}, \code{lmPolesNumError} is set if \code{NPoles} is not in [2,4,6,8,10] and \code{lmFFTBadRipple} if $PRipple < 0$ or $PRipple > 29$. In all these cases \code{Data} remains unchanged.  
+\end{itemize}	
+
+\subsubsection{GaussCascadeFreq}
+\label{ufilters-gausscascadefreq}
+\index[proc]{GaussCascadeFreq}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		function GaussCascadeFreq(Freq1, Freq2:Float):Float;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns effective cut-off frequency of cascade of 2 gaussian filters, each with cut-off frequencies \code{Freq1} and \code{Freq2}. If \code{Freq1 = 0}, \code{Freq2} is returned and \textit{vice versa}. Errors: if any of \code{Freq1} or \code{Freq2} is negative, \code{FDomain} error is set and 0 is returned.
+\end{itemize}	
+\subsubsection{GaussRiseTime}
+\label{ufilters-gaussrisetime}
+\index[proc]{GaussRiseTime}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		GaussRiseTime(Freq: Float): Float;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calculates Rise time of step response for gaussian filter with cut-off frequency \code{Freq}. Rise time is defined as time of rise from 10\% of step amplitude to 90\%. If $Freq = 0$, \code{MaxNum} is returned. Errors: if $Freq < 0$, FDomain is set and 0 is returned. 
+\end{itemize}	
+\subsubsection{MovAvRiseTime}
+\label{ufilters-movavrisetime}
+\index[proc]{MovAvRiseTime}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	function MovAvRiseTime(SamplingRate:Float; WLength:integer):Float;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calculates rise time from 0 to 100\% of step response for moving average filter with window length \code{WLength} and sampling rate \code{SamplingRate}. Errors: if \code{SamplingRate} $\leq$ 0 or \code{WLength} $<$ 1, \code{FDomain} error is set and 0 is returned.
+\end{itemize}	
+\subsubsection{MoveAvCutOffFreq}
+\label{ufilters-moveavcutofffreq}
+\index[proc]{MoveAvCutOffFreq}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+function MoveAvCutOffFreq(SamplingRate:Float; WLength:integer):Float;		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calculates cut-off frequency of moving average filter with SamplingRate \code{SamplingRate} and window length \code{WLength}. Errors: Errors: if \code{SamplingRate} $\leq$ 0 or \code{WLength} $<$ 1, \code{FDomain} error is set and 0 is returned.
+\end{itemize}	
+\subsubsection{MoveAvFindWindow}
+\label{ufilters-moveavfindwindow}
+\index[proc]{MoveAvFindWindow}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+function MoveAvFindWindow(SamplingRate, CutOffFreq:Float):Integer;		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calculates required window length from desired cut-off frequency (\code{CutOffFreq}) and given sampling rate (\code{SamplingRate}). Errors: if \code{SamplingRate} $\leq$ 0 or \code{CutOffFreq} $\leq$ 0, \code{FDomain} error is set; if \code{CutOffFreq} $>$ \code{ASamplingRate/2}, lmTooHighFreqError is set. In all these cases 0 is returned. 
+\end{itemize}	
+
 \chapter[Package lmRegression]{Package lmRegression: Linear and Non-Linear Regression and Curve Fitting}\label{package-lmRegression}
-Procedures for non-linear regression and data fitting with some general models are collected in this package. Units uLinFit, uMultFit and uSVDfit include procedures for linear and multple linear regression; unit unlfit contains algorithms for general non-linear regression; other units contain a library of common regression models. In addition, unit uSpline provides spline interpolation of experimental data and procedures for exploration of the spline function. Ufft unit, which contains the routine for fast Fouier transform, is also included in this package. 
+Procedures for non-linear regression and data fitting with some general models are collected in this package. Units uLinFit, uMultFit and uSVDfit include procedures for linear and multple linear regression; unit unlfit contains algorithms for general non-linear regression; other units contain a library of common regression models. In addition, unit uSpline provides spline interpolation of experimental data and procedures for exploration of the spline function. 
+
 
 \section{Unit ulinfit}
 \label{ulinfit}
@@ -7430,92 +7668,7 @@ Goodness of fit tests
 	
 \end{itemize}
 
-\section{Unit ufft}
-\label{ufft}
-\index[unit]{ufft}
-\subsection{Description}
-Fast Fourier transform 
 
-Modified from Don Cross:\\ \href{http://groovit.disjunkt.com/analog/time-domain/fft.html}{http://groovit.disjunkt.com/analog/time-domain/fft.html}
-
-\subsection{Functions and Procedures}
-\subsubsection{FFT}
-\label{ufft-FFT}
-\index[proc]{FFT}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			procedure FFT(NumSamples : Integer; InArray, OutArray : TCompVector);}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates the Fast Fourier Transform of the array of complex numbers represented by 'InArray' to produce the output complex numbers in 'OutArray'. NumSamples is number of samples; InArray and OutArray must have dimentions [0..NumSamples-1].
-	
-\end{itemize}
-\subsubsection{IFFT}
-\label{ufft-IFFT}
-\index[proc]{IFFT}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			procedure IFFT(NumSamples : Integer; InArray, OutArray : TCompVector);}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Calculates the Inverse Fast Fourier Transform of the array of complex numbers represented by 'InArray' to produce the output complex numbers in 'OutArray'.
-	
-\end{itemize}
-\subsubsection{FFT{\_}Integer}
-\label{ufft-FFT_Integer}
-\index[proc]{FFT{\_}Integer}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			procedure FFT{\_}Integer(NumSamples : Integer; RealIn, ImagIn : TIntVector; OutArray : TCompVector);}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	Same as procedure FFT, but uses Integer input arrays instead of double. Make sure you call FFT{\_}Integer{\_}Cleanup after the last time you call FFT{\_}Integer to free up memory it allocates.
-	
-\end{itemize}
-\subsubsection{FFT{\_}Integer{\_}Cleanup}
-\label{ufft-FFT_Integer_Cleanup}
-\index[proc]{FFT{\_}Integer{\_}Cleanup}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			procedure FFT{\_}Integer{\_}Cleanup;}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	If you call the procedure 'FFT{\_}Integer', you must call 'FFT{\_}Integer{\_}Cleanup' after the last time you call 'FFT{\_}Integer' in order to free up dynamic memory.
-	
-\end{itemize}
-\subsubsection{CalcFrequency}
-\label{ufft-CalcFrequency}
-\index[proc]{CalcFrequency}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function CalcFrequency(NumSamples, FrequencyIndex : Integer; InArray : TCompVector) : Complex;}
-		
-	\end{flushleft}
-	
-	\par
-	\item[\descriptiontitle{Description}]
-	This function returns the complex frequency sample at a given index directly. Use this instead of 'FFT' when you only need one or two frequency samples, not the whole spectrum.
-	
-	It is also useful for calculating the Discrete Fourier Transform (DFT) of a number of data which is not an integer power of 2. For example, you could calculate the DFT of 100 points instead of rounding up to 128 and padding the extra 28 array slots with zeroes.
-	
-\end{itemize}
 \chapter[Package lmSpecRegress]{Package lmSpecRegress: Specialized Regression Models}\label{package-lmSpecRegress}
 \section{Description}
 This package contains collection of some regression models, specific for paricular fields of knowledge. Currently it includes equation of enzyme kinetics (Michaelis-Menten equation, Hill equation), chemistry (acid-base titration curve), electrophysiology (Goldman-Hodgkin-Katz Equation for current), and some statistic distributions.
@@ -11002,8 +11155,44 @@ lotting routines for Delphi
 	\item[\descriptiontitle{Description}]
 	Converts screen coordinate Y to user ordinate.
 \end{itemize}
-\printindex[types]
-\printindex[const]
-\printindex[proc]
-\printindex
+\chapter{Changes in LMath}
+\subsection*{Modifications of DMath Code}  
+These are not numerous. 
+\begin{enumerate}
+	\item In many cases, I have changed \code{var} descriptor to \code{out} for output parameters in function calls, to avoid getting tons of unmeaningful warnings. So, now a user must take seriously compiler complaints on possibly uninitialized variables. However, I do not guarantee that I did it everywhere.
+	\item Instead of many various \code{Dim*Vector} and \code{Dim*Matrix}, overloaded \hyperref[utypes-DimVector]{DimVector} and \hyperref[utypes-DimMatrix]{DimMatrix} procedures for all types of vectors and matrices were defined.
+	\item Similarly, changed \code{FSwap} and \code{ISwap} to universal \hyperref[uminmax-Swap]{Swap}; \hyperref[uminmax-Min]{Min} and \hyperref[uminmax-Min]{Max} are overloaded as well.
+	\item In \hyperref[ueval]{uEval} unit, \hyperref[ueval-parsingerror]{ParsingError} variable was made public, to enable a calling program to react adequately if an invalid expression was passed for evaluation. Names of the variables may be of any length and, unlike DMath, the whole name is meaningful. Previously, only first letter was meaningful for expression parser.
+	\item Converted into Lazarus and recompiled GUI and BGI demo programs.
+\end{enumerate}
+
+\subsection*{Additions before and including ver 0.5.1}
+\begin{enumerate}
+	\item Added \hyperref[types:trealpoint]{TRealPoint} type which represents a point on a cartesian plane and defined several procedures and operators over it (see \ref{uRealPoints}).
+	\item Defined \hyperref[utypes-IsZero]{IsZero}, \hyperref[utypes-IsNan]{IsNAN} and \hyperref[utypes-SameValue]{SameValue} functions together with accompanying \hyperref[utypes-SetEpsilon]{SetEpsilon} and \hyperref[utypes-SetZeroEpsilon]{SetZeroEpsilon} functions.
+	\item Improvements in error handling: \hyperref[uErrors-SetErrCode]{SetErrCode} function allows to set not only numeric error code, but text message as well. Consequently, \hyperref[uErrors-MathErrMessage]{MathErrMessage} function allows to read it.  Standard error messages for standard error defined. See \ref{uErrors} for details.
+	\item In the unit \code{uMinMax}, function \code{Sign} was added with the same semantics as in Math unit, for compatibility reasons.
+	\item In \code{uMath}, operator \code{**} was defined.
+	\item In \code{uCompex} unit, opreators over complex numbers defined (inspired by \\ \code{uComplex} unit from Free Pascal RTL).
+	\item uIntervals unit was written where TInterval type is defined which represents an interval between two real numbers, several procedures with it are defined. See \ref{uIntervals} for details.
+	\item Unit uMatrix (\ref{sec:unit-umatrix}) was written which defines some basic operation of linear algebra.
+	\item uCrtPtPol unit written, with the procedures to find critical points of a polynomial, see \ref{unit-ucrtptpol}.
+	\item Unit uMeanSD{\_}MD written which defines functions of descriptive statistics over array containing missed values. By default, missed value is represented as NAN, but any code can be defined.
+	\item In the unit uNormal, function DGaussian added to evaluate a normal distribution with arbitrary $\mu$ and $\sigma$.
+	\item Unit uSpline written, for cubic spline interpolation of a set of points and to investigate the resulting spline function, finding roots and extremums.
+	\item Goldman-Hodgkin-Katz equation for current and Sum of Gaussians distribution were added to the library of fitting models (see \ref{ugauss}, \ref{ugaussf} and \ref{ugoldman}).
+	\item Estimates and models of exponential, hyperexponential and hypoexponential distributions added (see \ref{udistribs}).
+	\item Optimization algorithm innitially written by COBYLA by Michael J. D. Powell was implemented and used for constrained non-linear regression (see \ref{sec:unit-ucobyla} and \ref{sec:unit-uconstrnlfit}).
+	\item Unit uLinSimplex which solves linear programming problems with simplex method was written \ref{sec:unit-ulinsimplex}.
+	\item Unit lmSorting written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
+	\item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
+	\item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
+	\item Unit uVecFileUtils written, which contains procedures for saving \code{TMatrix} or \code{TVector} to a file and read them from a file.   
+\end{enumerate}
+\subsection*{Additions in Ver. 0.6.0}
+\begin{enumerate}
+	\item{Package }
+\end{enumerate}
+In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
+
 \end{document}
