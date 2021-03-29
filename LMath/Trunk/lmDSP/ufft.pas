@@ -14,23 +14,23 @@ uses utypes, uErrors, umath, uComplex;
 { Calculates the Fast Fourier Transform of the array of complex
   numbers represented by 'InArray' to produce the output complex
   numbers in 'OutArray'. }
-function FFT(NumSamples      : Integer;
-              const InArray  : array of Complex;
-                    OutArray : TCompVector = nil):TCompVector;  // OutArrays are never allocated => may be open arrays too with var
+function FFT(       NumSamples : Integer;
+              constref InArray : array of Complex;
+                      OutArray : TCompVector = nil):TCompVector;  // OutArrays are never allocated => may be open arrays too with var
                                               // Option: use Ziel
 { Calculates the Inverse Fast Fourier Transform of the array of
   complex numbers represented by 'InArray' to produce the output
   complex numbers in 'OutArray'. }
-function IFFT(NumSamples     : Integer;
-               const InArray : array of Complex; 
-                    OutArray : TCompVector = nil) : TCompVector;
+function IFFT(       NumSamples : Integer;
+               constref InArray : array of Complex; 
+                       OutArray : TCompVector = nil) : TCompVector;
 
 { Same as procedure FFT, but uses Integer input arrays instead of
   double. Make sure you call FFT_Integer_Cleanup after the last
   time you call FFT_Integer to free up memory it allocates. }
-function FFT_Integer(NumSamples            : Integer;
-                      const RealIn, ImagIn : array of Integer;
-                            OutArray       : TCompVector = nil) : TCompVector;
+function FFT_Integer(NumSamples               : Integer;
+                      constref RealIn, ImagIn : array of Integer;
+                            OutArray          : TCompVector = nil) : TCompVector;
 
 { This function returns the complex frequency sample at a given
   index directly.  Use this instead of 'FFT' when you only need one
@@ -41,8 +41,10 @@ function FFT_Integer(NumSamples            : Integer;
   you could calculate the DFT of 100 points instead of rounding up to
   128 and padding the extra 28 array slots with zeroes. }
 function CalcFrequency(NumSamples,
-                       FrequencyIndex : Integer;
-                       InArray        : array of Complex) : Complex;
+                       FrequencyIndex   : Integer;
+                       constref InArray : array of Complex) : Complex;
+
+procedure FFT_Integer_Cleanup; deprecated 'This call is not necessary anymore';
 
 implementation
 
@@ -96,12 +98,12 @@ begin
   ReverseBits := Rev;
 end;
 
-procedure FourierTransform(AngleNumerator : Float;
-                           NumSamples     : Integer;
-                           const InArray  : array of Complex;
-                           OutArray       : TCompVector);
+procedure FourierTransform(AngleNumerator   : Float;
+                           NumSamples       : Integer;
+                           constref InArray : array of Complex;
+                           OutArray         : TCompVector);
 var
-  NumBits, I, J, K, N, BlockSize, BlockEnd           : Integer;
+  NumBits, I, J, K, N, BlockSize, BlockEnd : Integer;
   Delta_angle, Delta_ar, Alpha, Beta : Float; {TODO: rewrite this for open arrays.}
   A, T : complex;
 begin
@@ -150,9 +152,9 @@ begin
   SetErrCode(MatOK);
 end;
 
-function FFT(NumSamples     : Integer;
-            const InArray  : array of Complex;
-                  OutArray : TCompVector = nil):TCompVector;
+function FFT(NumSamples      : Integer;
+            constref InArray : array of Complex;
+                  OutArray   : TCompVector = nil):TCompVector;
 begin
   if not IsPowerOfTwo(NumSamples) then
   begin
@@ -166,9 +168,9 @@ begin
   FourierTransform(-2 * PI, NumSamples, InArray, Result);
 end;
 
-function IFFT(NumSamples     : Integer;
-              const InArray : array of Complex;
-                   OutArray : TCompVector = nil) : TCompVector;
+function IFFT(NumSamples       : Integer;
+              constref InArray : array of Complex;
+                   OutArray    : TCompVector = nil) : TCompVector;
 var
   I : Integer;
 begin
@@ -191,9 +193,9 @@ begin
   end;
 end;
 
-function FFT_Integer(NumSamples            : Integer;
-                     const RealIn, ImagIn : array of Integer;
-                           OutArray       : TCompVector = nil) : TCompVector;
+function FFT_Integer(NumSamples              : Integer;
+                     constref RealIn, ImagIn : array of Integer;
+                           OutArray          : TCompVector = nil) : TCompVector;
 var
   I : Integer;
   Temp : TCompVector;
@@ -217,8 +219,8 @@ begin
 end;
 
 function CalcFrequency(NumSamples,
-                       FrequencyIndex : Integer;
-                       InArray        : array of complex) : Complex;
+                       FrequencyIndex   : Integer;
+                       constref InArray : array of complex) : Complex;
   var
     K                : Integer;
     Cos1, Cos2, Cos3 : Float;
@@ -248,5 +250,10 @@ function CalcFrequency(NumSamples,
         Result.Y := Result.Y + InArray[K].Y * Cos3 + InArray[K].X * Sin3;
       end;
   end;
+
+procedure FFT_Integer_Cleanup;
+begin
+  // do nothing
+end;
 
 end.

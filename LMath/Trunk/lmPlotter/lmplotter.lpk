@@ -11,13 +11,18 @@
         <OtherUnitFiles Value="units"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <CodeGeneration>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
+      </CodeGeneration>
       <Linking>
         <Debugging>
           <GenerateDebugInfo Value="False"/>
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="5" Release="1"/>
+    <Version Minor="6"/>
     <Files Count="4">
       <Item1>
         <Filename Value="uhsvrgb.pas"/>

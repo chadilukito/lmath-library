@@ -19,9 +19,17 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
       </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
-    <Version Minor="5" Release="1"/>
+    <Version Minor="6"/>
     <Files Count="12">
       <Item1>
         <Filename Value="ustrings.pas"/>
@@ -72,16 +80,13 @@
         <UnitName Value="uCompVecUtils"/>
       </Item12>
     </Files>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="LCL"/>
       </Item1>
       <Item2>
         <PackageName Value="lmgenmath"/>
       </Item2>
-      <Item3>
-        <PackageName Value="FCL"/>
-      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

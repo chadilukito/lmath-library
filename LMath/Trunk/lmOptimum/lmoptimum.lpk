@@ -19,10 +19,18 @@
           <OverflowChecks Value="True"/>
           <StackChecks Value="True"/>
         </Checks>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
         <SmallerCode Value="True"/>
       </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
-    <Version Minor="5" Release="1"/>
+    <Version Minor="6"/>
     <Files Count="15">
       <Item1>
         <Filename Value="ubfgs.pas"/>

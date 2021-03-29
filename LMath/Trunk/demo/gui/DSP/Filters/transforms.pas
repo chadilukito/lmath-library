@@ -2,7 +2,7 @@ unit Transforms;
 {$mode objfpc}{$H+}
 interface
 uses
-  uTypes, uIntervals, uComplex, uErrors, uFilters, uFFT, uVecUtils, uCompVecUtils;
+  uTypes, uComplex, uErrors, uFilters, uFFT, uVecUtils, uCompVecUtils;
 
 procedure GenerateData(DataKind:integer);
 

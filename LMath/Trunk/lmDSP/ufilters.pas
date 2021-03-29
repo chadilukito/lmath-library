@@ -5,7 +5,7 @@ unit uFilters;
 interface
 
 uses
-  uTypes, uErrors, uMedian, uMeanSD, uIntervals, uVectorHelper, uMatrix;
+  uTypes, uErrors, uMedian, uMeanSD, uIntervals, uVectorHelper, uMatrix, uFindChebyshevCoeffs;
 
 procedure GaussFilter(var Data:array of float; ASamplingRate: Float;  ACutFreq: Float);
 
@@ -21,9 +21,9 @@ procedure BandPassFilter(var Data:array of float; ASamplingRate: Float; AFreqPas
 
 procedure HighPassFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float);
 
-// NPoles is number of Poles, for stability we do not recomment values > 6; PRipple is allowed value of ripple
+// NPoles is number of Poles, for stability we do not recomment values > 10; PRipple is allowed value of ripple
 // in the passband in %, may be 0 (which means that Chebyshev filter becomes Butterworth filter) or
-// 0.5 <= PRipple <= 30.
+// 0.5 <= PRipple <= 29.
 procedure ChebyshevFilter(var Data:array of float; ASamplingRate: Float; ACutFreq: Float;
                               NPoles: integer; PRipple: float; AHighPass:boolean);
 
@@ -43,16 +43,27 @@ function MoveAvCutOffFreq(SamplingRate:Float; WLength:integer):Float;
 function MoveAvFindWindow(SamplingRate, CutOffFreq:Float):Integer;
 
 implementation
-uses uFindChebyshevCoeffs;
 
 {%REGION Moving Average}
 function MovAvRiseTime(SamplingRate: Float; WLength: integer): Float;
 begin
+  if (SamplingRate <= 0) or (WLength < 1) then
+  begin
+    SetErrCode(FDomain);
+    Result := 0;
+    Exit;
+  end;
   Result := WLength/SamplingRate;
 end;
 
 function MoveAvCutOffFreq(SamplingRate: Float; WLength: integer): Float;
 begin
+  if (SamplingRate <= 0) or (WLength < 1) then
+  begin
+    SetErrCode(FDomain);
+    Result := 0;
+    Exit;
+  end;
   Result := 0.44292/Sqrt(WLength*WLength-1)*SamplingRate;
 end;
 
@@ -61,8 +72,15 @@ var
   F:Float;
 begin
   F := CutOffFreq/SamplingRate;
+  if (SamplingRate <= 0) or (CutOffFreq <= 0) then
+     SetErrCode(FDomain);
   if F > 0.5 then
     SetErrCode(lmTooHighFreqError);
+  if MathErr <> MatOK then
+  begin
+    Result := 0;
+    exit;
+  end;
   Result := Round(Sqrt(0.196196+F*F)/F);
 end;
 
@@ -105,7 +123,7 @@ type
   TPT = 0..3;
   TPTArray = array[TPT] of Float;
 
-procedure GSFindParams (ASamplingRate:Float; ACutFreq: Float; out Sigma, BL, Q : Float; out Bs:TPTArray);
+procedure GSFindParams(ASamplingRate:Float; ACutFreq: Float; out Sigma, BL, Q : Float; out Bs:TPTArray);
 var
   Q2, Q3 : Float;
 begin
@@ -198,6 +216,12 @@ end;
 
 function GaussCascadeFreq(Freq1, Freq2: Float): Float;
 begin
+  if (Freq1 < 0) or (Freq2 < 0) then
+  begin
+    SetErrCode(FDomain);
+    Result := 0;
+    Exit;
+  end;
   if Freq1 = 0 then
     Result := Freq2
   else if Freq2 = 0 then
@@ -208,6 +232,12 @@ end;
 
 function GaussRiseTime(Freq: Float): Float;
 begin
+  if Freq < 0 then
+  begin
+    SetErrCode(FDomain);
+    Result := 0;
+    Exit;
+  end;
   if Freq = 0 then
     Result := MaxNum
   else
@@ -223,6 +253,10 @@ var
   Buffer:TVector;
 begin
   Ub := High(Data);
+  if WinLength > Ub then
+    SetErrCode(lmDSPFilterWinError);
+  if MathErr <> MatOK then
+    Exit;
   HighWin := WinLength-1;
   SetLength(Buffer,WinLength);
   for I := 0 to Ub-WinLength do
@@ -234,8 +268,6 @@ begin
     Data[I] := Median(Buffer);
   end;
 end;
-
-
 {%ENDREGION}
 
 {%REGION NARROWBAND Filters}
@@ -280,6 +312,7 @@ var
 begin
   for I := -2 to 0 do
     Old[I] := Data[I+2];
+
   for I := 2 to high(Data) do
   begin
     for J := -2 to -1 do
@@ -358,6 +391,8 @@ begin
     SetErrCode(lmPolesNumError);
   if ACutFreq > 0.5*ASamplingRate then
     SetErrCode(lmTooHighFreqError);
+  if (PRipple < 0) or (PRipple > 29.0) then
+    SetErrCode(lmFFTBadRipple);
   if MathErr <> matOK then
     Exit;
   DimVector(Old,NPoles);

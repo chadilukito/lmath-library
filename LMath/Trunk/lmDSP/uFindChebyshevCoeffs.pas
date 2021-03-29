@@ -99,8 +99,8 @@ begin
       BOne[J] := -BOne[J];
     TA.FillWithArr(0,A);
     TB.FillWithArr(0,B);
-    Convolve(TA,AOne,0,(I-1)*2,0,A);
-    Convolve(TB,BOne,0,(I-1)*2,0,B);
+    Convolve(TA[0..(I-1)*2],AOne,A);
+    Convolve(TB[0..(I-1)*2],BOne,B);
   end;
 
   B[0] := 0; //Finish combining coefficients B[0] := 0;

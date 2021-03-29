@@ -10,6 +10,14 @@
       <SearchPaths>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <CodeGeneration>
+        <Checks>
+          <RangeChecks Value="True"/>
+        </Checks>
+        <Optimizations>
+          <OptimizationLevel Value="0"/>
+        </Optimizations>
+      </CodeGeneration>
       <Linking>
         <Debugging>
           <UseLineInfoUnit Value="False"/>

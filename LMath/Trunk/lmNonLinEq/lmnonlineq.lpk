@@ -14,6 +14,9 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="3"/>
+        </Optimizations>
       </CodeGeneration>
       <Linking>
         <Debugging>
@@ -21,7 +24,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="5" Release="1"/>
+    <Version Minor="6"/>
     <Files Count="5">
       <Item1>
         <Filename Value="ubisect.pas"/>
