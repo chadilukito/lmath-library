@@ -10,12 +10,6 @@ implementation
 type
   TOne = array[0..2] of Float;
 
-{THIS SUBROUTINE IS CALLED FROM TABLE 20-4, LINE 340
-Variables entering subroutine: PI, FC, LH, PR, HP, P%
-Variables exiting subroutine: AOne, BOne
-Variables used internally: RP, IP, ES, VX, KX, T, W, M, D, K,
-X0, X1, X2, Y1, Y2
-}
 procedure ChebyshevParams(FC, PR : float; P, NP : integer; AHighPass: boolean; out AOne:TOne; out BOne:TOne);
 var
   RP, IP, ES, VX, KX, T, W, M, D, K, X0, X1, X2, Y1, Y2 : float;
@@ -27,7 +21,7 @@ begin
 // Warp from a circle to an ellipse
   IF PR <> 0 then 
   begin
-    ES := Sqrt(Sqr(100/(100-PR)) - 1); //may be sqr, but looks more like Pythagor calc
+    ES := Sqrt(Sqr(100/(100-PR)) - 1);
     VX := 1/NP*Log(1/ES + Sqrt(1/Sqr(ES) + 1));
     KX := 1/NP*Log(1/ES + Sqrt(1/Sqr(ES) - 1));
     KX := (EXP(KX) + EXP(-KX))/2;

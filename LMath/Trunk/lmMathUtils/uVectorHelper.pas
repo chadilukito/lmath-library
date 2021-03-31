@@ -95,7 +95,7 @@ end;
 
 procedure TIntVectorHelper.Clear;
 begin
-  FillByte(Self[0],length(Self)*SizeOf(Integer),0);
+  FillWord(Self[0],length(Self)*SizeOf(Integer) div 2,0);
 end;
 
 procedure TIntVectorHelper.Fill(Lb, Ub: integer; Val: Integer);

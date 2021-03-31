@@ -1,11 +1,10 @@
 unit uConvolutions;
 
 {$mode objfpc}
-
 interface
 
 uses
-  uTypes, uMinMax, uErrors;
+  uTypes, uMinMax, uErrors, uVectorHelper;
 
 //Convolutes Signal[Lb..Ub] with FIR[Flb..High(Fir)] in time domain.
 function Convolve(constref Signal:array of Float; constref FIR:array of float; Ziel : TVector= nil):TVector;
@@ -23,16 +22,17 @@ begin
   Ub := LS - 1;
   if Ziel <> nil then
   begin
-    Result := Ziel;
     if length(Ziel) < LR then
     begin
       SetErrCode(MatErrDim);
+      Result := nil;
       Exit;
     end;
+    Ziel.Clear;
   end else
   begin
-    DimVector(Result,LR-1);
-    if Result = nil then
+    DimVector(Ziel,LR-1);
+    if Ziel = nil then
     begin
       SetErrCode(MatErrDim,'Too long array or no memory');
       Result := nil;
@@ -44,27 +44,26 @@ begin
   I := 0;
   while I <= HF do
   begin
-    Result[I] := 0;
     for J := -Ind to min(HF,Ub-Ind) do
-      Result[I] := Result[I] + Signal[Ind+J]*Fir[HF - J];
+      Ziel[I] := Ziel[I] + Signal[Ind+J]*Fir[HF - J];
     inc(I); inc(Ind);
   end;
 
   while I < LR-LF do
   begin
-    Result[I] := 0;
     for J := 0 to HF do
-      Result[I] := Result[I] + Signal[Ind+J]*FIR[HF - J];
+      Ziel[I] := Ziel[I] + Signal[Ind+J]*FIR[HF - J];
     inc(I); inc(Ind);
   end;
 
   while I < LR do
   begin
-    Result[I] := 0;
     for J := 0 to min(HF,Ub-Ind) do
-      Result[I] := Result[I] + Signal[Ind+J]*FIR[HF - J];
+      Ziel[I] := Ziel[I] + Signal[Ind+J]*FIR[HF - J];
     inc(I); inc(Ind);
   end;
+
+  Result := Ziel;
 end;
 
 end.

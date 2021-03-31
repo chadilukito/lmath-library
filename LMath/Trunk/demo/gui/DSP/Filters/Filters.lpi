@@ -75,20 +75,20 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
-      <Optimizations>
-        <OptimizationLevel Value="3"/>
-      </Optimizations>
+      <Checks>
+        <RangeChecks Value="True"/>
+      </Checks>
     </CodeGeneration>
     <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="False"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-DOUBLEREAL"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

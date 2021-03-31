@@ -162,10 +162,9 @@ begin
     Exit;
   end;
   if OutArray = nil then
-    SetLength(Result, NumSamples)
-  else
-    Result := OutArray;
-  FourierTransform(-2 * PI, NumSamples, InArray, Result);
+    SetLength(OutArray, NumSamples);
+  FourierTransform(-2 * PI, NumSamples, InArray, OutArray);
+  Result := OutArray;
 end;
 
 function IFFT(NumSamples       : Integer;
@@ -180,17 +179,16 @@ begin
     Exit;
   end;
   if OutArray = nil then
-    SetLength(Result, NumSamples)
-  else
-    Result := OutArray;
-  FourierTransform(2 * PI, NumSamples, InArray, Result);
+    SetLength(OutArray, NumSamples);
+  FourierTransform(2 * PI, NumSamples, InArray, OutArray);
   if MathErr <> 0 then Exit;
   { Normalize the resulting time samples }
   for I := 0 to NumSamples - 1 do
   begin
-    Result[I].X := Result[I].X / NumSamples;
-    Result[I].Y := Result[I].Y / NumSamples;
+    OutArray[I].X := OutArray[I].X / NumSamples;
+    OutArray[I].Y := OutArray[I].Y / NumSamples;
   end;
+  Result := OutArray;
 end;
 
 function FFT_Integer(NumSamples              : Integer;
@@ -206,9 +204,7 @@ begin
     Exit;
   end;
   if OutArray = nil then
-    SetLength(Result,NumSamples)
-  else
-    Result := OutArray;
+    SetLength(OutArray,NumSamples);
   SetLength(Temp, NumSamples);
   for I := 0 to NumSamples - 1 do
   begin
@@ -216,6 +212,7 @@ begin
     Temp[I].Y := ImagIn[I];
   end;
   FourierTransform(-2 * PI, NumSamples, Temp, OutArray);
+  Result := OutArray;
 end;
 
 function CalcFrequency(NumSamples,

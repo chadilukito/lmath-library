@@ -234,11 +234,9 @@ var
   I,L:integer;
 begin
   if Ziel <> nil then
-  begin
-    Ub := min(High(Ziel),Ub);
-    Result := Ziel;
-  end else
-    DimVector(Result,Ub);
+    Ub := min(High(Ziel),Ub)
+  else
+    DimVector(Ziel,Ub);
   if (Lb > Ub) or (High(InitValues) > (Ub-Lb)) or (High(initValues) = -1) then
   begin
     SetErrCode(MatErrDim);
@@ -248,9 +246,10 @@ begin
 
   L := High(InitValues);
   for I := 0 to L do
-    Result[Lb+I] := InitValues[I];
+    Ziel[Lb+I] := InitValues[I];
   for I := Lb+L+1 to High(Result) do
-    Result[I] := Func(Result[I-L-1..I-1]);
+    Ziel[I] := Func(Result[I-L-1..I-1]);
+  Result := Ziel;
 end;
 
 function ApplyRecursive(Func: TIntArrayIntFunc; InitValues: array of Integer; Lb, Ub: integer; Ziel: TIntVector
@@ -259,11 +258,9 @@ var
   I,L:integer;
 begin
   if Ziel <> nil then
-  begin
-    Ub := min(High(Ziel),Ub);
-    Result := Ziel;
-  end else
-    DimVector(Result,Ub);
+    Ub := min(High(Ziel),Ub)
+  else
+    DimVector(Ziel,Ub);
   if (Lb > Ub) or (High(InitValues) > (Ub-Lb)) or (High(initValues) = -1) then
   begin
     SetErrCode(MatErrDim);
@@ -273,9 +270,10 @@ begin
 
   L := High(InitValues);
   for I := 0 to L do
-    Result[Lb+I] := InitValues[I];
+    Ziel[Lb+I] := InitValues[I];
   for I := Lb+L+1 to High(Result) do
-    Result[I] := Func(Result[I-L-1..I-1]);
+    Ziel[I] := Func(Result[I-L-1..I-1]);
+  Result := Ziel;
 end;
 
 function InitWithFunc(Lb, Ub: integer; Func: TIntFloatFunc; Ziel:TVector):TVector;
@@ -283,19 +281,18 @@ var
   I:integer;
 begin
   if Ziel <> nil then
-  begin
-    Ub := min(High(Ziel),Ub);
-    Result := Ziel;
-  end else
-    DimVector(Result,Ub);
-  Ub := min(High(Result),Ub);
+    Ub := min(High(Ziel),Ub)
+  else
+    DimVector(Ziel,Ub);
+  Ub := min(High(Ziel),Ub);
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
     Exit;
   end;
   for I := Lb to Ub do
-    Result[I] := Func(I);
+    Ziel[I] := Func(I);
+  Result := Ziel;
 end;
 
 function InitWithFunc(Lb, Ub: integer; Func: TIntFunc; Ziel:TIntVector):TIntVector;
@@ -303,19 +300,18 @@ var
   I:integer;
 begin
   if Ziel <> nil then
-  begin
-    Ub := min(High(Ziel),Ub);
-    Result := Ziel;
-  end else
-    DimVector(Result,Ub);
-  Ub := min(High(Result),Ub);
+    Ub := min(High(Ziel),Ub)
+  else
+    DimVector(Ziel,Ub);
+  Ub := min(High(Ziel),Ub);
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
     Exit;
   end;
   for I := Lb to Ub do
-    Result[I] := Func(I);
+    Ziel[I] := Func(I);
+  Result := Ziel;
 end;
 
 function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;

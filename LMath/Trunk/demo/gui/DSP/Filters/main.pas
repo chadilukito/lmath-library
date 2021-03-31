@@ -465,6 +465,7 @@ begin
   if MathErr <> matOK then
   begin
     MessageDlg('Filtering error',MathErrMessage,mtError,[mbOK],'');
+    SetErrCode(matOK);
     Exit;
   end;
   FilteredTimeLine := TPoints.Combine(TimeVector,FilteredData,0,High(FilteredData));
