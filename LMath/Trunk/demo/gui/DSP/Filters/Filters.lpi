@@ -87,7 +87,7 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-DOUBLEREAL"/>
+      <CustomOptions Value="-dDOUBLEREAL"/>
     </Other>
   </CompilerOptions>
   <Debugging>

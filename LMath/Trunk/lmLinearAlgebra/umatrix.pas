@@ -4,7 +4,8 @@ unit uMatrix;
 
 interface
 
-uses uTypes, uMinMax, uErrors;
+uses uTypes, uMinMax, uVecUtils, uErrors;
+
 operator + (const V:array of float; R:Float) Res : TVector;
 operator - (const V:array of float; R:Float) Res : TVector;
 operator / (const V:array of float; R:Float) Res : TVector;
@@ -18,16 +19,20 @@ operator * (const M:TMatrix; R:Float) Res : TMatrix;
 operator + (const V1:array of float; const V2:array of float) Res : TVector; // element-wise
 operator - (const V1:array of float; const V2:array of float) Res : TVector;
 
+procedure VecFloatAdd  (V:array of float; R:Float; var Ziel : array of float); overload;
+procedure VecFloatSubtr(V:array of float; R:Float; var Ziel : array of float); overload;
+procedure VecFloatDiv  (V:array of float; R:Float; var Ziel : array of float); overload;
+procedure VecFloatMul  (V:array of float; R:Float; var Ziel : array of float); overload;
 
 {These functions use _Ziel_ array if it is not _nil_ by call. Otherwise, new array is allocated.}
 function VecFloatAdd(V:TVector; R:Float; Lb, Ub : integer; 
-              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+              Ziel : TVector = nil; ResLb : integer = 1): TVector; overload;
 function VecFloatSubtr(V:TVector; R:Float; Lb, Ub : integer; 
-              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+              Ziel : TVector = nil; ResLb : integer = 1): TVector; overload;
 function VecFloatDiv(V:TVector; R:Float; Lb, Ub : integer; 
-              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+              Ziel : TVector = nil; ResLb : integer = 1): TVector; overload;
 function VecFloatMul(V:TVector; R:Float; Lb, Ub : integer;  
-              Ziel : TVector = nil; ResLb : integer = 1): TVector;
+              Ziel : TVector = nil; ResLb : integer = 1): TVector; overload;
 
 //Ub1 is number of rows, Ub2 is number of columns (same as row length)
 function MatFloatAdd(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
@@ -35,18 +40,26 @@ function MatFloatSubtr(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatri
 function MatFloatDiv(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 function MatFloatMul(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 
-function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;
-function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;
+procedure VecAdd(V1,V2:array of float; var Ziel : array of float);
+procedure VecSubtr(V1,V2:array of float; var Ziel : array of float);
 
 {This function multiplies elements of one vector by elements of other.}
-function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
-function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
+procedure VecElemMul(V1,V2:array of float; var Ziel : array of float);
+procedure VecDiv(V1,V2:array of float; var Ziel : array of float);
 
-function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;
-function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix;
-function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;
-function VecEucLength(V:TVector; LB, Ub : integer) : float;
+function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float; overload;
+function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix; overload;
+function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector; overload;
+function VecEucLength(V:TVector; LB, Ub : integer) : float; overload;
 function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;
+
+function VecDotProd(V1,V2:array of float) : float; overload;
+function VecOuterProd(V1, V2:array of float; Ziel : TMatrix = nil):TMatrix; overload;
+procedure VecCrossProd(V1, V2:array of float; var Ziel : array of float); overload;
+function VecEucLength(V:array of float) : float; overload;
+
+
+procedure MatVecMul(M: TMatrix; V: array of float; var Ziel: array of float);
 
 function MatMul(A, B : TMatrix; LB : integer; Ziel : TMatrix = nil) : TMatrix;
 
@@ -136,6 +149,63 @@ begin
   Result := Ziel;
 end;
 
+procedure VecFloatAdd(V: array of float; R: Float; var Ziel: array of float);
+var
+  I,H:Integer;
+begin
+  H := high(V);
+  if High(Ziel) < H then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := 0 to H do
+    Ziel[I] := V[I]+R;
+end;
+
+procedure VecFloatSubtr(V: array of float; R: Float; var Ziel: array of float);
+var
+  I,H:Integer;
+begin
+  H := high(V);
+  if High(Ziel) < H then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := 0 to H do
+    Ziel[I] := V[I]-R;
+end;
+
+procedure VecFloatDiv(V: array of float; R: Float; var Ziel: array of float);
+var
+  I,H:Integer;
+begin
+  H := high(V);
+  if High(Ziel) < H then
+    SetErrCode(MatErrDim);
+  if IsZero(R) then
+    SetErrCode(FDomain,'VecFloatDiv : division by zero');
+  if not (MathErr = matOK) then
+    Exit;
+  for I := 0 to H do
+    Ziel[I] := V[I]/R;
+end;
+
+procedure VecFloatMul(V: array of float; R: Float; var Ziel: array of float);
+var
+  I,H:Integer;
+begin
+  H := high(V);
+  if High(Ziel) < H then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  for I := 0 to H do
+    Ziel[I] := V[I]*R;
+end;
+
 function MatFloatAdd(M:TMatrix; R:Float; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil) : TMatrix;
 var
   I, J:Integer;
@@ -184,86 +254,55 @@ begin
   Result := Ziel;
 end;
 
-function VecAdd(V1,V2:TVector; Ziel : TVector = nil) : TVector;
+procedure VecAdd(V1, V2: array of float; var Ziel: array of float);
 var
   I,H:Integer;
 begin
   H := High(V1);
-  if Ziel = nil then
-    DimVector(Ziel,H);
-  H := High(V1);
   if (High(V2) = H) and (High(Ziel) = H) then
-  begin
     for I := 0 to H do
-      Ziel[I] := V1[I] + V2[I];
-    Result := Ziel;
-  end else
-  begin
+      Ziel[I] := V1[I] + V2[I]
+  else
     SetErrCode(MatErrDim);
-    Result := nil;
   end;
-end;
 
-function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;
+procedure VecSubtr(V1, V2: array of float; var Ziel: array of float);
 var
   I,H:Integer;
 begin
   H := High(V1);
-  if Ziel = nil then
-    DimVector(Ziel,H);
   if (High(V2) = H) and (High(Ziel) = H) then
-  begin
     for I := 0 to H do
-      Ziel[I] := V1[I] - V2[I];
-    Result := Ziel;
-  end
-  else begin
+      Ziel[I] := V1[I] - V2[I]
+  else
     SetErrCode(MatErrDim);
-    Result := nil;
-  end;
-  Result := Ziel;
 end;
 
-function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;
+procedure VecElemMul(V1, V2: array of float; var Ziel: array of float);
 var
   I,H:Integer;
 begin
-  H := High(V1);
-  if Ziel = nil then
-    DimVector(Ziel,H);
+   H := High(V1);
   if (High(V2) = H) and (High(Ziel) = H) then
-  begin
     for I := 0 to H do
-      Ziel[I] := V1[I] * V2[I];
-    Result := Ziel;
-  end
-  else begin
+      Ziel[I] := V1[I] * V2[I]
+  else
     SetErrCode(MatErrDim);
-    Result := nil;
-  end;
 end;
 
-function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;
+procedure VecDiv(V1, V2: array of float; var Ziel: array of float);
 var
   I,L,H:Integer;
 begin
   H := High(V1);
-  if Ziel = nil then
-    DimVector(Ziel,H);
-  if (High(V2) = H) and (High(Ziel) = H) then
-  begin
-    if V2[0] = 0 then
-      L := 1
-    else
-      L := 0;
-    for I := L to H do
-      Ziel[I] := V1[I] / V2[I];
-    Result := Ziel;
-  end
-  else begin
+  if (High(V2) <> H) or (High(Ziel) <> H) then
     SetErrCode(MatErrDim);
-    Result := nil;
-  end;
+  if Any(V2, @IsZero) then
+    SetErrCode(FDomain, 'VecDiv: division by zero');
+  if not MathErr = matOK then
+    Exit;
+  for I := 0 to H do
+    Ziel[I] := V1[I] / V2[I]
 end;
 
 function VecDotProd(V1, V2: TVector; Lb, Ub : integer): float;
@@ -317,6 +356,82 @@ begin
   Result := 0;
   for I := LB to Ub do
     Result := Result + Sqr(V[I]);
+  Result := Sqrt(Result);
+end;
+
+function VecDotProd(V1, V2: array of float): float;
+var
+  I:Integer;
+begin
+  Result := 0;
+  if High(V1) = High(V2) then
+  for I := 0 to High(V1) do
+      Result := Result + V1[I] * V2[I]
+  else
+      SetErrCode(MatErrDim);
+end;
+
+function VecOuterProd(V1, V2: array of float; Ziel: TMatrix): TMatrix;
+var
+  I:integer;
+  Ub1, Ub2:integer;
+begin
+  Ub1 := high(V1);
+  Ub2 := high(V2);
+  if Ziel = nil then
+    DimMatrix(Ziel,Ub1,Ub2)
+  else begin
+    if (High(Ziel) < Ub1) or (High(Ziel[0]) < Ub2) then
+    begin
+      SetErrCode(MatErrDim);
+      Result := nil;
+    end;
+  end;
+  for I := 0 to Ub1 do
+    VecFloatMul(V2,V1[I],Ziel[I]);
+  Result := Ziel;
+end;
+
+procedure VecCrossProd(V1, V2: array of float; var Ziel: array of float);
+begin
+  if (High(V1) <> 2) or (High(V2) <> 2) or (High(Ziel) <> 2) then
+  begin
+    SetErrCode(MatErrDim);
+    Exit;
+  end;
+  Ziel[0] := V1[1]*V2[2]  - V1[2]*V2[1];
+  Ziel[1]  := V1[2]*V2[0] - V1[0]*V2[2];
+  Ziel[2]  := V1[0]*V2[1] - V1[1]*V2[0];
+end;
+
+function VecEucLength(V: array of float): float;
+var
+  I:integer;
+begin
+  Result := 0;
+  for I := 0 to high(V) do
+    Result := Result + Sqr(V[I]);
+  Result := Sqrt(Result);
+end;
+
+procedure MatVecMul(M: TMatrix; V: array of float; var Ziel: array of float);
+var
+  HighRow, HighCol : integer;
+  I,J:integer;
+  R:float;
+begin
+  HighRow := High(M);
+  HighCol := High(M[0]);
+  if (HighCol = High(V)) and (HighRow = High(Ziel)) then
+    for I := 0 to HighRow do
+    begin
+      R := 0.0;
+      for J := 0 to HighCol do
+        R := R + V[J]*M[I,J];
+      Ziel[I] := R;
+    end
+  else
+    SetErrCode(MatErrDim);
 end;
 
 function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;

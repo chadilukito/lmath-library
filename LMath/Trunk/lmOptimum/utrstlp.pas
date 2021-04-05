@@ -37,7 +37,7 @@ shift RESMAX that makes the lest residual zero. }
 
 unit uTrsTlp;
 interface
-uses uTypes, uMinMax, uMath, uMatrix, uVectorHelper;
+uses uTypes, uMinMax, uMath, uMatrix, uVectorHelper, uTrigo;
 
 procedure TrsTlp(N, M : integer; A : TMatrix; B : TVector; RHO : float; DX : TVector; out IFULL : integer);
 
@@ -116,8 +116,7 @@ begin
         end;
       end;
       if resmax = 0.0 then goto 480; // no violations. first stage over
-      for i := 1 to n do
-        sdirn[i] := 0.0;
+      sdirn.Clear;
 //
 //     End the current stage of the calculation if 3 consecutive iterations
 //     have either failed to reduce the best calculated value of the objective
@@ -175,11 +174,11 @@ begin
         accb := spabs+0.2*abs(sp);
         if (spabs >= acca) or (acca >= accb) then
            sp := 0.0;
-        if tot = 0.0 then
+        if IsZero(Tot) then
           tot := sp
         else begin
           kp := k+1;
-          temp := sqrt(sp*sp+tot*tot);
+          temp := Pythag(sp,tot); // sqrt(sp*sp+tot*tot);
           alpha := sp/temp;
           beta := tot/temp;
           tot := temp;
@@ -196,9 +195,9 @@ begin
 //     Add the new constraint if this can be done without a deletion from the
 //     active set.
 //
-      if tot <> 0.0 then
+      if not IsZero(tot) then
       begin
-        nact := nact+1;
+        inc(nact);
         zdota[nact] := tot;
         vmultc[icon] := vmultc[nact];
         vmultc[nact] := 0.0;
@@ -264,7 +263,7 @@ begin
           sp := 0.0;
           for i := 1 to n do
             sp := sp+z[i,k]*A[i,kw];
-          temp := sqrt(sp*sp+zdota[kp]**2);
+          temp := Pythag(sp,zdota[kp]);
           alpha := zdota[kp]/temp;
           beta := sp/temp;
           zdota[kp] := alpha*zdota[k];
@@ -302,7 +301,7 @@ begin
         sp := 0.0;
         for i := 1 to n do
           sp := sp+z[i,k]*A[i,kk];
-        temp := sqrt(sp*sp+zdota[nact]**2);
+        temp := Pythag(sp,zdota[nact]);
         alpha := zdota[nact]/temp;
         beta := sp/temp;
         zdota[nact] := alpha*zdota[k];
@@ -468,7 +467,7 @@ begin
 //
 //     Complete vmultc by finding the new constraint residuals.
 //
-      dxnew := VecAdd(dx, VecFloatMul(sdirn, step, 1, N, dxnew));
+      VecAdd(dx[1..N], dxnew[1..N], VecFloatMul(sdirn, step, 1, N, dxnew)[1..N]);
       if mcon > nact then
       begin
           kl := nact+1;

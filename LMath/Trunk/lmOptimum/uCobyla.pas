@@ -188,7 +188,7 @@ begin
    followed by the objective function and the greatest constraint violation
    at the vertex.}
 
-    for k := 1 to mpp do // newly calculated values in DatMat[*,Jdrop]
+   for k := 1 to mpp do // newly calculated values in DatMat[*,Jdrop]
       datmat[k,jdrop] := Con[k]; //DatMat[1..m,JDrop] constrain violations, m function val, mpp max.viol
     if nfvals > np then goto 130;
 
@@ -253,7 +253,7 @@ begin
         sim[i,nbest] := 0.0;
         sim[i,np] := sim[i,np]+temp;
         tempa := 0.0;
-        VecFloatAdd(sim[i],-temp,1,N,sim[i]);
+        VecFloatAdd(sim[i][1..N],-temp,sim[i][1..N]);
         for k := 1 to N do
           tempa := tempa-simi[k,i];
         simi[nbest,i] := tempa;
@@ -374,8 +374,7 @@ begin
       sim[i,jdrop] := dx[i];
       temp := temp+simi[jdrop,i]*dx[i];
     end;
-    for i := 1 to N do
-      simi[jdrop,i] := simi[jdrop,i]/temp;
+    VecFloatDiv(simi[jdrop][1..N],temp,simi[jdrop][1..N]);
     for j := 1 to N do
     begin
       if j <> jdrop then
@@ -394,7 +393,7 @@ begin
 // and here, to 370, we come if this update of vertex was not needed
 //    Calculate DX := x[*]-x[0]. Branch if the length of DX is less than 0.5*RHO.
 370: trstlp(N,M,A,Con,Rho,dx,ifull);
-    if (ifull = 0) and (vecEucLength(DX,1,N) < 0.25*sqr(Rho)) then
+    if (ifull = 0) and (vecEucLength(DX[1..N]) < 0.25*sqr(Rho)) then
     begin
       ibrnch := 1;
       goto 550;

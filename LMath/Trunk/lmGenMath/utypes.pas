@@ -20,7 +20,8 @@ Approximate equality functions
 // Compares to zero with epsilon. If Epsilon is -1 (default),
 //default value as set with SetZeroEpsilon is used.
 // if SetZeroEpsilon was not used, MachEp / 8 is used
-function IsZero(F: Float; Epsilon: Float = -1): Boolean;
+function IsZero(F:Float): boolean; overload;
+function IsZero(F: Float; Epsilon: Float): Boolean; overload;
 
 // Test if given vaule is NAN
 function IsNan(F : Float): Boolean;
@@ -82,11 +83,14 @@ var
 
 implementation
 
-function IsZero(F: Float; Epsilon: Float = -1): Boolean;
+function IsZero(F: Float; Epsilon: Float): Boolean;
 begin
-  if Epsilon < 0 then
-    Epsilon := DefaultZeroEpsilon;
   Result := Abs(F) < Epsilon;
+end;
+
+function IsZero(F: Float): Boolean;
+begin
+  Result := Abs(F) < DefaultZeroEpsilon;
 end;
 
 {$if defined(SingleReal)}

@@ -226,7 +226,7 @@ function CalcFrequency(NumSamples,
   begin
     Result.X := 0.0;
     Result.Y := 0.0;
-    Theta := 2 * Pi * FrequencyIndex / NumSamples;
+    Theta := -TwoPi * FrequencyIndex / NumSamples;
     Sin1 := Sin(- 2 * Theta);
     Sin2 := Sin(- Theta);
     Cos1 := Cos(- 2 * Theta);
