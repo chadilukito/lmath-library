@@ -53,10 +53,10 @@ function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;
 function VecEucLength(V:TVector; LB, Ub : integer) : float; overload;
 function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;
 
-function VecDotProd(V1,V2:array of float) : float; overload;
-function VecOuterProd(V1, V2:array of float; Ziel : TMatrix = nil):TMatrix; overload;
+function VecDotProd(const V1,V2:array of float) : float; overload;
+function VecOuterProd(const V1, V2:array of float; Ziel : TMatrix = nil):TMatrix; overload;
 procedure VecCrossProd(V1, V2:array of float; var Ziel : array of float); overload;
-function VecEucLength(V:array of float) : float; overload;
+function VecEucLength(const V:array of float) : float; overload;
 
 
 procedure MatVecMul(M: TMatrix; V: array of float; var Ziel: array of float);
@@ -359,7 +359,7 @@ begin
   Result := Sqrt(Result);
 end;
 
-function VecDotProd(V1, V2: array of float): float;
+function VecDotProd(const V1, V2: array of float): float;
 var
   I:Integer;
 begin
@@ -371,7 +371,7 @@ begin
       SetErrCode(MatErrDim);
 end;
 
-function VecOuterProd(V1, V2: array of float; Ziel: TMatrix): TMatrix;
+function VecOuterProd(const V1, V2: array of float; Ziel: TMatrix): TMatrix;
 var
   I:integer;
   Ub1, Ub2:integer;
@@ -404,7 +404,7 @@ begin
   Ziel[2]  := V1[0]*V2[1] - V1[1]*V2[0];
 end;
 
-function VecEucLength(V: array of float): float;
+function VecEucLength(const V: array of float): float;
 var
   I:integer;
 begin

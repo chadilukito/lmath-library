@@ -3052,11 +3052,28 @@ Finds an appropriate scale for plotting the data in X[Lb..Ub]
 This package includes procedures for linear algebra: operations with vectors, matrices, systems of linear equations.
 \section{Unit uMatrix}\label{sec:unit-umatrix}
 \lmatha{-28pt}
+\lmathsix{-12pt}
 \label{umatrix}\index[unit]{umatrix} 
 \subsection{Description}
 This unit introduces several basic functions  and defines several operators over vectors and matrices.  Functions which have \code{Ziel = nil} default parameter, place result in \code{Ziel} beginning from \code{Ziel[ResLb]} and return it as a result. If \code{Ziel} is nil, it is allocated, otherwise it must have a size sufficient to accomodate the result. For vectors, length of \code{Ziel} must be at least \code{Ub - Lb + ResLb}, for matrices it must be at least \code{[Lb..Ub1,Lb..Ub2]}. Note that \code{ResLb} default value is 1. Reason is that many routines in DMath and LMath were written originally in Fortran, and its inheritance makes us to use arrays beginning from index 1. 
+
+Modern Pascal allows to define open array parameters and, importantly, pass subarrays to the procedures and functions. Use of open arrays allows to make calls more concise when a complete array must be passed, yet even more flexible when only partial array is needed. Beginning from LMath Ver.0.6, attempt is made to develop, along with old \code{TVector, Lb, Ub} convention, a new, more clear and flexible syntax using open arrays in place of \code{TVector} as formal parameters. At this stage this feature is only developing and experimental.
+
+What is important, these two forms can be different not only syntactically, but semantically as well. Let's consider two functions:\\
+\code{function SomeFunc(V:TVector; Lb, Ub:integer):TVector;}
+and\\
+\code{function SomeFunc(V:array of float):TVector}\\
+which somehow transform passed array and return result of the transformation. Now let's consider following calls:\\
+\code{V2 := SomeFunc(V,2,7);}\\
+and\\
+\code{V3 := Somefunc(V[2..7])}\\
+In the first case the whole array is passed to the function and and returned, but transformaton is applied only elements from 2 to 7; elements 0 and 1, as well as everything after 7, are returned unchanged. In the second case, the function receives only elements 2..7 and only they are returned. To aoid this issue, in some cases functions were converted to procedures with output parameters made also open arrays. Advantage of this approach is that result of the transformation can be assigned to static arrays or subarrays; disadvantage, of course, that procedures cannot be used as parts of expressions.
+
+Finally, two-dimentional arrays cannot be passed as open arrays, therefore only dynamic array functions for \code{TMatrix} exist.
+  
 \subsection{Functions and Procedures}
-\subsubsection{VecFloatAdd,VecFloatSubtr,VecFloatMul,VecFloatDiv}
+\subsubsection{VecFloatAdd,VecFloatSubtr,VecFloatMul,VecFloatDiv\\
+(for TVector)}
 \label{VecFloatAdd}\index[proc]{VecFloatAdd}\index[proc]{VecFloatSubtr}\index[proc]{VecFloatMul}\index[proc]{VecFloatDiv}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
@@ -3073,6 +3090,22 @@ This unit introduces several basic functions  and defines several operators over
 	\item[\descriptiontitle{Description}]
 	Every of these functions adds, subtracts, multiplies or divides every element of the vector \code{V} with float \code{R}, beginning from element \code{Lb} and to element \code{Ub}. To modify original \code{V}, make \code{Ziel = V}. 
 \end{itemize} 
+\subsubsection{VecFloatAdd,VecFloatSubtr,VecFloatMul,VecFloatDiv\\
+	(for Open Array)} \lmathsix{-30pt}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{procedure VecFloatAdd  (V:array of float; R:Float; var Ziel : array of float); overload;\\
+procedure VecFloatSubtr(V:array of float; R:Float; var Ziel : array of float); overload;\\
+procedure VecFloatDiv  (V:array of float; R:Float; var Ziel : array of float); overload;\\
+procedure VecFloatMul  (V:array of float; R:Float; var Ziel : array of float); overload;\\
+}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+These functions add, subtract, multiply or divide every element of the input array (\code{V}) and place result into output array (\code{Ziel}). Dynamic, static or partial these functions adds, subtracts, multiplies or divides every element of the vector arrays may be used both for input and output. For example, \code{VecFloatDiv(V[5..9], 4, V[10..14])} is a valid call. Input and output arrays must be of equal length, otherwise error \code{MatErrDim} is set and output array is not modified. 	
+\end{itemize}	
+
+
 \subsubsection{MatFloatAdd,MatFloatSubtr,MatFloatMul,MatFloatDiv}
 \index[proc]{MatFloatAdd}\index[proc]{MatFloatSubtr}\index[proc]{MatFloatMul}\index[proc]{MatFloatDiv}\label{MatFloatDiv}
 \begin{itemize}
@@ -3089,20 +3122,21 @@ This unit introduces several basic functions  and defines several operators over
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-	\code{function VecAdd(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
-	\code{function VecSubtr(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
-	\code{function VecElemMul(V1,V2:TVector; Ziel : TVector = nil): TVector;}\\
-	\code{function VecDiv(V1,V2:TVector; Ziel : TVector = nil): TVector;}
+\code{procedure VecAdd(V1,V2:array of float; var Ziel : array of float);}\\
+\code{procedure VecSubtr(V1,V2:array of float; var Ziel : array of float);}\\
+\code{procedure VecElemMul(V1,V2:array of float; var Ziel : array of float);}\\
+\code{procedure VecDiv(V1,V2:array of float; var Ziel : array of float);}\\
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Another set of element-wise functions. This time, element of second vector is added to, substracted from, multiplied with or is a divider of each element of a first vector, beginning from 0 to High(V1). VecDiv checks if V2[0] = 0. If yes, operation is fulfilled from 1 to High(V1).
-	\code{V1} and \code{V2} must have equal dimentions, otherwise error \code{MatErrDim} is set.
+	Another set of element-wise procedures. This time, element of second array is added to, substracted from, multiplied with or is a divider of each element of a first array. Result is placed to \code{Ziel} array, which can be a subarray.
+	\code{V1}, \code{V2} and \code{Ziel} must have equal dimentions, otherwise error \code{MatErrDim} is set. In \code{VecDiv}, if any of \code{V2} elements is zero, \code{FDomain} error is set and \code{Ziel} remains unmodified.
 \end{itemize} 
 \subsubsection{VecDotProd}
 \index[proc]{VecDotProd}\label{VecDotProd}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
-	\code{function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;}
+	\code{function VecDotProd(V1,V2:TVector; Lb, Ub : integer) : float;}\\
+	\code{function VecDotProd(const V1,V2:array of float) : float;}
 	\item[\descriptiontitle{Description}]Dot product of the vectors \code{V1} and \code{V2}.
 \end{itemize}
 \subsubsection{VecOuterProd}
@@ -3110,21 +3144,26 @@ This unit introduces several basic functions  and defines several operators over
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-	\code{function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix;}
+	\code{function VecOuterProd(V1, V2:TVector; Lb, Ub1, Ub2 : integer; Ziel : TMatrix = nil):TMatrix;}\\
+	\code{function VecOuterProd(const V1, V2:array of float; Ziel : TMatrix = nil):TMatrix;}
 	\end{flushleft}
-	\item[\descriptiontitle{Description}]Outer product of the vectors \code{V1} and \code{V2}. Result is placed into \code{Ziel}; if it is \code{nil}, it is allocated. 
+	\item[\descriptiontitle{Description}]Outer product of the vectors \code{V1} and \code{V2}. Result is placed into \code{Ziel}; if on input is \code{nil}, it is allocated. Length of \code{Ziel} column must be equal to length of the first vector and length of \code{Ziel row} must be equal to the length of second vector, otherwise \code{MatErrDim} error is set and \code{nil} is returned.
 \end{itemize}
 \subsubsection{VecCrossProd}
 \index[proc]{VecCrossProd}\label{VecCrossProd}
 \begin{itemize}
-\item[\declarationitem{Declaration}\hfill]\begin{flushleft}\code{function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;}
+\item[\declarationitem{Declaration}\hfill]
+\begin{flushleft}\code{function VecCrossProd(V1, V2:TVector; Lb: integer; Ziel :TVector = nil):TVector;}\\
+	\code{procedure VecCrossProd(V1, V2: array of float; var Ziel: array of float);}
 \end{flushleft}
-\item[\descriptiontitle{Description}] Cross product of two vectors.
+\item[\descriptiontitle{Description}] Cross product of two vectors. Function puts result into \code{Ziel} if it is supplied, otherwise allocates it itself. For procedure call, \code{Ziel} must exist. Use of subarrays is possible both for input and output arrays. The procedure checks length of all arrays and sets error \code{MaterrDim} if any of them is different from 3.
 \end{itemize}
 \subsubsection{VecEucLength}
 \label{VecEucLength}\index[proc]{VecEucLength}
 \begin{itemize}
-\item[\declarationitem{Declaration}\hfill]\code{function VecEucLength(V:TVector; LB, Ub : integer) : float;}
+\item[\declarationitem{Declaration}\hfill]
+\code{function VecEucLength(V:TVector; LB, Ub : integer) : float;}\\
+\code{function VecEucLength(const V: array of float): float;}
 \item[\descriptiontitle{Description}]Returns euclidian length of a vector (dot product with itself).
 \end{itemize}
 \subsubsection{MatVecMul}
@@ -3132,7 +3171,8 @@ This unit introduces several basic functions  and defines several operators over
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-	\code{function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;}
+	\code{function MatVecMul(M:TMatrix; V:TVector; LB: integer; Ziel: TVector = nil): TVector;}\\
+	\code{procedure MatVecMul(M: TMatrix; V: array of float; var Ziel: array of float);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]Product of vector \code{V} and matrix \code{M}. Length of matrix rows must be equal to length of \code{V}.
 \end{itemize}
@@ -3156,9 +3196,13 @@ This unit introduces several basic functions  and defines several operators over
 \item[\descriptiontitle{Description}]Transpose square matrix and place result in itself.
 \end{itemize}
 \subsection{Operators}
-Operators \code{+,-,*,/} are defined for \code{TVector} and \code{Float} as well as for \code{TMatrix} and \code{Float}. They add the float to every element of the vector or matrix.
+Operators \code{+,-,*,/} are defined for \code{array of float} and \code{Float} as well as for \code{TMatrix} and \code{Float}. They add the float to every element of the vector or matrix.
 
-Operators \code{+,-} are defined for two vectors. They must be of equal length; these are element-wize operations too.
+Operators \code{+,-} are defined for two arrays of float. They must be of equal length; these are element-wize operations too. Result of operation is \code{TVector}, which is allocated by the operator.
+
+Vector operators work with subarrays, thus, line\\
+ \code{NewVect := V1[5..8]+V2[7..9]}\\
+is valid and produces expected result. Unfortunately, only dynamic arrays can be result of an operation; no static arrays and no subarrays.
  
 \section{Unit ugausjor}
 \label{ugausjor}
@@ -5993,6 +6037,8 @@ In DMath library, only 26 variables could be defined and only first letter of a 
 
 Operator \code{**} is added to \code{\^} for exponentiation. It may be necessary in some environments where \code{\^} may have a special meaning.
 
+Special variable \code{\_Last} contains result of the last evaluation. Variables \code{Pi} and \code{Euler} are predefined, containing corresponding constants. 
+
 \subsection{Functions and Procedures}
 \subsubsection{InitEval}
 \label{ueval-InitEval}
@@ -6356,7 +6402,23 @@ Secant method for nonlinear equation.
 
 \chapter[Package lmDSP]{Package lmDSP:\\ Digital Signal Processing}\label{package-lmDSP}
 \section{Description}
-This package contains common routines for digital signal processing: Fast Fourier Transform (unit uFFT), Digital Fourier Transform, which does not require that input signal has length of power of two (unit uDSP; note however that this unit is distributed under GPL license, and not LGPL), and several signal filters (unit uFilters). Unit uFFT was moved here from lmRegression package, othersw were written for LMath ver 0.6.0. 
+This package contains common routines for digital signal processing: Fast Fourier Transform (unit uFFT), Digital Fourier Transform, which does not require that input signal has length of power of two (unit uDSP; note however that this unit is distributed under GPL license, and not LGPL), and several signal filters (unit uFilters). Unit uFFT was moved here from lmRegression package, others were written for LMath ver 0.6.0. 
+\section{Unit uConvolutions}\label{sec:uconvolutions}\lmathsix{-24pt}
+\index[unit]{uConvolutions}
+\subsection{Description}
+This unit defines a single function \code{Convolve} for convolution of two signals in time domain.
+\subsection{Procedures and functions}
+\label{uconvolutions-convolve}
+\index[proc]{Convolve}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{function Convolve(constref Signal:array of float; constref FIR:array of float; Ziel : TVector = nil):TVector;}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	\code{Function Convolve} convolves array \code{Signal} with array \code{FIR}. If \code{Ziel} is provided, result is placed into it beginning from Ziel[0], and \code{Ziel} is returned as result of function. Procedure is optimized for a case when \code{Signal} is longer than \code{FIR}, but works in the opposite case as well, only slightly slower. 
+\end{itemize}	
+
 \section{Unit ufft}
 \label{ufft}
 \index[unit]{ufft}
@@ -8954,10 +9016,14 @@ TVectorHelper = type helper for TVector
      procedure Insert(value:Float; index:integer);
      procedure Remove(index:integer);
      procedure Swap(ind1,ind2:integer);
-     procedure Fill(St, En : integer; Val:Float);
+     procedure Clear;
+     procedure Fill(Lb, Ub : integer; Val:Float);
+     procedure FillWithArr(Lb : integer; Vals:array of Float);
      procedure Sort(Descending:boolean);
      procedure InsertFrom(
      	Source:TVector; Lb, Ub: integer; ind:integer);
+     procedure InsertFrom(constref source: array of float; 
+        ind: integer); overload;
      function ToString(Index:integer):string;
      function ToStrings(Dest:TStrings; First, Last:integer;
      Indices:boolean; Delimiter: char):integer;
@@ -8972,10 +9038,13 @@ TIntVectorHelper = type helper for TIntVector
      procedure Insert(value:Integer; index:integer);
      procedure Remove(index:integer);
      procedure Swap(ind1,ind2:integer);
+     procedure Clear;
      procedure Fill(St, En : integer; Val:Integer);
-     procedure FillWithArr(St : integer; Vals:array of Float);
+     procedure FillWithArr(Lb : integer; Vals:array of Integer);
      procedure InsertFrom(
      	Source:TIntVector; Lb, Ub: integer; ind:integer);
+     procedure InsertFrom(constref source: array of integer; 
+        ind: integer); overload;
      function ToString(Index:integer):string;
      function ToStrings(Dest:TStrings; First, Last:integer;
      Indices:boolean; Delimiter: char):integer;
@@ -8988,9 +9057,9 @@ Most of the methods of TVectorHelper and TVIntVectorHelper are identical with th
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-     procedure Insert(value:Float; index:integer);\\ \vspace{4pt}
+\code{     procedure Insert(value:Float; index:integer);\\ \vspace{4pt}
      procedure Insert(value:Integer; index:integer);
-	\end{flushleft}
+}	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Inserts \code{value} in the position \code{index}. Following elements are shifted to the right. Self[High(self)] is lost.
 \end{itemize}
@@ -8998,7 +9067,7 @@ Most of the methods of TVectorHelper and TVIntVectorHelper are identical with th
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-     procedure Remove(index:integer);
+     \code{procedure Remove(index:integer);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
 	Element in the position \code{index} is removed; succeeding elements are shifted to the left. Self[High(self)] is set to 0. 
@@ -9007,41 +9076,53 @@ Most of the methods of TVectorHelper and TVIntVectorHelper are identical with th
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-     procedure Swap(ind1,ind2:integer);
+     \code{procedure Swap(ind1,ind2:integer);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
 	Swaps elements in positions ind1, ind2. No range check is performed.
 \end{itemize}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{procedure Clear;}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Fills \code{Self} with zeros.
+\end{itemize}	
 \subsubsection{Fill}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		     procedure Fill(St, En : integer; Val:Float);\\ \vspace{4pt}
-		     procedure Fill(St, En : integer; Val:integer);
+		     \code{procedure Fill(Lb, Ub : integer; Val:Float);}\\ \vspace{4pt}
+		     \code{procedure Fill(Lb, Ub : integer; Val:integer);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-	Sets all elements from \code{self[St]} to \code{self[En]} to \code{Val}. If \code{Self} is empty, it is allocated, otherwise it id filled to min(En,high(self)). Length of \code{Self} remains unchanged.
+	Sets all elements from \code{self[Lb]} to \code{self[Ub]} to \code{Val}. If \code{Self} is empty, it is allocated, otherwise it id filled to min(Ub,high(self)). Length of \code{Self} remains unchanged.
 \end{itemize}
 \subsubsection{FillWithArr}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		procedure FillWithArr(St : integer; Vals:array of Float);\\ \vspace{4pt}
-		procedure FillWithArr(St : integer; Vals:array of Integer);
+		\code{procedure FillWithArr(Lb : integer; Vals:array of Float);}\\ \vspace{4pt}
+		\code{procedure FillWithArr(Lb : integer; Vals:array of Integer);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-	Copies all elements from \code{Vals} into \code{self} beginning from \code{self[St]}. If \code{Self} is empty, it is allocated, otherwise filled up to \\ min(St+length(Vals),High(Self)). \\ This procedure is designed mainly for convenient initialization of arrays in statements like \\ 
+	Copies all elements from \code{Vals} into \code{self} beginning from \code{self[Lb]}. If \code{Self} is empty, it is allocated, otherwise filled up to \\ min(Lb+length(Vals),High(Self)). \\ This procedure is designed mainly for convenient initialization of arrays in statements like \\ 
 	MyNewVector.FillWithArr(1,[3,4,5,9,12]);
 \end{itemize}
 \subsubsection{InsertFrom}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-     procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);\\ \vspace{4pt}
-     procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);
-	\end{flushleft}
+     \code{procedure InsertFrom(Source:TVector; Lb, Ub: integer; ind:integer);}\\ \vspace{4pt}
+     \code{procedure InsertFrom(Source:TIntVector; Lb, Ub: integer; ind:integer);}\\ \vspace{8pt}
+     \code{procedure InsertFrom(constref source: array of float; \\ ind: integer); overload;}\\ \vspace{4pt}
+     \code{procedure InsertFrom(constref source: array of integer; \\ ind: integer); overload;}
+ 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-Elements of Source beginning from \code{Source[Lb]} to \code{Source[Ub]} are inserted into \code{Self} beginning from \code{Self[ind]}. Elements of target array beginning from \code{Ind} are shifted to the right. Length of target array remains unchanged, last elements of it are lost. If $Ind + Ub - Lb > High(Self)$, only $High(Self) - Ind$ elements are inserted. 	
+This method exists in two forms: older one where \code{Sourse} is TVector, kept for backward compatibility, and a new one where sourse is an open array, which gives greater flexibility. 
+
+Elements of Source are inserted into \code{Self} beginning from \code{Self[ind]}. Elements of target array beginning from \code{Ind} are shifted to the right. Length of target array remains unchanged, last elements of it are lost. In the older form, elements beginning from \code{Source[Lb]} to \code{Source[Ub]} are insterted, in the new one, the whole array is inserted. If you need to insert a subarray, you may define it at a calling the method:\\ \code{MyArr.InsertFrom(MyOtherArr[5..12])}.\\ If length of passed array is too long, the array is truncated respectively, such that length of a target array remains unchanged: if $Ind + Ub - Lb > High(Self)$, only $High(Self) - Ind$ elements are inserted. 	
 \end{itemize}
 \subsubsection{Sort (TVectorHelper only)}
 \begin{itemize}
@@ -9183,15 +9264,16 @@ This small unit introduces procedures for printout of a vector or matrix in a co
 LB : integer = 1;
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
-	Defines a lower bound of an array printout. Default value is 1 (Fortran inheritance).
+	Defines a lower bound of a matrix printout. Default value is 1 (Fortran inheritance). PrintVector do not use this variable, use subarrays at call instead.
 \end{itemize}
+\subsection{Procedures And Functions}
 \subsubsection{PrintVector}
 \label{uvecmatprn:PrintVector}\index[vart]{PrintVector}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-	procedure PrintVector(V:TIntVector);
-	procedure PrintVector(V:TVector);
+	procedure PrintVector(V:array of Integer);\\
+	procedure PrintVector(V:array of Float);
 	\end{flushleft}
 	\item[\descriptiontitle{Description}\hfill]
 	Prints TVector or TIntVector on one line in a console window.
@@ -11194,5 +11276,9 @@ These are not numerous.
 	\item{Package }
 \end{enumerate}
 In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
+\printindex[types]
+\printindex[const]
+\printindex[proc]
+\printindex
 
 \end{document}
