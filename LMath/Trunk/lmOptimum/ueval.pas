@@ -874,10 +874,10 @@ begin
     Res := Abs(ArgV[1])
 
   else if CurrentFunction = 'SGN' then
-    Res := Sgn(ArgV[1])
+    Res := Sgn(ArgV[1])  // returns 1 if ArgV >= 0
 
   else if CurrentFunction = 'INT' then
-    Res := Int(ArgV[1])
+    Res := Int(ArgV[1])  // round to nearest integer
 
   else if CurrentFunction = 'SQRT' then
     begin
@@ -905,14 +905,14 @@ begin
   else if CurrentFunction = 'FACT' then
     Res := Fact(Trunc(ArgV[1]))
     
-  else if CurrentFunction = 'BINOMIAL' then
+  else if CurrentFunction = 'BINOMIAL' then { Binomial coefficient C(N,K) }
     Res := Binomial(Trunc(ArgV[1]), Trunc(ArgV[2]))
 
   else if CurrentFunction = 'DEG' then
-    Res := ArgV[1] * RadToDeg
+    Res := ArgV[1] * RadToDeg  // radian to degrees conversion
 
   else if CurrentFunction = 'RAD' then
-    Res := ArgV[1] * DegToRad
+    Res := ArgV[1] * DegToRad   // degrees to radian conversion
 
   else if CurrentFunction = 'SIN' then
     Res := Sin(ArgV[1])
@@ -933,9 +933,9 @@ begin
     Res := ArcTan(ArgV[1])
 
   else if CurrentFunction = 'ARCTAN2' then
-    Res := ArcTan2(ArgV[1], ArgV[2])
+    Res := ArcTan2(ArgV[1], ArgV[2])  // arctan of an argument as a vector (X,Y)
 
-  else if CurrentFunction = 'SINH' then
+  else if CurrentFunction = 'SINH' then  // from here hyperbolic functions
     Res := Sinh(ArgV[1])
 
   else if CurrentFunction = 'COSH' then
@@ -956,25 +956,25 @@ begin
   else if CurrentFunction = 'GAMMA' then
     Res := Gamma(ArgV[1])
 
-  else if CurrentFunction = 'IGAMMA' then
+  else if CurrentFunction = 'IGAMMA' then  // inverse gamma
     Res := IGamma(ArgV[1], ArgV[2])
 
   else if CurrentFunction = 'BETA' then
     Res := Beta(ArgV[1], ArgV[2])
 
-  else if CurrentFunction = 'IBETA' then
+  else if CurrentFunction = 'IBETA' then  // inverse beta
     Res := IBeta(ArgV[1], ArgV[2], ArgV[3])
 
-  else if CurrentFunction = 'ERF' then
+  else if CurrentFunction = 'ERF' then   // error function
     Res := Erf(ArgV[1])
 
   else if CurrentFunction = 'LAMBERTW' then
     Res := LambertW(ArgV[1], True, False)
     
-  else if CurrentFunction = 'PBINOM' then
-    Res := PBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3]))
+  else if CurrentFunction = 'PBINOM' then  // probability density for binomial distribution
+    Res := PBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3])) // ArgV[1] N; [2]: P; [3]: K. [1] and [3] are truncated.
     
-  else if CurrentFunction = 'FBINOM' then
+  else if CurrentFunction = 'FBINOM' then  // must be cumulative probability for binomial, but this is bug
     Res := PBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3]))
 
   else if CurrentFunction = 'PPOISSON' then
@@ -983,10 +983,10 @@ begin
   else if CurrentFunction = 'FPOISSON' then
     Res := FPoisson(ArgV[1], Trunc(ArgV[2]))
     
-  else if CurrentFunction = 'DEXPO' then
+  else if CurrentFunction = 'DEXPO' then // probability density for exponential distrib
     Res := DExpo(ArgV[1], ArgV[2])
     
-  else if CurrentFunction = 'FEXPO' then
+  else if CurrentFunction = 'FEXPO' then // cumulative exponential distrib
     Res := FExpo(ArgV[1], ArgV[2])
     
   else if CurrentFunction = 'DGAMMA' then
