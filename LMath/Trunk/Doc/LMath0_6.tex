@@ -1797,7 +1797,9 @@ Gamma function and related functions. Translated from C code in Cephes library (
 \label{uigamma}
 \index[proc]{uigamma}
 \subsection{Description}
-Incomplete Gamma function and related functions. Translated from C code in Cephes library (\href{http://www.moshier.net}{http://www.moshier.net}) \subsection{Functions and Procedures}
+Incomplete Gamma function and related functions. Translated from C code in (\href{http://www.moshier.net}{Cephes library}).
+
+ \subsection{Functions and Procedures}
 \subsubsection{IGamma}
 \label{uigamma-IGamma}
 \index[proc]{IGamma}
@@ -3067,7 +3069,7 @@ which somehow transform passed array and return result of the transformation. No
 \code{V2 := SomeFunc(V,2,7);}\\
 and\\
 \code{V3 := Somefunc(V[2..7])}\\
-In the first case the whole array is passed to the function and and returned, but transformaton is applied only elements from 2 to 7; elements 0 and 1, as well as everything after 7, are returned unchanged. In the second case, the function receives only elements 2..7 and only they are returned. To aoid this issue, in some cases functions were converted to procedures with output parameters made also open arrays. Advantage of this approach is that result of the transformation can be assigned to static arrays or subarrays; disadvantage, of course, that procedures cannot be used as parts of expressions.
+In the first case the whole array is passed to the function and and returned, but transformaton is applied only elements from 2 to 7; elements 0 and 1, as well as everything after 7, are returned unchanged. In the second case, the function receives only elements 2..7 and only they are returned. To avoid this issue, in some cases functions were converted to procedures with output parameters made also open arrays. Advantage of this approach is that result of the transformation can be assigned to static arrays or subarrays; disadvantage, of course, that procedures cannot be used as parts of expressions.
 
 Finally, two-dimentional arrays cannot be passed as open arrays, therefore only dynamic array functions for \code{TMatrix} exist.
   
@@ -4530,15 +4532,15 @@ Gaussian random numbers
 \label{umeansd}
 \index[unit]{umeansd}
 \subsection{Description}
-Mean and standard deviations
+Various statistics of a vector: min, max, mean, standard deviation, sum. Every function exists in two forms: older, with TVector, Lb, Ub convention and newer, with open arrays. Older functions are left for backward compatibility and are not recommended for use in new code.
 \subsection{Functions and Procedures}
 \subsubsection{Min}
 \label{umeansd-Min}
 \index[proc]{Min}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			function Min(X : TVector; Lb, Ub : Integer) : Float;}
+		\code{function Min(X : TVector; Lb, Ub : Integer) : Float;}\\
+		\code{function Min(constref X:array of float) : float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Minimum of sample X
@@ -4548,8 +4550,8 @@ Mean and standard deviations
 \index[proc]{Max}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			function Max(X : TVector; Lb, Ub : Integer) : Float;}
+		\code{function Max(X : TVector; Lb, Ub : Integer) : Float;}\\
+		\code{Max(constref X : array of float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Maximum of sample X
@@ -4557,7 +4559,8 @@ Mean and standard deviations
 \subsubsection{Sum}\label{umeansd-sum} \lmath{-24pt}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
-	\code{function Sum(X:TVector; Lb, Ub : integer) : Float;}
+	\code{function Sum(X:TVector; Lb, Ub : integer) : Float;}\\
+	\code{Sum(constref X:array of float) : Float;}
 	\item[\descriptiontitle{Description}]
 	Sum of sample X.
 \end{itemize}
@@ -4566,8 +4569,8 @@ Mean and standard deviations
 \index[proc]{Mean}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			function Mean(X : TVector; Lb, Ub : Integer) : Float;}
+		\code{function Mean(X : TVector; Lb, Ub : Integer) : Float;}\\
+		\code{Mean(constref X:array of float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Mean of sample X
@@ -4577,8 +4580,8 @@ Mean and standard deviations
 \index[proc]{StDev}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			function StDev(X : TVector; Lb, Ub : Integer; M : Float) : Float;}
+		\code{function StDev(X : TVector; Lb, Ub : Integer; M : Float) : Float;}\\
+		\code{StDev(constref X : array of float; M : Float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Standard deviation estimated from sample X
@@ -4588,8 +4591,8 @@ Mean and standard deviations
 \index[proc]{StDevP}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{
-			function StDevP(X : TVector; Lb, Ub : Integer; M : Float) : Float;}
+		\code{function StDevP(X : TVector; Lb, Ub : Integer; M : Float) : Float;}\\
+		\code{StDevP(constref X : array of float; M : Float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Standard deviation of population
@@ -6498,6 +6501,75 @@ Call of this procedure is not necessary anymore, it is kept only for backward co
 	
 	It is also useful for calculating the Discrete Fourier Transform (DFT) of a number of data which is not an integer power of 2. For example, you could calculate the DFT of 100 points instead of rounding up to 128 and padding the extra 28 array slots with zeroes.
 \end{itemize}
+
+\section{Unit uDFT}\label{sec:uDFT}\lmathsix{-24pt}
+\subsection{Description}
+Unit uDFT includes procedures for direct and inverse digital Fourier transform of arrays with length different from degrees of two. Unit was contributed by David Chen, who translated it from C\# version of \href{https://www.alglib.net/}{AlgLib library} by Sergey Bochkanov,
+ Cooley-Tukey and Bluestein's algorithms are used. Important: this unit is distributed under GPL license, not LGPL as other parts of \code{LMath}. 
+\subsection{Procedures and Functions} 
+\subsubsection{FFTC1D}
+\label{fftc1d}
+\index[proc]{FFTC1D}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{Procedure FFTC1D(var A: TCompVector; Lb, Ub: Integer);}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	1-dimensional complex DFT. Input parameters: \code{A} is \code{Complex} array to be transformed;
+	\code{Lb, Ub}  are lower and upper bounds of array slice to be transformed.	\code{Lb} must be less or equal to \code{Ub}, otherwise \code{MatErrDim} error is set and no transform is done. Typically, but not necessary, \code{Lb} is 0 or 1 and \code{Ub} is \code{High(A)}. The problem size N, $N=Ub-Lb+1$, could be any natural number.	Output parameters:	upon successful call,\code{A[Lb..Ub]} contains result of DFT transform.
+	If the input data need to be preserved, back it up before calling.
+\end{itemize}	
+\subsubsection{FFTC1DInv}
+\label{fftc1dinv}
+\index[proc]{FFTC1DInv}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{Procedure FFTC1DInv(var A: TCompVector; Lb, Ub: Integer);}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	1-dimensional complex inverse FFT. Input parameters: \code{A} is an array of \code{Complex} to be transformed; \code{Lb, Ub} are lower and upper bounds of the array slice to be transformed.
+	\code{Lb} must be less or equal to \code{Ub}, otherwise \code{MatErrDim} error is set and no transform is done. Typically, but not necessarily, \code{Lb} is 0 or 1 and \code{Ub} is \code{High(A)}.
+	 The problem size N, $N=Ub-Lb+1$, could be any natural number.	Output parameters:	upon successful call,\code{A[Lb..Ub]} contains result of inverse DFT transform.
+	If the input data need to be preserved, back it up before calling.
+\end{itemize}	
+\subsubsection{FFTR1D}
+\label{fftr1d}
+\index[proc]{FFTR1D}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	Procedure FFTR1D(const A: TVector; Lb, Ub: Integer; out F: TCompVector);	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	1-dimensional real FFT.	Input parameters: A is array of \code{Float} to be transformed;
+	\code{Lb, Ub} are Lower and upper bounds of the array slice to be transformed.
+	\code{Lb} must be less or equal to \code{Ub}, otherwise \code{MatErrDim} error is set and no transform done.
+	Typically, but not necessary, \code{Lb} is 0 or 1 and \code{Ub} is \code{High(A)}.
+	The problem size N,  $N=Ub-Lb+1$, could be any natural number.
+	Output parameters: \code{F} is the result of DFT of \code{A}. \code{F} is a complex array with range \code{[0..(Ub-Lb)]}.
+	Note:
+	F[] satisfies symmetry property $F[k] = \mathrm{conj}(F[N-k])$, so just one half of
+	array is usually needed. But for convenience, subroutine returns full complex
+	array (with frequencies above N/2), so its result may be  used  by other
+	FFT-related subroutines. $N = Ub-Lb$.
+\end{itemize}	
+\subsubsection{FFTR1DInv}
+\label{fftr1dinv}
+\index[proc]{FFTR1DInv}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{Procedure FFTR1DInv(const F: TCompVector; Lb, Ub: Integer; var A: TVector);}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	1-dimensional real inverse FFT. Input parameters: \code{F} array of Complex containing frequencies from forward real FFT. \code{Lb, Ub} are bounds of the array slice to be transformed. \code{Lb} must be less or equal to \code{Ub}, otherwise \code{MatErrDim} error is set and no transform done. Typically, but not always, \code{Lb} is 0 or 1 and \code{Ub} is \code{High(F)}.	The problem size N, which equals $Ub-Lb+1$, could be any natural number.
+	Output parameters: \code{A} is result of Inverse DFT of the input array. Its dimensions are [0..(Ub-Lb)]. Note:	F[] should satisfy symmetry property $F[k] = \mathrm{conj}(F[N-k])$. Only  one half of frequencies array $F$, namely, elements from $Lb$ to \code{floor(Lb + N/2)}, is used. However, this function doesn't check the symmetry of F[Lb..Ub], so the caller have to
+	make sure it before use. F[0] is always real. If \code{N} is even, F[floor(N/2)] is
+	real too. If \code{N} is odd, then F[floor(N/2)] has no special properties. $N = Ub-Lb$.
+\end{itemize}	
+
 \section{Unit uFilters}\label{sec:uFilters}\lmathsix{-24pt}
 \subsection{Description}\label{ufilters-description}
 This unit implements several digital filters: low pass moving average and gaussian filters, one-pole stop-band (notch) and pass band filters, one-pole high-pass filter, Chebyshev filter, which can be used both as low- and high-pass; with ripple = 0 setting it is a Butterworth filter; median filter. Besides that, the unit contains several functions for calculation of filter parameter. \code{GaussCascadeFreq} allows to find effective cut-off frequency for a case when two Gaussian filters were used one after another (and, because cascade of gaussian filters is also gaussian filters, repeatitive use of this function allows to find effective frequency of a cascade of any arbitrary length). \code{GaussRiseTime} allows to find a rise time of a step response of gaussian filter with a given cut-off frequency. Rise time is defined as time of the rize from 10{\%} to 90{\%} of complete amplitude. \code{MoveAvRiseTime} finds a rise time of moving average filter with a given window length. \code{MoveAvCutOffFreq} finds the cut-off frequency of Moving Average Filter with a given window length. \code{MoveAvFindWindow} solves the opposite task: finds window length for a given cut-off frequency. Cut-off frequency of all filters is defined as a frequency at which power of signal is reduced to 50{\%} of initial value, which corresponds to amplitude reduction by $\sqrt{2}/2 \approx 0.7$. Most of filter procedures require sampling rate and cut-off frequency. If sampling frequency is not defined in your allipcation, you may set it to 1 and define cut-off frequency as its fraction. Note also that typically cut-off frequency cannot be higher than half of sampling rate.
@@ -8783,7 +8855,7 @@ Quicksort, InsertSort and HeapSort algorithms are implemented for sorting of arr
 		
 	\end{flushleft}
 \end{itemize}
-\section{Unit uVecUtils}\label{sec:unit-uvecutils}\index[unit]{uVecUtils}
+\section{Unit VecUtils}\label{sec:unit-uvecutils}\index[unit]{uVecUtils}
 \lmatha{-28pt}
 \subsection{Types}
 \subsubsection{TTestFunc, TIntTestFunc}
@@ -8825,21 +8897,26 @@ Constructor of TMatCoords from two integers.
 	procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); \\ \vspace{4pt}
 	procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc);\\ \vspace{4pt}
 	procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc);\\ \vspace{6pt}
-	procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc);\\ \vspace{4pt}
-	procedure Apply(V:TIntVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TIntFunc);}
+	procedure Apply(V:TVector; Mask:TIntVector; MaskLb:integer; Func:TFunc);\\ \vspace{4pt}
+	procedure Apply(V:TIntVector; Mask:TIntVector; MaskLb:integer; Func:TIntFunc);\\  \vspace{4pt}
+	procedure Apply(var V:array of Float; Func:TFunc);\\  \vspace{4pt}
+	procedure Apply(var V:array of Integer; Func:TIntFunc);\\ \vspace{4pt}
+}
 \end{flushleft}	\item[\descriptiontitle{Description}]
 	These procedures apply \hyperref[utypes-TFunc]{\code{TFunc}} or \code{TIntFunc} to every element of \code{V} or \code{M} in the slice defined by \code{Lb} and \code{Ub} variables. Last two versions are ``masked'' functions which apply the functions only to elements whose indices are included into \code{Mask} array.
-	For example, if \code{Mask = (3,5,7)} then the function will be applied only to \code{V[3],V[5] and V[7]}. The \code{Mask} array may be formed for example with the help of \hyperref[uvecutils:SelElements]{\code{SelectElements}} function.
+	For example, if \code{Mask = (3,5,7)} then the function will be applied only to \code{V[3],V[5] and V[7]}. The \code{Mask} array may be formed for example with the help of \hyperref[uvecutils:SelElements]{\code{SelectElements}} function. Last two versions apply the function to every element of open array. At a function call, subarray may be passed as a parameter.
 \end{itemize}
 \subsubsection{CompVec}
 \label{uvectutils:compvec}\index[proc]{CompVec}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
-\begin{flushleft}\code{function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;}
+\begin{flushleft}\code{function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean;\\ \vspace{4pt}
+function CompVec(constref X, Xref : array of float; Tol : Float) : Boolean; 
+}
 \end{flushleft}\item[\descriptiontitle{Description}]
  Checks if every component of vector X is within a fraction Tol of
 the corresponding component of the reference vector Xref. In this
-case, the function returns True, otherwise it returns False.
+case, the function returns True, otherwise it returns False. Subarray can be passed to a version with open array. This latter function has all functionality as a version with TVector, but has more simple calling convention and is more flexible, allowing to use both dynamic and static arrays and subarrays. Hence, we suggest that it is used in all new code with the old version left for backward compatibility.
 \end{itemize}
 \subsubsection{Any}\index[proc]{Any}
 \begin{itemize}
@@ -8848,10 +8925,13 @@ case, the function returns True, otherwise it returns False.
 	\code{function Any(Vector : TVector; Lb, Ub : integer; Test : TTestFunc) : boolean;\\ \vspace{4pt}
 	function Any(M : TMatrix; LRow, URow, LCol, UCol : integer; Test : TTestFunc) : boolean;\\ \vspace{4pt}
 	function Any(Vector : TIntVector; Lb, Ub : integer; Test : TIntTestFunc) : boolean;\\ \vspace{4pt}
-	function Any(M : TIntMatrix; LRow, URow, LCol, UCol : integer; Test : TIntTestFunc) : boolean;}
+	function Any(M : TIntMatrix; LRow, URow, LCol, UCol : integer; Test : TIntTestFunc) : boolean;\\ \vspace{4pt}
+	function Any(constref Vector:array of Float; Test:TTestFunc):boolean; overload;\\ \vspace{4pt}
+	function Any(constref Vector:array of integer; Test:TIntTestFunc):boolean; overload;
+}
 \end{flushleft}	
 \item[\descriptiontitle{Description}]
-Applies \code{Test} function of type \hyperref[uvecutils:ttestfunc]{TTestFunc}\ to every element in Vector[Lb..Ub] or M[LCol..UCol,LRow..URow] and returns \code{true} if for any of them \code{Test} returns \code{true}.
+Applies \code{Test} function of type \hyperref[uvecutils:ttestfunc]{TTestFunc}\ to every element in Vector[Lb..Ub] or M[LCol..UCol,LRow..URow], or to every element of open array and returns \code{true} if for any of them \code{Test} returns \code{true}.
 \end{itemize}
 \subsubsection{FirstElement}
 \label{uvecutils:firstelement}\index[proc]{FirstElement}
@@ -9229,9 +9309,240 @@ This unit defines four routines for saving \code{TMatrix} or \code{TVector} to a
 	
 	Errors: if \code{Lb} is negative, MatErrDim error is set; on file read failure, lmFileError is set. 
 \end{itemize}	
+\section{Unit uCompVecUtils}\lmathsix{-28pt}
+\label{ucompvecutils}
+\subsection{Description}
+Unit uCompVectUtils defines several utility functions and procedures to make more convenient work with arrays of complex numbers, largely similar to what was done for arrays of \code{Float} in the unit \code{uVecUtils} (\ref{sec:unit-uvecutils}).
+\subsection{Types}
+\subsubsection{TComplexTestFunc}
+\label{tcomplextestfunc}\index[types]{TComplexTestFunc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{TComplexTestFunc = function(Val:complex):boolean;}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+  General function for testing complex value for a condition
+\end{itemize}	
+\subsubsection{TComplexFunc}
+\label{tcomplexfunc}
+\index[types]{TComplexFunc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+  \code{TComplexFunc = function(Arg:Complex):complex;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+  General complex function of real argument
+\end{itemize}	
+\subsubsection{TIntComplexFunc}
+\label{tintcomplexfunc}
+\index[types]{TIntComplexFunc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{TIntComplexFunc = function(Arg:Integer):complex;}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Complex function of an integer argument. This type is intended mostly for the use with function Apply (\ref{comp-apply}) where index of an element is passed to the function.
+\end{itemize}	
+
+\subsubsection{TComplexComparator}
+\label{tcomplexcomparator}
+\index[types]{TComplexComparator}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+ \code{TComplexComparator = function(Val, Ref:complex):boolean;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+  General function for comparison of complex numbers.
+ Functions \code{FirstElement} and \code{SelElements} pass array elements to \code{Val} and user-supplied \code{Ref} value to \code{Ref}.
+\end{itemize}	
+\subsection{Procedures and Functions}
+\subsubsection{ExtractReal}
+\label{extractreal}
+\index[proc]{ExtractReal}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function ExtractReal(const CVec:array of complex):TVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Extracts real components from all elements of \code{CVec} and puts them into result, which is allocated by the function.
+\end{itemize}	
+\subsubsection{ExtractImaginary}
+\label{extractimaginary}
+\index[proc]{ExtractImaginary}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function ExtractImaginary(const CVec:array of complex):TVector;}
+\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Extracts imaginary components from all elements of \code{CVec} and puts them into result, which is allocated by the function.
+\end{itemize}	
+\subsubsection{CombineCompVec}
+\label{combinecompvec}
+\index[proc]{CombineCompVec}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function CombineCompVec(const VecRe, VecIm:array of float):TCompVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Opposite to \code{ExtractImaginary} and \code{ExtractReal}: takes two arrays of \code{Float} and combines them into \code{TCompVector}. Elements of \code{VecRe} become real components; elements of \code{VecIm} become imaginary. Lengths of \code{VecRe} and \code{VecIm} must be equal, otherwise \code{MaterrDim} error is set and \code{nil} is returned.  
+\end{itemize}	
+\subsubsection{CMakePolar}
+\label{cmakepolar}
+\index[proc]{CMakePolar}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function CMakePolar(const V:array of complex):TCompVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Converts all elements of array of complex \code{V} from rectangular to polar form and puts them into \code{TCompVector} which is returned as result.	
+\end{itemize}	
+\subsubsection{CMakeRectangular}
+\label{cmakerectangular}
+\index[proc]{CMakeRectangular}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function CMakeRectangular(const V:array of complex):TCompVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Converts all elements of array of complex \code{V} from polar to rectangular form and puts them into \code{TCompVector} which is returned as result.	
+\end{itemize}	
+\subsubsection{MaxReLoc}
+\label{maxreloc}
+\index[proc]{MaxReLoc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function MaxReLoc(CVec: TCompVector; Lb, Ub: integer):integer;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns position in \code{CVec:TCompVector)} beginning from \code{Lb} ending with \code{Ub} of an element with maximal value of real component. If $Lb > Ub$, \code{MatErrDim} error is set and -1 is returned.  
+\end{itemize}	
+\subsubsection{MaxImLoc}
+\label{maximloc}
+\index[proc]{MaxImLoc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function MaxImLoc(CVec: TCompVector; Lb, Ub: integer):integer;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns position in \code{CVec:TCompVector)} beginning from \code{Lb} ending with \code{Ub} of an element with maximal value of imaginary component.  If $Lb > Ub$, \code{MatErrDim} error is set and -1 is returned.  
+\end{itemize}	
+\subsubsection{MinReLoc}
+\label{minreloc}
+\index[proc]{MinReLoc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function MinReLoc(CVec: TCompVector; Lb, Ub: integer):integer;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns position in \code{CVec:TCompVector)} beginning from \code{Lb} ending with \code{Ub} of an element with minimal value of real component.  If $Lb > Ub$, \code{MatErrDim} error is set and -1 is returned.  
+\end{itemize}	
+\subsubsection{MinImLoc}
+\label{minimloc}
+\index[proc]{MinImLoc}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{function MinImLoc(CVec: TCompVector; Lb, Ub: integer):integer;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns position in \code{CVec:TCompVector)} beginning from \code{Lb} ending with \code{Ub} of an element with minimal value of imaginary component.  If $Lb > Ub$, \code{MatErrDim} error is set and -1 is returned.  
+\end{itemize}	
+\subsubsection{Apply}
+\label{comp-apply}
+\index[proc]{Apply}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{procedure Apply(var V:array of Complex; Func:TComplexFunc); \\;
+procedure Apply(var V:array of Complex; Func:TIntComplexFunc);\\
+procedure Apply(V:TCompVector; Mask:TIntVector; MaskLb:integer; Func:TComplexFunc);}
+\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	These functions apply functions passed as \code{Func} parameter to every element of array \code{V} and assign result of the function to this element. When \code{Func} is of \code{TComplexFunc} type (\ref{tcomplexfunc}), element itself is passed to the function, otherwise if \code{Func} is \code{TIntComplexFunc} (\ref{tintcomplexfunc}), index of the element is passed to the function. Thus, \code{Apply} in this form is suitable for primary initialization of arrays of \code{complex}. Third version of \code{Apply} applies \code{Func} only to the elements whose indices are contained in the \code{Mask}, beginning from \code{MaskLb}. The mask array can be generated for example by call to \code{Selelements } (\ref{comp-selelements}) prior to using \code{Apply} function.
+\end{itemize}	
+\subsubsection{CompareCompVec}
+\label{comparecompvec}
+\index[proc]{CompareCompVec}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function CompareCompVec(const X, Xref : array of Complex; Tol : Float) : Boolean;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Returns \code{True} if both vectors have same length and all elements are equal to the \code{MachEp} (\ref{utypes-MachEp})accuracy.
+\end{itemize}	
+\subsubsection{Any}
+\label{comp-any}
+\index[proc]{Any}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function Any(const Vector:array of Complex; Test:TComplexTestFunc):boolean;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Calls function \code{Test} with every element of array \code{Vector}. Returns \code{True} if \code{Test} returns \code{True} for at least one of the elements, otherwize returns \code{False}.
+\end{itemize}	
+\subsubsection{FirstElement}
+\label{comp-firstelement}
+\index[proc]{FirstElement}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function FirstElement(Vector: TCompVector; Lb, Ub: integer; Ref: complex; Comparator: TComplexComparator): integer;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Function \code{FirstElement} for \code{TCompVector} calls \code{Comparator} of \code{TComplexComparator} type (\ref{tcomplexcomparator}) with each element of the vector, beginning from \code{Lb} ending with \code{Ub}. Elements of array are passed as \code{Val} parameter, user-supplied \code{Ref} value as a second parameter. Function \code{FirstElement} returns index of the first element for which \code{Comparator} returns \code{True}.  If $Lb > Ub$, \code{MatErrDim} error is set and -1 is returned.  
+\end{itemize}	
+\subsubsection{SelElements}
+\label{comp-selelements}
+\index[proc]{Selelements}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function SelElements(Vector:TCompVector; Lb, Ub, ResLb : integer;
+Ref:complex; Comparator:TComplexComparator):TIntVector;}	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Function \code{SelElements is largely similar to \code{FirstElement}, but it does not stop after finding a first element which satisfies the condition of \code{Comparator}, but finds all such elements and places them into result of \code{TInteger} type, beginning from \code{ResLb}, which typically is \code{0} or \code{1}. Later this array of indices may be used for example with \code{ExtractElements} (see below) or masked version of \code{Apply} (\ref{comp-apply}) function.}  If $Lb > Ub$, \code{MatErrDim} error is set and \code{nil} is returned. 
+\end{itemize}	
+\subsubsection{ExtractElements}
+\label{comp-extractelements}
+\index[proc]{ExtractElements}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+\code{function ExtractElements(Vector:TCompVector; Mask:TIntVector; Lb:integer):TCompVector;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Function \code{ExtractElements} for \code{TCompVector} places all elements of input array \code{Vector}	whose indicis are found in the \code{Mask}
+\end{itemize}	
+\subsubsection{ComplexSeq}
+\label{complexseq}
+\index[proc]{ComplexSeq}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+function ComplexSeq(Lb, Ub : integer; FirstRe, FirstIm, IncrementRe, IncrementIm:Float; Vector:TCompVector = nil):TCompVector;		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Function \code{ComplexSec} is intended for easy initialization of \code{TCompVector}. This function generates arithmetic progression 
+	$$FirstRe+I \dot IncrementRe$$ where $I$ is consecutive number of progression element. This progression is placed into the real components of output vector beginning from Lb. Similarly, progression formed as $$FirstIm+I \dot IncrementIm$$ is placed into imaginary components of the same elements. If output array \code{Input} at a call is \code{nil}, it is allocated by \code{ComplexSec}, otherwise the user-supplied array is used.  If $Lb > Ub$, \code{MatErrDim} error is set and \code{nil} is returned.  
+\end{itemize}	
 
 \section{Unit uVecMatPrn}\lmath{-28pt}
-\label{uvecmatprn}\index[unit]{uvecmatprn}
+\label{uvecmatprn}\index[unit]{uVecMatPrn}
 \subsection{Description}
 This small unit introduces procedures for printout of a vector or matrix in a console, useful mostly for test and demonstration purposes. See program LinProgTest as an example of usage.
 \subsection{Constants}
@@ -11271,9 +11582,11 @@ These are not numerous.
 	\item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
 	\item Unit uVecFileUtils written, which contains procedures for saving \code{TMatrix} or \code{TVector} to a file and read them from a file.   
 \end{enumerate}
-\subsection*{Additions in Ver. 0.6.0}
+\subsection*{Ver. 0.6.0}
 \begin{enumerate}
-	\item{Package }
+	\item{Package \code{lmDSP} \ref{package-lmDSP} created, which contains functions for digital signal processing. It includes \code{uFFT} unit \ref{ufft} for fast Fourier transform, moved from \code{lmOptimum} package, and new units: \code{uConvolutions} \ref{sec:uconvolutions}, for convolution of two arrays of \code{Float}, \code{uDFT}  unit, for digital Fourier transform of signals with length other then degrees of two. Importantly, this unit is distributed under GPL license, not LGPL, as the rest of the library. Unit \code{uFilters} contains procedures for various data filtering: low pass, high pass, bandstop and bandpass.}
+	\item{New unit \code{uCompVecUtils} \ref{ucompvecutils} in \code{lmMathUtil} package. The unit implements several utility routines for work with arrays of Complex numbers, somewhat similar to \code{uVecUtils} for \code{Float}.}
+	\item{}
 \end{enumerate}
 In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
 \printindex[types]

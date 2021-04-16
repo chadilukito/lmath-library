@@ -974,8 +974,8 @@ begin
   else if CurrentFunction = 'PBINOM' then  // probability density for binomial distribution
     Res := PBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3])) // ArgV[1] N; [2]: P; [3]: K. [1] and [3] are truncated.
     
-  else if CurrentFunction = 'FBINOM' then  // must be cumulative probability for binomial, but this is bug
-    Res := PBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3]))
+  else if CurrentFunction = 'FBINOM' then  // cumulative probability for binomial
+    Res := FBinom(Trunc(ArgV[1]), ArgV[2], Trunc(ArgV[3]))
 
   else if CurrentFunction = 'PPOISSON' then
     Res := PPoisson(ArgV[1], Trunc(ArgV[2]))

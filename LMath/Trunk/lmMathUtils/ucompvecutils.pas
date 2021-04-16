@@ -40,6 +40,7 @@ function MinImLoc(CVec: TCompVector; Lb, Ub: integer):integer;
 
 procedure Apply(var V:array of Complex; Func:TComplexFunc); overload;
 procedure Apply(var V:array of Complex; Func:TIntComplexFunc); overload;
+procedure Apply(V:TCompVector; Mask:TIntVector; MaskLb:integer; Func:TComplexFunc); overload;
 
 // returns True if both vectors have same length and all elements are equal to the MachEp accuracy
 function CompareCompVec(const X, Xref : array of Complex; Tol : Float) : Boolean; overload;
@@ -48,7 +49,7 @@ function FirstElement(Vector: TCompVector; Lb, Ub: integer; Ref: complex; Compar
 function ComplexSeq(Lb, Ub : integer; firstRe, firstIm, incrementRe, incrementIm:Float; Vector:TCompVector = nil):TCompVector;
 function SelElements(Vector:TCompVector; Lb, Ub, ResLb : integer;
          Ref:complex; Comparator:TComplexComparator):TIntVector; overload;
-function ExtractElements(Vector:TCompVector; Mask:TIntVector; Lb:integer):TCompVector; overload;
+function ExtractElements(Vector:TCompVector; Mask:TIntVector; MaskLb:integer):TCompVector; overload;
 
 implementation
 
@@ -95,7 +96,7 @@ var
   I:integer;
   MaxVal:float;
 begin
-  Result := Lb;
+  Result := -1;
   Ub := min(Ub,High(CVec));
   if Lb > Ub then
   begin
@@ -103,6 +104,7 @@ begin
     Exit;
   end;
   MaxVal := CVec[Lb].X;
+  Result := Lb;
   for I := Lb+1 to Ub do
     if CVec[I].X > MaxVal then
     begin
@@ -116,7 +118,7 @@ var
   I:integer;
   MaxVal:float;
 begin
-  Result := Lb;
+  Result := -1;
   Ub := min(Ub,High(CVec));
   if Lb > Ub then
   begin
@@ -124,6 +126,7 @@ begin
     Exit;
   end;
   MaxVal := CVec[Lb].Y;
+  Result := Lb;
   for I := Lb+1 to Ub do
     if CVec[I].X > MaxVal then
     begin
@@ -137,7 +140,7 @@ var
   I:integer;
   MinVal:float;
 begin
-  Result := Lb;
+  Result := -1;
   Ub := min(Ub,High(CVec));
   if Lb > Ub then
   begin
@@ -145,6 +148,7 @@ begin
     Exit;
   end;
   MinVal := CVec[Lb].X;
+  Result := Lb;
   for I := Lb+1 to Ub do
     if CVec[I].X < MinVal then
     begin
@@ -158,13 +162,14 @@ var
   I:integer;
   MinVal:float;
 begin
-  Result := Lb;
+  Result := -1;
   Ub := min(Ub,High(CVec));
   if Lb > Ub then
   begin
     SetErrCode(MatErrDim);
     Exit;
   end;
+  Result := Lb;
   MinVal := CVec[Lb].Y;
   for I := Lb+1 to Ub do
     if CVec[I].Y < MinVal then
@@ -188,6 +193,17 @@ var
 begin
   for I := 0 to High(V) do
     V[I] := Func(I);
+end;
+
+procedure Apply(V: TCompVector; Mask: TIntVector; MaskLb: integer; Func: TComplexFunc);
+var
+  I,J:integer;
+begin
+  for I := MaskLb to High(Mask) do
+  begin
+    J := Mask[I];
+    V[J] := Func(V[J]);
+  end;
 end;
 
 function CompareCompVec(const X, Xref: array of complex; Tol: Float): Boolean;
@@ -303,12 +319,12 @@ begin
     SetLength(Result,0);
 end;
 
-function ExtractElements(Vector: TCompVector; Mask: TIntVector; Lb: integer): TCompVector;
+function ExtractElements(Vector: TCompVector; Mask: TIntVector; MaskLb: integer): TCompVector;
 var
   I:integer;
 begin
   DimVector(Result,High(Mask));
-  for I := Lb to High(Mask) do
+  for I := MaskLb to High(Mask) do
     Result[I] := Vector[Mask[I]];
 end;
 

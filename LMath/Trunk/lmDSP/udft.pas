@@ -1,12 +1,11 @@
 {**********************************************************************************
  *     Translated and adapted by David Chen (陳昱志) for LMath from               *
- *     ALGLIB 2.6 by Sergey Bochkanov                                             *
+ *     C# code from ALGLIB by Sergey Bochkanov.                                             *
  *     Important! Unlike the rest of LMath, this unit is distributed              *
  *     under GPL  v. 2.0                                                          *
  **********************************************************************************}
 
 unit uDFT;
-//This unit merged "ftbase.pas" and "fft.pas" of ALGLIB 2.6 and did some modification.
 
 {$mode objfpc}{$H+}
 

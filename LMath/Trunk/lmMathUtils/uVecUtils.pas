@@ -21,17 +21,14 @@ function tmCoords(ARow,ACol:integer):TMatCoords;
 // back the returned value
 procedure Apply(var V:array of Float; Func:TFunc); overload;
 procedure Apply(var V:array of Integer; Func:TIntFunc); overload;
-function CompVec(constref X, Xref : array of float; Tol : Float) : Boolean; overload;
-function Any(constref Vector:array of Float; Test:TTestFunc):boolean; overload;
-function Any(constref Vector:array of integer; Test:TIntTestFunc):boolean; overload;
 
 procedure Apply(V:TVector; Lb, Ub: integer; Func:TFunc); overload;
 procedure Apply(M:TMatrix; LRow, URow, LCol, UCol: integer; Func:TFunc); overload;
 procedure Apply(V:TIntVector; Lb, Ub: integer; Func:TIntFunc); overload;
 procedure Apply(M:TIntMatrix; LRow, URow, LCol, UCol: integer; Func:TIntFunc); overload;
 
-procedure Apply(V:TVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
-procedure Apply(V:TIntVector; Lb, Ub: integer; Mask:TIntVector; MaskLb:integer; Func:TIntFunc); overload;
+procedure Apply(V:TVector; Mask:TIntVector; MaskLb:integer; Func:TFunc); overload;
+procedure Apply(V:TIntVector; Mask:TIntVector; MaskLb:integer; Func:TIntFunc); overload;
 
 //InitWithFunc function passes to the function index of an array element and assigns returned value to it
 function InitWithFunc(Lb, Ub: integer; Func:TIntFloatFunc; Ziel:TVector = nil):TVector; overload;
@@ -45,10 +42,13 @@ function ApplyRecursive(Func:TIntArrayIntFunc; InitValues:array of Integer;
 { Checks if each component of vector X is within a fraction Tol of
 the corresponding component of the reference vector Xref. In this
 case, the function returns True, otherwise it returns False}
-function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean; overload;  deprecated 'Use version with open array instead.';
+function CompVec(X, Xref : TVector; Lb, Ub  : Integer; Tol : Float) : Boolean; overload;
+function CompVec(constref X, Xref : array of float; Tol : Float) : Boolean; overload;
 
 // applies Test function to every enement in [Lb..Ub] and returns true
 // if for any of them Test returns true
+function Any(constref Vector:array of Float; Test:TTestFunc):boolean; overload;
+function Any(constref Vector:array of integer; Test:TIntTestFunc):boolean; overload;
 function Any(Vector:TVector; Lb, Ub : integer; Test:TTestFunc):boolean; overload; deprecated 'Use version with open array instead.';
 function Any(M:TMatrix; LRow, URow, LCol, UCol : integer; Test:TTestFunc):boolean; overload;
 function Any(Vector:TIntVector; Lb, Ub : integer; Test:TIntTestFunc):boolean; overload; deprecated 'Use version with open array instead.';
@@ -193,17 +193,11 @@ begin
       M[I,J] := Func(M[I,J]);
 end;
 
-procedure Apply(V: TVector; Lb, Ub: integer; Mask: TIntVector; MaskLb: integer;
+procedure Apply(V: TVector; Mask: TIntVector; MaskLb: integer;
   Func: TFunc);
 var
   I,J:integer;
 begin
-  Ub := min(High(V),Ub);
-  if Lb > Ub then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
   for I := MaskLb to High(Mask) do
   begin
     J := Mask[I];
@@ -211,17 +205,11 @@ begin
   end;
 end;
 
-procedure Apply(V: TIntVector; Lb, Ub: integer; Mask: TIntVector;
+procedure Apply(V: TIntVector; Mask: TIntVector;
   MaskLb: integer; Func: TIntFunc);
 var
   I,J:integer;
 begin
-  Ub := min(High(V),Ub);
-  if Lb > Ub then
-  begin
-    SetErrCode(MatErrDim);
-    Exit;
-  end;
   for I := MaskLb to High(Mask) do
   begin
     J := Mask[I];
