@@ -4580,7 +4580,7 @@ Various statistics of a vector: min, max, mean, standard deviation, sum. Every f
 \index[proc]{StDev}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{function StDev(X : TVector; Lb, Ub : Integer; M : Float) : Float;}\\
+		\code{function StDev(X:TVector; Lb,Ub:Integer; M:Float) : Float;}\\
 		\code{StDev(constref X : array of float; M : Float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
@@ -4591,7 +4591,7 @@ Various statistics of a vector: min, max, mean, standard deviation, sum. Every f
 \index[proc]{StDevP}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
-		\code{function StDevP(X : TVector; Lb, Ub : Integer; M : Float) : Float;}\\
+		\code{function StDevP(X:TVector; Lb, Ub:Integer; M:Float) : Float;}\\
 		\code{StDevP(constref X : array of float; M : Float) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
@@ -4724,10 +4724,11 @@ Median
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			function Median(X : TVector; Lb, Ub : Integer) : Float;}
+			function Median(X : TVector; Lb, Ub : Integer) : Float;}\\
+		\code{function Median(X:array of float) : float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Returns median for vector X
+	Returns median for vector X. Importantly, vector \code{X} is rearranged by the algorithm. If you need original vector, use the second form of the function, where vector is passed by value.
 \end{itemize}
 \section{Unit udistrib}
 \label{udistrib}
@@ -4755,7 +4756,7 @@ Statistical distribution
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			procedure Distrib(X : TVector; Lb, Ub : Integer; A, B, H : Float; C : TStatClassVector);}
+			procedure Distrib(X : TVector; Lb, Ub : Integer; A,  H : Float; C : TStatClassVector);}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
 	Distributes the values of array X[Lb..Ub] into M classes with equal width H, according to the following scheme:
@@ -4764,7 +4765,7 @@ Statistical distribution
 	]-------]-------].......]-------]-------]
 	A      A+H     A+2H                     B
 	\end{verbatim}	
-	such that $ B = A + M H$
+	such that $ B = A + M H$. Number of classes \code{M} is High(C); note that it is 1-based.
 \end{itemize}
 \subsubsection{distExtract*}\lmatha{-24pt}
 \label{udistrib-distExtract}
@@ -4809,7 +4810,7 @@ Skewness and kurtosis
 \label{ubinom}
 \index[unit]{ubinom}
 \subsection{Description}
-Binomial distribution 
+Binomial coefficient and probability of distribution. Function for cumulative probability \code{FBinom} is located in the unit \code{uIBtDist} (\ref{uibtdist}).  
 \subsection{Functions and Procedures}
 \subsubsection{Binomial}
 \label{ubinom-Binomial}
@@ -4831,17 +4832,13 @@ Binomial distribution
 			function PBinom(N : Integer; P : Float; K : Integer) : Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Probability of binomial distribution
+	Probability of binomial distribution for \code{K} successes in \code{N} attempts and probability of success \code{P}. 
 \end{itemize}
 \section{Unit upoidist}
 \label{upoidist}
 \index[unit]{upoidist}
 \subsection{Description}
 Poisson distribution 
-\subsection{Overview}
-\begin{description}
-	\item[\texttt{PPoisson}]
-\end{description}
 \subsection{Functions and Procedures}
 \subsubsection{PPoisson}
 \label{upoidist-PPoisson}
@@ -11549,6 +11546,19 @@ lotting routines for Delphi
 	Converts screen coordinate Y to user ordinate.
 \end{itemize}
 \chapter{Changes in LMath}
+\subsection*{Ver. 0.6.0}
+\begin{enumerate}
+	\item{Package \code{lmDSP} (chapter \ref{package-lmDSP}) created, which contains functions for digital signal processing. It includes \code{uFFT} unit (\ref{ufft}) for fast Fourier transform, moved from \code{lmOptimum} package, and new units: \code{uConvolutions} (\ref{sec:uconvolutions}), for convolution of two arrays of \code{Float}, \code{uDFT}  unit, for digital Fourier transform of signals with length other then degrees of two. (\ref{sec:uDFT}) Importantly, this unit is distributed under GPL license, not LGPL, as the rest of the library. Unit \code{uFilters} (\ref{sec:uFilters}) contains procedures for various data filtering: low pass, high pass, bandstop and bandpass.}
+	\item{New unit \code{uCompVecUtils} (\ref{ucompvecutils}) in \code{lmMathUtil} package. The unit implements several utility routines for work with arrays of Complex numbers, somewhat similar to \code{uVecUtils} for \code{Float}.}
+	\item{Call convention of many functions and procedures working with arrays is revisited. Mostly for historical reasons, related in part to Fortran inheritance, in part to limitations of old Pascal implementations, standard API of DMath/LMath includes passing of a dynamic array (\code{TVector, TMatrix}, etc) and bounds of a slice which is actually processed by a function (\code{Lb,Ub}).\\[4pt] \code{Function Apply(V:TVector;Lb,Ub:integer; Func:TFunc)}\\[4pt] is an example of such call. This approach has an important limitation that only dynamic, but not static, arrays may be used with LMath. Besides, mandatory passing of bounds, even if the whole array must be processed, makes the call too complicated. Modern Pascal implementations have open array parameter mechanism and even allow to pass slices of arrays, both static and dynamic. Therefore, as an experimental feature, LMath 0.6 introduced new form of function calls where instead of \code{V:TVector, Lb, Ub:integer} open array is passed. \code{Apply} in this new form looks like:\\[4pt]] \code{Apply(var V:array of Float, Func:TFunc);}.\\[4pt] In most cases, old forms are kept for backward compatibility as overloaded functions. Operators over arrays defined in \code{uMatrix} unit were also redefined for open arrays. This makes them much more flexible. For example, it is possible now to write:\\[4pt]
+		\code{V := MyArr[4..9]+AnotherArr[7..12]},\\[4pt] which will create \code{V:TVector} with length 6, containing sums of elements \code{MyArr[4]+AnotherArr[7]}, etc.
+		
+		Work with new call conventions is still in progress and this feature is considered experimental. For now, functions and procedures from \code{uMatrix} (\ref{sec:unit-umatrix}), \code{uVecUtils} (\ref{sec:unit-uvecfileutils}), \code{uCompVecUtils} (\ref{ucompvecutils}), \code{uMedian} (\ref{umedian}), \code{uMeanSD} (\ref{umeansd}), \code{uFFT} (\ref{ufft}) got these new forms. New units have only form with open arrays. Unfortunately, there is now way to define open two-dimentional arrays, therefore all operations with \code{TMatrix} keep old form only. 
+		
+		It must be noted, that in some cases subtle differences in implementation of functions in these two forms exist. For example,\\[4pt] function Median(V:TVector,Lb,Ub:integer)\\[4pt] gets \code{V} by reference, as always with dynamic arrays and rearranges it in the process of median search. In contrast,\\[4pt] \code{function Median(V:array of Float)}\\[4pt] gets it by value, hence, old array remains unchanged. This is done deliberately to avoid unwanted side effect. In most other cases open arrays are passed by reference, either as \code{var} or \code{constref} parameters.}
+	\item{Few bugs were fixed.}
+\end{enumerate}
+
 \subsection*{Modifications of DMath Code}  
 These are not numerous. 
 \begin{enumerate}
@@ -11576,19 +11586,12 @@ These are not numerous.
 	\item Goldman-Hodgkin-Katz equation for current and Sum of Gaussians distribution were added to the library of fitting models (see \ref{ugauss}, \ref{ugaussf} and \ref{ugoldman}).
 	\item Estimates and models of exponential, hyperexponential and hypoexponential distributions added (see \ref{udistribs}).
 	\item Optimization algorithm innitially written by COBYLA by Michael J. D. Powell was implemented and used for constrained non-linear regression (see \ref{sec:unit-ucobyla} and \ref{sec:unit-uconstrnlfit}).
-	\item Unit uLinSimplex which solves linear programming problems with simplex method was written \ref{sec:unit-ulinsimplex}.
-	\item Unit lmSorting written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
+	\item Unit uLinSimplex which solves linear programming problems with simplex method was written (\ref{sec:unit-ulinsimplex}).
+	\item Unit lmSorting (\ref{usorting}) written which contains procedures for quick sort, insert sort and heap sort of Float and TRealPoint arrays.
 	\item Unit lmUnitsFormat written, for formatting values with units using SI prefixes (femto-, pico-, \dots, Tera-, Peta-).
 	\item Units uVecUtils (\ref{sec:unit-uvecutils}), uVectorHelpers (\ref{sec:unit-uvectorhelpers}), uVecFunc (\ref{sec:uvecfunc}) and uVecMatPrn (\ref{uvecmatprn}) were written which define utility functions and type helpers for easier work with vectors and matrices.
 	\item Unit uVecFileUtils written, which contains procedures for saving \code{TMatrix} or \code{TVector} to a file and read them from a file.   
 \end{enumerate}
-\subsection*{Ver. 0.6.0}
-\begin{enumerate}
-	\item{Package \code{lmDSP} \ref{package-lmDSP} created, which contains functions for digital signal processing. It includes \code{uFFT} unit \ref{ufft} for fast Fourier transform, moved from \code{lmOptimum} package, and new units: \code{uConvolutions} \ref{sec:uconvolutions}, for convolution of two arrays of \code{Float}, \code{uDFT}  unit, for digital Fourier transform of signals with length other then degrees of two. Importantly, this unit is distributed under GPL license, not LGPL, as the rest of the library. Unit \code{uFilters} contains procedures for various data filtering: low pass, high pass, bandstop and bandpass.}
-	\item{New unit \code{uCompVecUtils} \ref{ucompvecutils} in \code{lmMathUtil} package. The unit implements several utility routines for work with arrays of Complex numbers, somewhat similar to \code{uVecUtils} for \code{Float}.}
-	\item{}
-\end{enumerate}
-In more detail changes in \code{LMath} compared to \code{DMath} describe in \href{New_in_LMath.pdf}{a special reference manual}.
 \printindex[types]
 \printindex[const]
 \printindex[proc]
