@@ -72,6 +72,8 @@ type
     procedure SetMinY(AMinY:Float); virtual;
     procedure SetMaxY(AMaxY:Float); virtual;
     procedure DrawAxis; virtual;
+    procedure DrawHorGridLine(YGridPos:float); virtual;
+    procedure DrawVertGridLine(XGridPos:float); virtual;
     procedure DrawGridLines; virtual;
     procedure DrawAxisLabels; virtual; abstract; {<Writes text labels near the ends of axis, if defined}
     procedure SetLeftMargin(AMargin:integer); virtual;
@@ -443,50 +445,126 @@ begin
   invalidate;
 end;
 
+procedure TCoordSys.DrawHorGridLine(YGridPos:float);
+var
+  S:string;
+begin
+  PutLine(MinX, YGridPos, MaxX, YGridPos);
+  if ((abs(FMinY) < LowerLimitForFixedFormat) and (abs(FMaxY) < LowerLimitForFixedFormat))
+  or (FMaxY > UpperLimitForFixedFormat) or (abs(FMinY) > UpperLimitForFixedFormat)
+  then
+    S := FloatToStrF(YGridPos,ffExponent,YGridNumbersPrecision,YGridNumbersDecimals)
+  else
+    S := FloatToStrF(YGridPos,ffFixed,YGridNumbersPrecision,YGridNumbersDecimals);
+  Canvas.TextOut(1,YUserToScreen(YGridPos)-Canvas.TextHeight(S) div 2,S);
+end;
+
+procedure TCoordSys.DrawVertGridLine(XGridPos:float);
+var
+  S:String;
+begin
+  PutLine(XGridPos,MinY,XGridPos,MaxY);
+  if ((abs(FMinX) < LowerLimitForFixedFormat) and (abs(FMaxX) < LowerLimitForFixedFormat))
+  or (FMaxX > UpperLimitForFixedFormat) or (abs(FMinX) > UpperLimitForFixedFormat)
+  then
+    S := FloatToStrF(XGridPos,ffExponent,XGridNumbersPrecision,XGridNumbersDecimals)
+  else
+    S := FloatToStrF(XGridPos,ffFixed,XGridNumbersPrecision,XGridNumbersDecimals);
+  Canvas.TextOut(XUserToScreen(XGridPos)-Canvas.TextWidth(S) div 2,
+        Height-Canvas.TextHeight(S)-1, S);
+end;
+
 procedure TCoordSys.DrawGridLines;
 var
   I : integer;
   C:Float;
-  S:string;
+
+  procedure YForward;
+  begin
+    while C <= MaxY do
+    begin
+      DrawHorGridLine(C);
+      C := C + YGridDist;
+    end
+  end;
+
+  procedure YBackward;
+  begin
+    while C >= MinY do
+    begin
+      DrawHorGridLine(C);
+      C := C - YGridDist;
+    end
+  end;
+
+  procedure XForward;
+  begin
+    while C <= MaxX do
+    begin
+      DrawVertGridLine(C);
+      C := C + XGridDist;
+    end
+  end;
+
+  procedure XBackward;
+  begin
+    while C >= MinX do
+    begin
+      DrawVertGridLine(C);
+      C := C - XGridDist;
+    end
+  end;
+
 begin
   Canvas.Pen.Assign(GridPen);
   {starting to draw vertical grid}
   if YGridDist <> 0 then
   begin
-    I := 1;
-    C := MinY+YGridDist;
-    while C <= MaxY do
+    C := XPos;
+    if XPos < MinY then
     begin
-      if C <> XPos then PutLine(MinX,C,MaxX,C);
-      if ((abs(FMinY) < LowerLimitForFixedFormat) and (abs(FMaxY) < LowerLimitForFixedFormat))
-      or (FMaxY > UpperLimitForFixedFormat) or (abs(FMinY) > UpperLimitForFixedFormat)
-      then
-        S := FloatToStrF(C,ffExponent,YGridNumbersPrecision,YGridNumbersDecimals)
-      else
-        S := FloatToStrF(C,ffFixed,YGridNumbersPrecision,YGridNumbersDecimals);
-      Canvas.TextOut(1,YUserToScreen(C)-Canvas.TextHeight(S) div 2,S);
-      Inc(I);
-      C := MinY+I*YGridDist;
+      repeat
+        C := C + YGridDist
+      until C > MinY;
+      YForward;
+    end else
+    if XPos > MaxY then
+    begin
+      repeat
+        C := C - YGridDist
+      until C < MaxY;
+      YBackward;
+    end else
+    begin
+      C := C + YGridDist;
+      YForward;
+      C := XPos - YGridDist;
+      YBackward;
     end;
   end;
-  {now - horisontal}
+
   if XGridDist <> 0 then
   begin
-    I := 1;
-    C := MinX + XGridDist;
-    while C <= MaxX do
+    C := YPos;
+    if YPos < MinX then
     begin
-      if C <> YPos then PutLine(C,MinY,C,MaxY);
-      if ((abs(FMinX) < LowerLimitForFixedFormat) and (abs(FMaxX) < LowerLimitForFixedFormat))
-      or (FMaxX > UpperLimitForFixedFormat) or (abs(FMinX) > UpperLimitForFixedFormat)
-      then
-        S := FloatToStrF(C,ffExponent,XGridNumbersPrecision,XGridNumbersDecimals)
-      else
-        S := FloatToStrF(C,ffFixed,XGridNumbersPrecision,XGridNumbersDecimals);
-      Canvas.TextOut(XUserToScreen(C)-Canvas.TextWidth(S) div 2,
-        Height-Canvas.TextHeight(S)-1,S);
-      Inc(I);
-      C := MinX+I*XGridDist;
+      repeat
+        C := C + XGridDist
+      until C > MinX;
+      XForward;
+    end else
+    if YPos > MaxX then
+    begin
+      repeat
+        C := C - XGridDist
+      until C < MaxX;
+      XBackward;
+    end else
+    begin
+      C := C + XGridDist;
+      XForward;
+      C := YPos - XGridDist;
+      XBackward;
     end;
   end;
 end;
