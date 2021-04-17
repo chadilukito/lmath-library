@@ -19,8 +19,16 @@
           <OverflowChecks Value="True"/>
           <StackChecks Value="True"/>
         </Checks>
+        <Optimizations>
+          <OptimizationLevel Value="2"/>
+        </Optimizations>
         <SmallerCode Value="True"/>
       </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
     <Version Minor="6"/>
     <Files Count="15">

@@ -14,7 +14,15 @@
       <CodeGeneration>
         <SmartLinkUnit Value="True"/>
         <RelocatableUnit Value="True"/>
+        <Optimizations>
+          <OptimizationLevel Value="2"/>
+        </Optimizations>
       </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <GenerateDebugInfo Value="False"/>
+        </Debugging>
+      </Linking>
     </CompilerOptions>
     <Version Minor="6"/>
     <Files Count="17">

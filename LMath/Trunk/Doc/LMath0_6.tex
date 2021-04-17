@@ -111,7 +111,17 @@ Alternatively, if you have Project Groups package installed in your Lazarus IDE,
 If you are going to use LMComponents, open LMComponents package, compile and install it.
 
 LMComponents is an object-oriented extension of LMath. It contains TCoordSys component which serves for graphical representation of functions or data, several dialogs and input controls, as well as DSP filters implemented as components.
-    
+
+For the sake of maximally broad compatibility, rather conservative optimization options are selected in LMath packages (optimization level 2, no options for modern processors selected). Depending on your system, you may want to increase this level and use options for modern processors. For example, you may want to define
+\begin{verbatim}
+	-CfAVX2
+	-CpCOREAVX2
+	-OoFASTMATH
+	-OoLOOPUNROLL
+\end{verbatim}
+to effectively use AVX2 registers.
+
+``Do not generate debug information'' is selected by default in the options of LMath packages. If you want to step into LMath procedures debugging your programs, change it. If you find a bug in LMath, please, report it at the \href{https://sourceforge.net/p/lmath-library/tickets/}{official site at Sourseforge}.    
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[RO]{\rightmark}
