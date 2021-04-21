@@ -8,7 +8,7 @@ unit lmDSP;
 interface
 
 uses
-  uConvolutions, uFilters, uDFT, ufft, uFindChebyshevCoeffs, LazarusPackageIntf;
+  uConvolutions, uFilters, uDFT, ufft, uFindFilterCoeffs, LazarusPackageIntf;
 
 implementation
 

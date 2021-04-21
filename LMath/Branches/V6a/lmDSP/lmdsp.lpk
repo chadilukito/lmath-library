@@ -43,7 +43,7 @@
         <UnitName Value="ufft"/>
       </Item4>
       <Item5>
-        <Filename Value="uFindChebyshevCoeffs.pas"/>
+        <Filename Value="uFindFilterCoeffs.pas"/>
         <UnitName Value="uFindChebyshevCoeffs"/>
       </Item5>
     </Files>

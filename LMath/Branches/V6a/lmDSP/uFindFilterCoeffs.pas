@@ -1,14 +1,75 @@
  //CHEBYSHEV FILTER- RECURSION COEFFICIENT CALCULATION
-unit uFindChebyshevCoeffs;
+unit uFindFilterCoeffs;
 interface
 uses uTypes, uErrors, uMath, uTrigo, uMeanSD, uMatrix, uConvolutions, uVectorHelper;
+
+type
+  TPT = 0..3;
+  TPTArray = array[TPT] of Float; //< used in Gauss filter
+  TRecursCoeffs = array[1..2] of Float; //< used by narrowband filters
+  TInCoeffs = array[0..2] of Float;  //< used by narrowband filters
 
 procedure FindChebyshevCoeffs(ASamplingRate, ACutFreq: float; AHighPass : boolean; PR: float;
    NPoles: integer; out A,B:TVector);
 
+procedure GSFindParams(ASamplingRate:Float; ACutFreq: Float; out Sigma, BL, Q : Float; out Bs:TPTArray);
+
+procedure FindNarrowBandParams(CentralFreq, BW, SamplingRate : Float; out K, R, CoF : float);
+
+procedure FindBandPassCoeffs(K, R, Cof : Float; out A:TInCoeffs; out B:TRecursCoeffs);
+
+procedure FindNotchCoeffs(K, R, Cof : Float; out A:TInCoeffs; out B:TRecursCoeffs);
+
 implementation
 type
   TOne = array[0..2] of Float;
+
+procedure GSFindParams(ASamplingRate:Float; ACutFreq: Float; out Sigma, BL, Q : Float; out Bs:TPTArray);
+var
+  Q2, Q3 : Float;
+begin
+  Sigma := ASamplingrate*0.83/(TwoPi*ACutFreq);
+  if Sigma >= 2.5 then
+    Q := 0.98711 * Sigma - 0.96330
+  else
+    Q := 3.97156 - 4.14554 * Sqrt(1 - 0.26891 * Sigma);
+  Q2 := Q*Q;
+  Q3 := Q2*Q;
+  Bs[0] := 1.57825 + 2.44413*Q + 1.4281*Q2 + 0.422205*Q3;
+  Bs[1] := 2.44413*Q + 2.85619*Q2 + 1.26661*Q3;
+  Bs[2] := -1.4281*Q2 - 1.26661*Q3;
+  Bs[3] := 0.422205*Q3;
+  BL    := 1 - (Bs[1] + Bs[2] + Bs[3])/Bs[0];
+end;
+
+procedure FindNarrowBandParams(CentralFreq, BW, SamplingRate : Float; out K, R, CoF : float);
+var
+  FrRatio, BWRatio: float;
+begin
+  FrRatio := CentralFreq/SamplingRate;
+  BWratio := BW/SamplingRate;
+  R := 1-3*BWRatio;
+  CoF := 2*cos(TwoPi*FRRatio);
+  K := (1 - R*CoF + R*R)/(2 - CoF);
+end;
+
+procedure FindBandPassCoeffs(K, R, Cof : Float; out A:TInCoeffs; out B:TRecursCoeffs);
+begin
+  A[0] := 1 - K;
+  A[1] := (K-R)*CoF;
+  A[2] := R*R-K;
+  B[1] := R*CoF;
+  B[2] := -R*R;
+end;
+
+procedure FindNotchCoeffs(K, R, Cof : Float; out A:TInCoeffs; out B:TRecursCoeffs);
+begin
+  A[0] := K;
+  A[1] := CoF * (-K);
+  A[2] := K;
+  B[1] := R*CoF;
+  B[2] := -R*R;
+end;
 
 procedure ChebyshevParams(FC, PR : float; P, NP : integer; AHighPass: boolean; out AOne:TOne; out BOne:TOne);
 var
