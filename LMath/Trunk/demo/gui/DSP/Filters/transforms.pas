@@ -82,6 +82,11 @@ end;
 
 procedure FilterData(FilterKind:integer; cascade : boolean);
 begin
+  if not Assigned(RawData) then
+  begin
+
+    Exit;
+  end;
   if not Cascade then
     FilteredData := copy(RawData,0,length(RawData))
   else begin

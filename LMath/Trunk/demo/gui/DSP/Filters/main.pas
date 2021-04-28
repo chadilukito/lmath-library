@@ -5,8 +5,8 @@ unit main;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, Buttons, ComCtrls, Spin,
-  lmcoordsys, uTypes, Transforms, lmPointsVec, lmnumericedits, uRound, uMinMax, Types, uIntervals, uErrors;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, Buttons, ComCtrls, Spin, lmcoordsys,
+  uTypes, Transforms, lmPointsVec, lmnumericedits, lmRecursFilters, uRound, uMinMax, Types, uIntervals, uErrors;
 
 type
 
@@ -455,7 +455,7 @@ end;
 procedure TMainForm.FullScaleRSBtnClick(Sender: TObject);
 begin
   if assigned(RawTimeLine) then
-    SetNewCoords(RawSignalCoords, RawTimeLine);
+   SetNewCoords(RawSignalCoords, RawTimeLine);
 end;
 
 procedure TMainForm.FilterBtnClick(Sender: TObject);
