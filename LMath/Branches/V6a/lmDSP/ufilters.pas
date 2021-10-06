@@ -256,8 +256,8 @@ var
   I,J: integer;
   Old: array[-2..0] of Float;
 begin
-  for I := -2 to 0 do
-    Old[I] := Data[I+2];
+  for I := -1 to 0 do
+    Old[I] := Data[I+1];
 
   for I := 2 to high(Data) do
   begin

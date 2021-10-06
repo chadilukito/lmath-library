@@ -143,8 +143,11 @@ type
   ------------------------------------------------------------------ }
 
 { Function of one variable }
-TFunc = function(X : Float) : Float;
-TIntFunc = function(X:integer) : integer;
+TFunc         = function(X : Float) : Float;
+TIntFunc      = function(X:integer) : integer;
+TTestFunc     = function(X:Float):boolean;
+TIntTestFunc  = function(X:Integer):boolean;
+TIntFloatFunc = function(X:integer):float;
 
 { Function of several variables }
 TFuncNVar = function(X : TVector) : Float;

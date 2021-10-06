@@ -4,9 +4,6 @@ interface
 uses uTypes, uErrors, uMinMax;
 
 type
-  TTestFunc       = function(X:Float):boolean;
-  TIntTestFunc    = function(X:Integer):boolean;
-  TIntFloatFunc   = function(X:integer):float;
   TIntArrayFunc   = function(X:array of integer):float;
   TFloatArrayFunc = function(X:array of float):float;
   TIntArrayIntFunc   = function(X:array of integer):integer;

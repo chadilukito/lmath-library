@@ -11,15 +11,13 @@
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
-        <Checks>
-          <RangeChecks Value="True"/>
-        </Checks>
         <Optimizations>
-          <OptimizationLevel Value="0"/>
+          <OptimizationLevel Value="2"/>
         </Optimizations>
       </CodeGeneration>
       <Linking>
         <Debugging>
+          <GenerateDebugInfo Value="False"/>
           <UseLineInfoUnit Value="False"/>
         </Debugging>
       </Linking>
@@ -44,7 +42,7 @@
       </Item4>
       <Item5>
         <Filename Value="uFindFilterCoeffs.pas"/>
-        <UnitName Value="uFindChebyshevCoeffs"/>
+        <UnitName Value="uFindFilterCoeffs"/>
       </Item5>
     </Files>
     <RequiredPkgs Count="4">
