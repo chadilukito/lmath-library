@@ -476,7 +476,6 @@ end;
 
 procedure TCoordSys.DrawGridLines;
 var
-  I : integer;
   C:Float;
 
   procedure YForward;

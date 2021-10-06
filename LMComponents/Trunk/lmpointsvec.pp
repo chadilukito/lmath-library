@@ -1,5 +1,6 @@
 unit lmPointsVec;
 {$mode objfpc}{$H+}
+{$DEFINE DEBUG}
 interface
 uses
   Classes, SysUtils, uTypes, uSorting;
@@ -25,6 +26,8 @@ type
    Count:integer;
    Index:integer;
    constructor Create(ACapacity:integer);
+
+   constructor CopyPointVector(APoints:TRealPointVector);
 
    // Combine(XVector,YVector:TVector; Lb, Ub:integer)
    //combines TPoints from two TVector
@@ -297,6 +300,14 @@ begin
   Capacity := ACapacity;
 end;
 
+constructor TPoints.CopyPointVector(APoints: TRealPointVector);
+begin
+  inherited Create;
+  Capacity := length(APoints);
+  Count := Capacity;
+  Points := copy(APoints,0,Capacity);
+end;
+
 constructor TPoints.Combine(XVector, YVector: TVector; Lb, Ub: integer);
 var
   I:Integer;
@@ -304,14 +315,16 @@ begin
   inherited Create;
   Capacity := Ub - Lb + 1;
   setLength(Points,Capacity);
-  Count := Capacity;
-  for I := 0 to Count - 1 do
+  I := Lb;
+  while I <= Ub do
   begin
-    if IsNAN(XVector[I+Lb]) or IsNAN(YVector[I+Lb]) then
+    if IsNAN(XVector[I]) or IsNAN(YVector[I]) then
       Continue;
-    Points[I].X := XVector[I+Lb];
-    Points[I].Y := YVector[I+Lb];
+    Points[I-Lb].X := XVector[I];
+    Points[I-Lb].Y := YVector[I];
+    Inc(I);
   end;
+  Count := I-Lb;
 end;
 
 destructor TPoints.Destroy;

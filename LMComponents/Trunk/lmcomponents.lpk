@@ -16,43 +16,19 @@
       <Parsing>
         <SyntaxOptions>
           <CStyleOperator Value="False"/>
-          <IncludeAssertionCode Value="True"/>
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
-        <Checks>
-          <IOChecks Value="True"/>
-          <RangeChecks Value="True"/>
-          <OverflowChecks Value="True"/>
-          <StackChecks Value="True"/>
-        </Checks>
-        <VerifyObjMethodCallValidity Value="True"/>
         <Optimizations>
-          <OptimizationLevel Value="0"/>
+          <OptimizationLevel Value="2"/>
           <VariablesInRegisters Value="True"/>
         </Optimizations>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <DebugInfoType Value="dsDwarf2Set"/>
-        </Debugging>
-      </Linking>
-      <Other>
-        <CustomOptions Value="-dNoDMath"/>
-      </Other>
     </CompilerOptions>
-    <Description Value="Small and simple coordinate system and other utilities
-Ver 2.1: NVFilters added
-Ver 2.2: TCoordSys.Circle added
-Ver 2.3 Largely extended TReals with statistical functions, printout etc
-Ver 2.4 New functions of NVFilters
-Ver 2.5 TMedianFilter
-Ver 2.5.1 TNVCoordSys.[XY]ScrollTo functions added
-Ver 2.6 TFloatEdit component added, icons added
-Ver 2.7 IntervalQuery function added"/>
+    <Description Value="Several digital filters implemented as components; TCoordSys: simple component for functions and data visualizations; simple float editing components."/>
     <License Value="GDP"/>
-    <Version Major="2" Minor="7"/>
-    <Files Count="7">
+    <Version Minor="6"/>
+    <Files Count="8">
       <Item1>
         <Filename Value="lmcoordsys.pas"/>
         <HasRegisterProc Value="True"/>
@@ -84,18 +60,26 @@ Ver 2.7 IntervalQuery function added"/>
         <Filename Value="lmnumericinputdialogs.lfm"/>
         <Type Value="LFM"/>
       </Item7>
+      <Item8>
+        <Filename Value="lmrecursfilters.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="lmRecursFilters"/>
+      </Item8>
     </Files>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="lmRegression"/>
+        <PackageName Value="lmDSP"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="lmRegression"/>
       </Item2>
       <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

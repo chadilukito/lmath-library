@@ -26,22 +26,7 @@ unit lmfilters;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, SysUtils, uTypes;
-
-//finds effective cutoff frequency of cascade of 2 gaussian filters
-function GaussCascadeFreq(Freq1, Freq2:Float):Float;
-
-// finds risetime (10-90%) of a gaussian filter with given cut-off frequency
-function GaussRiseTime(Freq:Float):Float;
-
-//risetime of moving average filter (0-100%)
-function MovAvRiseTime(SamplingRate:Float; WLength:integer):Float;
-
-//cut-off freq. of moving average filter, given sampling rate and window length
-function MoveAvCutOffFreq(SamplingRate:Float; WLength:integer):Float;
-
-//find required window length from desired cut-off freq. and sampling rate
-function MoveAvFindWindow(SamplingRate, CutOffFreq:Float):Integer;
+  Classes, SysUtils, uTypes, uVectorHelper, uFilters;
 
 type
   EFilterException = class(exception)
@@ -49,16 +34,22 @@ type
 
   TInputFunc = function(Index:integer):Float of Object;
   TOutputproc = procedure(Val:Float; Index:integer) of Object;
+  TTestMethod = function:boolean of Object;
 
-    { **************** TDigFilter ***************************}
+    {%REGION **************** TDigFilter ***************************}
+
+  { TDigFilter }
 
   TDigFilter = class(TComponent)
   protected
     FOnInput:TInputFunc;
     FOnOutput:TOutputProc;
+    Index:integer;
   public
     //receives inpus signal values by calls OnInput, makes actual filtering and outputs result by calls of OnOutput
     procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;
+    procedure InitFiltering; virtual;
+    procedure NextPoint; virtual; abstract;
   published
     // function(Index:integer):Float; must provide value of input signal at index Index. Is called from procedure Filter
     property OnInput:TInputFunc read FOnInput write FOnInput;
@@ -66,48 +57,59 @@ type
     // is called from Filter
     property OnOutput:TOutputProc read FOnOutput write FOnOutput;
   end;
+ {%ENDREGION}
+  {%REGION **************** TOneFreqFilter ***************************}
 
-  { **************** TOneFreqFilter ***************************}
+  // abstract class which describes lowpass or highpass filters, or one-frequency notch/pass
 
-  // abstract class which describes lowpass or highpass filters (but not pass- or stopband)
+  { TOneFreqFilter }
+
   TOneFreqFilter = class(TDigFilter)
-  private
+  protected
     FSamplingRate : Float;
     FCutFreq1     : Float;
+    procedure SetSamplingrate(AValue: Float); virtual;
+    procedure SetCutFreq1(ACutFreq1:float); virtual;
   public
     constructor Create(AOwner:TComponent); override;
     procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;
   published
-    property SamplingRate : Float read FSamplingRate;
-    property Cutfreq1     : Float read FCutFreq1;
+    property SamplingRate : Float read FSamplingRate write SetSamplingrate;
+    property CornerFreq   : Float read FCutFreq1 write SetCutFreq1;
   end;
-
-  { **************** TFIRFilter *****************}
+ {%ENDREGION}
+  {%REGION **************** TFIRFilter *****************}
 
   TFIRFilter = class(TOneFreqFilter)
   protected
     FWinLength : integer;
+    PrevPtr:integer;
+    WindowData:TVector;
     procedure SetWinLength(L:integer); virtual;
+    procedure InitFiltering; override;
   public
     constructor Create(AOwner:TComponent); override;
   published
     property WinLength : integer read FWinLength write SetWinLength;
   end;
-
-{ **************** TMovAvFilter ***************************}
+{%ENDREGION}
+{%REGION **************** TMovAvFilter ***************************}
 
 //moving average filter
   TMovAvFilter = class(TFIRFilter)
   protected
+    Buffer : extended;
     procedure SetWinLength(L:integer); override;
   public
     procedure Filter(StartIndex, EndIndex:integer); override;
     procedure SetupFilter(ASamplingRate, ACutFreq:Float); override;
+    procedure InitFiltering; override;
+    procedure NextPoint; override;
   published
     property WinLength : integer read FWinLength write SetWinLength;
   end;
-
-  { **************** TGaussFilter ***************************}
+  {%ENDREGION}
+  {%REGION **************** TGaussFilter ***************************}
 
   //gaussian filter
   TGaussFilter = class(TOneFreqFilter)
@@ -116,6 +118,7 @@ type
     Q      : Float;
     Bs     : array[0..3] of Float;
     BL     : Float;
+    FOnInputBackward : TInputFunc;
     procedure FindParams;
     procedure ForwardFilter(StartIndex, EndIndex:integer);
     procedure BackwardFilter(StartIndex, EndIndex:integer);
@@ -123,29 +126,54 @@ type
     constructor Create(AOwner:TComponent); override;
     procedure SetupFilter(ASamplingRate, ACutFreq1: Float); override;
     procedure Filter(StartIndex, EndIndex:integer); override;
+  published
+    // Used for input during BackwardFilter procedure. It must read data already processed by ForwardFilter.
+    // Hence, must read from output array. If filtering takes place in situ, input and output array are the same,
+    // defining this property is not necessary. If it is not defines, usual OnInput is used.
+    property OnInputBackward : TInputFunc read FOnInputBackward write FOnInputBackward;
   end;
-
+  {%ENDREGION}
     { **************** TMedianFilter ***************************}
 
-  { TMedianFilter }
+  {%REGION TMedianFilter }
 
   TMedianFilter = class(TFIRFilter)
   private
-    DataBuffer:array of Float;
     HalfWin, HighWin : integer;
   protected
     function FindMedian:Float;
     procedure SetWinLength(L:integer); override;
   public
+    procedure InitFiltering; override;
+    procedure NextPoint; override;
     constructor Create(AOwner:TComponent); override;
     procedure filter(StartIndex, EndIndex:integer); override;
   end;
-
+  {%ENDREGION}
 procedure Register;
 
 implementation
 
-{ ********************** TOneFreqFilter *************************}
+{ TDigFilter }
+
+procedure TDigFilter.InitFiltering;
+begin
+  Index := 0;
+end;
+
+{%REGION ********************** TOneFreqFilter *************************}
+
+procedure TOneFreqFilter.SetSamplingrate(AValue: Float);
+begin
+  if FSamplingRate = AValue then Exit;
+  SetupFilter(AValue,FCutFreq1);
+end;
+
+procedure TOneFreqFilter.SetCutFreq1(ACutFreq1: float);
+begin
+  if FCutFreq1 = ACutFreq1 then Exit;
+  SetupFilter(FSamplingRate, ACutFreq1);
+end;
 
 constructor TOneFreqFilter.Create(AOwner: TComponent);
 begin
@@ -155,11 +183,13 @@ end;
 
 procedure TOneFreqFilter.SetupFilter(ASamplingRate, ACutFreq1: Float);
 begin
+  if FCutFreq1 > FSamplingrate / 2 then
+    raise EFilterException.Create('Cutoff frequency > Sampling rate / 2');
   FSamplingRate := ASamplingRate;
   FCutFreq1     := ACutFreq1;
 end;
-
-{ **************** TFIRFilter *****************}
+{%ENDREGION}
+{%REGION **************** TFIRFilter *****************}
 constructor TFIRFilter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -171,19 +201,48 @@ begin
   FWinLength := L;
 end;
 
-{ ******************** TMedianFilter *************************** }
+procedure TFIRFilter.InitFiltering;
+begin
+  inherited InitFiltering;
+  PrevPtr := 0;
+end;
+{%ENDREGION}
+{%REGION ******************** TMedianFilter *************************** }
 constructor TMedianFilter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  setlength(DataBuffer, FWinLength);
+  FWinLength := 3;
+  setlength(WindowData, 3);
 end;
 
 procedure TMedianFilter.SetWinLength(L: integer);
 begin
   if L < 3  then
-    Raise EFilterException.Create('Window length must be > 3 and odd for median filter');
+    Raise EFilterException.Create('Window length must be > 2 and odd for median filter');
+  if L mod 2 = 0 then
+    L := L + 1;
   inherited SetWinLength(L);
-  setlength(DataBuffer, L);
+  setlength(WindowData, L);
+  HalfWin := FWinLength div 2;
+  HighWin := FWinLength - 1;
+end;
+
+procedure TMedianFilter.InitFiltering;
+begin
+  inherited InitFiltering;
+  WindowData.Clear;
+end;
+
+procedure TMedianFilter.NextPoint;
+var
+  I,J:integer;
+begin
+  WindowData[PrevPTR] := FOnInput(Index);
+  FOnOutput(FindMedian,Index);
+  inc(PrevPTR);
+  if PrevPTR >= WinLength then
+    PrevPTR := 0;
+  inc(Index);
 end;
 
 function TMedianFilter.FindMedian:Float;
@@ -191,29 +250,29 @@ var
    I,J,M,L,R:integer;
    X,Buf:Float;
 begin
-   M := HalfWin + 1;
+   M := HalfWin;
    L := 0; R := HighWin;
    while L < R - 1 do
    begin
-     X := Self.DataBuffer[M];
+     X := Self.WindowData[M];
      I := L; J := R;
      repeat
-       while DataBuffer[I] < X do // they are in place; no need to exchange
+       while WindowData[I] < X do // they are in place; no need to exchange
          inc(I);
-       while DataBuffer[J] > X do
+       while WindowData[J] > X do
          dec(J);
        if I <= J then  //pair to exchange found
        begin
-         Buf := DataBuffer[I];
-         DataBuffer[I] := DataBuffer[J];
-         DataBuffer[J] := Buf;
+         Buf := WindowData[I];
+         WindowData[I] := WindowData[J];
+         WindowData[J] := Buf;
          inc(I); dec(J);
        end;
      until I > J;
      if J < M then L := I;
      if I > M then R := J;
    end;
-   Result := DataBuffer[M];
+   Result := WindowData[M];
 end;
 
 procedure TMedianFilter.filter(StartIndex, EndIndex: integer);
@@ -221,27 +280,23 @@ var
   I, J: Integer;
   First:Float;
 begin
-  if FWinLength mod 2 = 0 then
-    WinLength := FWinLength + 1;
   if FWinLength >= Endindex - StartIndex then
     Raise EFilterException.Create('Filter window is longer then data!');
-  HalfWin := FWinLength div 2 - 1;
-  HighWin := FWinLength - 1;
   First := FOnInput(StartIndex);
   (* Part one: padding actual data with first value *)
   for I := StartIndex to StartIndex + HalfWin do
   begin
     for J := 0 to HalfWin - I do
-      DataBuffer[J] := First;
+      WindowData[J] := First;
     for J := HalfWin - I + 1 to HighWin do
-      DataBuffer[J] := FOnInput(I+J-HalfWin);
+      WindowData[J] := FOnInput(I+J-HalfWin);
     FOnOutput(FindMedian, I);
   end;
   (* Part two: completely inside the actual data *)
   for I := StartIndex + HalfWin + 1 to EndIndex - HalfWin do
   begin
     for J := 0 to HighWin do
-      DataBuffer[J] := FOnInput(I + J - HalfWin);
+      WindowData[J] := FOnInput(I + J - HalfWin);
     FOnOutput(FindMedian, I);
   end;
   (* Part three: padding data at the end *)
@@ -249,14 +304,14 @@ begin
   for I := EndIndex - HalfWin + 1 to EndIndex do
   begin
     for J := 0 to EndIndex - I do
-      DataBuffer[J] := FOnInput(I - HalfWin + J);
+      WindowData[J] := FOnInput(I - HalfWin + J);
     for J := EndIndex - I + 1 to HighWin do
-      DataBuffer[J] := First;
+      WindowData[J] := First;
     FOnOutput(FindMedian, I);
   end;
 end;
-
-{ ************************* TGaussFilter **************************** }
+{%ENDREGION}
+{%REGION ************************* TGaussFilter **************************** }
 
 procedure TGaussFilter.FindParams;
 var
@@ -290,7 +345,7 @@ begin
   Pt[0] := 0;
   for I := 1 to 3 do
   begin
-    WD[I] := WD[0];  //data are padded before beginning with Data[StartIndex]
+    WD[I] := WD[0];  //data are padded with Data[StartIndex] before beginning with Data[StartIndex]
     Pt[I] := I;
   end;
   for I := startIndex to EndIndex - 1 do
@@ -313,7 +368,7 @@ var
   I  : integer;
   J  : TPT;
 begin
-  WD[0] := FOnInput(EndIndex);
+  WD[0] := FOnInputBackward(EndIndex);
   Pt[0] := 0;
   for J := 1 to 3 do
   begin
@@ -323,7 +378,7 @@ begin
   for I := EndIndex downto StartIndex+1 do
   begin
     FOnOutput(WD[Pt[3]],I);
-    WD[Pt[3]] := BL*FOnInput(I-1)+(WD[Pt[2]]*Bs[1]+WD[Pt[1]]*Bs[2]+Bs[3]*WD[Pt[0]])/Bs[0];
+    WD[Pt[3]] := BL*FOnInputBackward(I-1)+(WD[Pt[2]]*Bs[1]+WD[Pt[1]]*Bs[2]+Bs[3]*WD[Pt[0]])/Bs[0];
     for J := 0 to 3 do
       if Pt[J] < High(TPT) then
         Pt[J] := Succ(Pt[J])
@@ -347,12 +402,14 @@ end;
 
 procedure TGaussFilter.Filter(StartIndex, EndIndex: integer);
 begin
+  if not Assigned(FOnInputBackward) then
+    FOnInputBackward := FOnInput;
   ForwardFilter(StartIndex, EndIndex);
   BackwardFilter(StartIndex, EndIndex);
 end;
 
-
-{ **************************** TMovAvFilter ******************************** }
+{%ENDREGION}
+{%REGION **************************** TMovAvFilter ******************************** }
 
 procedure TMovAvFilter.SetWinLength(L: integer);
 begin
@@ -362,10 +419,7 @@ end;
 
 procedure TMovAvFilter.Filter(StartIndex, EndIndex: integer);
 var
-  Buffer : extended;
   I,J,L:integer;
-  WindowData:array of Float;
-  PrevPtr:integer;
 begin
   if WinLength >= Endindex - StartIndex then
     Raise EFilterException.Create('Averaging window is longer then data!');
@@ -398,13 +452,34 @@ begin
   end;
 end;
 
+procedure TMovAvFilter.InitFiltering;
+begin
+  SetLength(WindowData, WinLength);
+  WindowData.Clear;
+  Buffer := 0;
+  PrevPTR := 0;
+  Index := 0;
+end;
+
+procedure TMovAvFilter.NextPoint;
+begin
+  Buffer := Buffer - WindowData[PrevPTR];
+  WindowData[PrevPTR] := FOnInput(Index);
+  Buffer := Buffer + WindowData[PrevPTR];
+  FOnOutput(Buffer/WinLength,Index);
+  inc(PrevPTR);
+  if PrevPTR >= WinLength then
+    PrevPTR := 0;
+  inc(Index);
+end;
+
 procedure TMovAvFilter.SetupFilter(ASamplingRate, ACutFreq: Float);
 begin
   inherited SetupFilter(ASamplingRate, ACutFreq);
   FWinLength := MoveAvFindWindow(ASamplingRate,ACutFreq);
 end;
-
-{ ********************* General functions *********************************}
+{%ENDREGION}
+{%REGION ********************* General functions *********************************}
 function GaussCascadeFreq(Freq1, Freq2: Float): Float;
 begin
   if Freq1 = 0 then
@@ -445,6 +520,6 @@ procedure Register;
 begin
   RegisterComponents('LMComponents', [TMovAvFilter, TGaussFilter, TMedianFilter]);
 end;
-
+{%ENDREGION}
 end.
 
