@@ -54,7 +54,7 @@ type
     FXAxisLabel,FYAxisLabel:String;{<Text labels for axis}
     FMinX,FMinY,FMaxX,FMaxY:Float;  {<limits of user coordinates}
     FXPos,  FYPos  : Float; {<Axis positions in user coords. May differ from zero}
-    FOnPaint:TNotifyEvent;
+    FOnDrawData:TNotifyEvent;
     FXGridDist,FYGridDist:Float; {<Distances between grid lines or dashes at axis}
  //   FXGridLines,FYGridLines:boolean;{Whether GridLines (if true) or dashes at axis are drawn}
  //   FXNumbers, FYNumbers:boolean;{Write numbers near gridlines or dashes or not}
@@ -174,7 +174,7 @@ type
     property YGridNumbersDecimals: integer read FYGridNumbersDecimals write FYGridNumbersDecimals default 4;
     property Canvas;
     // all drawing of user data (like drawfunction, fastdraw, all user-defined drawing etc) must be done in this event.
-    property OnDrawData:TNotifyEvent read FOnPaint write FOnPaint;
+    property OnDrawData:TNotifyEvent read FOnDrawData write FOnDrawData;
   end;
 
   operator := (P:TPoint) R:TIntegerPoint;
@@ -187,6 +187,7 @@ constructor TCoordSys.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
   ScaleX := 1;
+  ScaleY := 1;
   FAxisPen := TPen.Create;
   FAxisPen.Color := ColorAxis;
   FOutputPen := TPen.Create;
@@ -195,10 +196,10 @@ begin
   FGridPen.Color := ColorGridLines;
   FMinX := -5; FMaxX := 5;
   FMinY := -5; FMaxY := 5;
-  FUpperMargin := 1;
-  FLowerMargin := 1;
-  FLeftMargin := 1;
-  FRightMargin := 1;
+  FUpperMargin := 0;
+  FLowerMargin := 0;
+  FLeftMargin := 0;
+  FRightMargin := 0;
 end;
 
 destructor TCoordSys.Destroy;
@@ -222,7 +223,8 @@ begin
   DrawGridLines;
   DrawAxis;
   Canvas.Pen.Assign(OutputPen);
-  if Assigned(OnDrawData) then OnDrawData(Self);
+  if Assigned(FOnDrawData) then
+    FOnDrawData(Self);
 end;
 
 procedure TCoordSys.SetPenPos(APenPos:TRealPoint);

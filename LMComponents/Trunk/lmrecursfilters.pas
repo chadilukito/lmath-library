@@ -43,7 +43,7 @@ type
     public
       constructor Create(AOwner:TComponent); override;
       procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); virtual;
-      procedure Filter(StartIndex: integer; EndIndex:integer);
+      procedure Filter(StartIndex: integer; EndIndex:integer); override;
       procedure InitFiltering; override;
       procedure NextPoint; override;
    published
@@ -152,12 +152,9 @@ var
   CurrVal      : float;
 begin
   J := FNumPoles;
-  for I := StartIndex to FNumPoles + StartIndex do
-  begin
-    Old[J] := FOnInput(I);
-    Dec(J);  // now Old contains beginning of Data in reversed order
-  end;
-  for I := StartIndex + FNumPoles to EndIndex do
+  Old.Clear;
+  NewData.Clear;
+  for I := StartIndex to EndIndex do
   begin
     Old.Insert(FOnInput(I),0); // value is inserted into beginning of Old, others are shifted to the right; last lost
     CurrVal := 0;

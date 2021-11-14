@@ -19,8 +19,8 @@
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
         <Optimizations>
-          <OptimizationLevel Value="2"/>
           <VariablesInRegisters Value="True"/>
         </Optimizations>
       </CodeGeneration>

@@ -376,9 +376,9 @@ $RangeY=MaxY-MinY$
 \label{lmfilters}
 \index{lmfilters}
 \section{Description}
-Unit lmFilters includes several off-line digital filters of a signal which are implemented as non-visual components. You can drop a component on your form, define sampling rate and cut-off frequency, define \code{OnInput} and \code{OnOutput} events and call \code{Filter} method. \code{OnInput} event is called from \code{Filter} method whenever the filtering procedure needs next input value, and \code{OnOutput} when it is ready to return a next value. This technique makes the components independent of a format of data which are filtered.
+Unit lmFilters includes several digital filters of a signal which are implemented as non-visual components, most of them can be used both for filtering of earlier sampled data in any format and for filtering in real time, during data aquisition. You can drop a component on your form, define sampling rate and cut-off frequency, define \code{OnInput} and \code{OnOutput} events. After that, either call \code{Filter} method for off-line filtering of existing data, or initiate filtering in real time. For this, call \code{InitFiltering} and then call \code{NextPoint} method whenever new datapoint is aquired. \code{OnInput} event is called from \code{Filter} method whenever the filtering procedure needs next input value, and \code{OnOutput} when it is ready to return a next value. Similarly, \code{NextPoint} calls \code{OnInput} and \code{OnOutput} when is invoked. This technique with \code{OnInput} and \code{OnOutput} events makes the components independent of a format of data which are filtered.
 
-Currently, implemented are gaussian filter, moving average filter, which are probably the best ``smoothing'' filters for time domain, and median filter which is ideal to remove short spikes preserving sharp edges.
+Implemented are gaussian filter, moving average filter, which are probably the best ``smoothing'' filters for time domain, and median filter which is ideal to remove short spikes preserving sharp edges. One-pole high-pass filter, notch filter and Chebyshev filter are implemented in \code{lmRecursFilters} unit. All of these filters except Gaussian can be used for both real time and off-line filtering. Gaussian filter requires forward and backward filtering, hence, can be used only off line.
 
 \section{Types}
 \subsection{TInputFunc}
@@ -417,8 +417,11 @@ TDigFilter {$>$} TComponent
 		protected
 		  FOnInput:TInputFunc;
 		  FOnOutput:TOutputProc;
+		  Index:integer;
 		public
-		  procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;
+		 procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;
+		 procedure InitFiltering; virtual;
+ procedure NextPoint; virtual; abstract;
 		published
 		  property OnInput:TInputFunc read FOnInput write FOnInput;
 		  property OnOutput:TOutputProc read FOnOutput write FOnOutput;
@@ -464,21 +467,17 @@ end;
 
 \end{itemize}
 \subsubsection{Fields}
-\begin{itemize}\label{lmfilters.TDigFilter-FOnInput}
-	\index{FOnInput}
-	\item[\declarationitem{FOnInput}\hfill]
+\paragraph{Index}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			protected FOnInput:TInputFunc;}
+			protected Index:Integer;}
 	\end{flushleft}
-	\par  \label{lmfilters.TDigFilter-FOnOutput}
-	\index{FOnOutput}
-	\item[\declarationitem{FOnOutput}\hfill]
-	\begin{flushleft}
-		\code{
-			protected FOnOutput:TOutputProc;}
-	\end{flushleft}
-	\par  \end{itemize}
+	\par  
+\item[\descriptiontitle{Description}]
+Integer field for points indexing. Successors use it in \code{NextPoint} method.
+\end{itemize}
 \subsubsection{Methods}
 \paragraph{Filter}\hspace*{\fill}
 \label{lmfilters.TDigFilter-Filter}
@@ -489,10 +488,22 @@ end;
 			public procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;}
 		
 	\end{flushleft}
-	
 	\par
 	\item[\descriptiontitle{Description}]
 	Receives inpus signal values calling \code{OnInput}, makes actual filtering and outputs result calling \code{OnOutput}.
+
+\paragraph{InitFiltering}\hspace*{\fill}
+\label{lmfilters.TDigFilter-InitFiltering}
+\index{InitFiltering}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			procedure InitFiltering; virtual;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Calls \code{inherited Create}, sets \code{WinLength} to 5.
+\end{itemize}
+
+
 \end{itemize}
 \subsection{TOneFreqFilter Class}
 \label{lmfilters.TOneFreqFilter}
@@ -511,7 +522,7 @@ public
   procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;
 published
   property SamplingRate : Float read FSamplingRate;
-  property Cutfreq1     : Float read FCutFreq1;
+  property CornerFreq     : Float read FCutFreq1;
 end;
 \end{verbatim}
 \subsubsection{Description}
@@ -528,10 +539,10 @@ Descendant of \code{TDigFilter} which describes lowpass or highpass filters (but
 	Sampling rate, usually Hz.
 	\label{lmfilters.TOneFreqFilter-Cutfreq1}
 	\index{Cutfreq1}
-	\item[\declarationitem{CutFreq1}\hfill]
+	\item[\declarationitem{CornerFreq}\hfill]
 	\begin{flushleft}
 		\code{
-			published property CutFreq1     : Float read FCutFreq1;}
+			published property CornerFreq     : Float read FCutFreq1;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}] Cut (or corner) frequency, usually Hz. Must be less then \code{SamplingRate}.
 	\end{itemize}

@@ -124,7 +124,7 @@ end;
 
 procedure TPoints.SortY(descending:boolean);
 begin
-  HeapSortX(Points,0,Count-1,Descending);
+  HeapSortY(Points,0,Count-1,Descending);
 end;
 
 procedure TPoints.ExtractX(var AXVector:TVector; Lb, Ub: integer);
@@ -312,6 +312,9 @@ constructor TPoints.Combine(XVector, YVector: TVector; Lb, Ub: integer);
 var
   I:Integer;
 begin
+  if (length(XVector) = 0) or (length(YVector) = 0) then
+      Raise ERealPointsException.Create('Points combine: a source vector is empty') at
+       get_caller_addr(get_frame),get_caller_frame(get_frame);
   inherited Create;
   Capacity := Ub - Lb + 1;
   setLength(Points,Capacity);
