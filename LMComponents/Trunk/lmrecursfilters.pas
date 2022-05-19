@@ -17,7 +17,7 @@ type
       NewVal : float;
       A0, A1 : float;
     public
-      procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); override;
+      procedure SetupFilter(ASamplingRate, ACornerFreq : Float); override;
       procedure Filter(StartIndex, EndIndex:integer); override;
       procedure InitFiltering; override;
       procedure NextPoint; override;
@@ -39,10 +39,10 @@ type
       NewVal: float;
       procedure SetBandWidth(ABandWidth:float); virtual;
       procedure SetSamplingrate(AValue: Float); override;
-      procedure SetCutFreq1(ACutFreq1:float); override;
+      procedure SetCornerFreq(ACornerFreq:float); override;
     public
-      constructor Create(AOwner:TComponent); override;
-      procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); virtual;
+      procedure SetupFilter(ASamplingRate, ACornerFreq : Float); override;
+      procedure SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth : float); virtual;
       procedure Filter(StartIndex: integer; EndIndex:integer); override;
       procedure InitFiltering; override;
       procedure NextPoint; override;
@@ -54,14 +54,14 @@ type
 
   TNotchFilter = class(TNarrowBandFilter)
     public
-      procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;
+      procedure SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;
   end;
  {%ENDREGION}
   {%REGION TBandPassFilter }
 
   TBandPassFilter = class(TNarrowBandFilter)
   public
-    procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;
+    procedure SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;
   end;
   {%ENDREGION}
   {%REGION TChebyshevFilter }
@@ -77,10 +77,10 @@ type
       BR           : TVector;
       Old, NewData : TVector;
     public
-      constructor Create(AOwner:TComponent); override;
       procedure Filter(StartIndex, EndIndex:integer); override;
-      procedure SetupChebyshevFilter(ASamplingRate: Float; ACutFreq: Float;
+      procedure SetupChebyshevFilter(ASamplingRate: Float; ACornerFreq: Float;
                               ANPoles: integer; APRipple: float; AHighPass:boolean);
+      procedure SetupFilter(ASamplingRate, ACornerFreq : float); override;
       procedure InitFiltering; override;
       procedure NextPoint; override;
   end;
@@ -91,22 +91,23 @@ implementation
 
 {%REGION TChebyshevFilter }
 
-procedure TChebyshevFilter.SetupChebyshevFilter(ASamplingRate: Float; ACutFreq: Float;
+procedure TChebyshevFilter.SetupChebyshevFilter(ASamplingRate: Float; ACornerFreq: Float;
                               ANPoles: integer; APRipple: float; AHighPass:boolean);
 var
   I,J:integer;
 begin
-  SetupFilter(ASamplingRate, ACutFreq);
-   if not (ANPoles in [2,4,6,8,10]) then
-     Raise EFilterException.Create('Number of poles must be even between 2 and 10.');
-  if ACutFreq > 0.5*ASamplingRate then
+  if not (ANPoles in [2,4,6,8,10]) then
+    Raise EFilterException.Create('Number of poles must be even between 2 and 10.');
+  if ACornerFreq > 0.5*ASamplingRate then
     Raise EFilterException.Create('Cut-off frequenca must be below half of sampling rate.');
   if (APRipple < 0) or (APRipple > 29.0) then
     Raise EFilterException.Create('Passband ripple must be between 0 and 29%.');
-  FNumPoles := ANPoles;
+  FCornerFreq := ACornerFreq;
+  FSamplingRate := ASamplingRate;
   FRipple := APRipple;
   FHighPass := AHighPass;
-  FindChebyshevCoeffs(ASamplingRate,ACutFreq,AHighPass,APRipple,ANPoles,A,B);
+  FNumPoles := ANPoles;
+  FindChebyshevCoeffs(ASamplingRate,ACornerFreq,AHighPass,APRipple,ANPoles,A,B);
   DimVector(Old,FNumPoles);
   DimVector(BR,FNumPoles);
   DimVector(NewData,FNumPoles);
@@ -116,6 +117,14 @@ begin
     BR[J] := B[I];
     Dec(J);
   end;
+end;
+
+procedure TChebyshevFilter.SetupFilter(ASamplingRate, ACornerFreq: float);
+begin
+  if ReadyToUse then
+    SetupChebyshevFilter(ASamplingRate, ACornerFreq, FNumPoles, FRipple, FHighPass)
+  else
+    SetupChebyshevFilter(ASamplingRate, ACornerFreq, 6, 0.5, false);
 end;
 
 procedure TChebyshevFilter.InitFiltering;
@@ -140,12 +149,6 @@ begin
   inc(Index);
 end;
 
-constructor TChebyshevFilter.Create(AOwner:TComponent);
-begin
-  inherited Create(AOwner);
-  SetupChebyshevFilter(14440,4000,6,0.5,false);
-end;
-
 procedure TChebyshevFilter.Filter(StartIndex, EndIndex: integer);
 var
   I, J         : integer;
@@ -168,10 +171,10 @@ end;
 {%ENDREGION}
 {%REGION THighPassFilter }
 
-procedure THighPassFilter.SetupFilter(ASamplingRate, ACutFreq1 : Float);
+procedure THighPassFilter.SetupFilter(ASamplingRate, ACornerFreq : Float);
 begin
-  inherited SetupFilter(ASamplingRate,ACutFreq1);
-  X := exp(-TwoPi*FCutFreq1/FSamplingRate);
+  inherited SetupFilter(ASamplingRate,ACornerFreq);
+  X := exp(-TwoPi*FCornerFreq/FSamplingRate);
   A0 := (1+X)/2;
   A1 := -A0;
   NewVal := 0;
@@ -193,7 +196,7 @@ end;
 
 procedure THighPassFilter.InitFiltering;
 begin
-  X := exp(-TwoPi*FCutFreq1/FSamplingRate);
+  X := exp(-TwoPi*FCornerFreq/FSamplingRate);
   A0 := (1+X)/2;
   A1 := -A0;
   NewVal := 0;
@@ -214,43 +217,44 @@ end;
 procedure TNarrowBandFilter.SetBandWidth(ABandWidth: float);
 begin
   if ABandWidth = FBW then exit;
-  SetupFilter(FSamplingrate, FCutFreq1, ABandWidth);
+  SetupNarrowBandFilter(FSamplingrate, FCornerFreq, ABandWidth);
 end;
 
 procedure TNarrowBandFilter.SetSamplingrate(AValue: Float);
 begin
   if AValue = FSamplingrate then exit;
-  SetupFilter(AValue, FCutFreq1, FBW);
+  SetupNarrowBandFilter(AValue, FCornerFreq, FBW);
 end;
 
-procedure TNarrowBandFilter.SetCutFreq1(ACutFreq1: float);
+procedure TNarrowBandFilter.SetCornerFreq(ACornerFreq: float);
 begin
-  if ACutFreq1 = FCutFreq1 then exit;
-  SetupFilter(FSamplingrate, ACutFreq1, FBW);
+  if ACornerFreq = FCornerFreq then exit;
+  SetupNarrowBandFilter(FSamplingrate, ACornerFreq, FBW);
 end;
 
-constructor TNarrowBandFilter.Create(AOwner:TComponent);
+procedure TNarrowBandFilter.SetupFilter(ASamplingRate, ACornerFreq: float);
 begin
-    inherited Create(AOwner);
-    SetupFilter(14400.0,4000.0,5.0);
+  if ReadyToUse then
+    SetupNarrowBandFilter(ASamplingRate, ACornerFreq, FBW)
+  else
+    SetupNarrowBandFilter(ASamplingRate, ACornerFreq, 5.0);
 end;
 
-procedure TNarrowBandFilter.SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float);
+procedure TNarrowBandFilter.SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth : float);
 begin
-  if FCutFreq1 > FSamplingrate / 2 then
+  if ABandFreq > ASamplingrate / 2 then
     raise EFilterException.Create('Bandpass or Band reject frequency > Sampling rate / 2');
-  if ABandWidth > FSamplingrate / 2 then
+  if ABandWidth > ASamplingrate / 2 then
     raise EFilterException.Create('Bandwidth frequency > Sampling rate / 2');
   FSamplingRate := ASamplingRate;
-  FCutFreq1     := ABandFreq;
+  FCornerFreq     := ABandFreq;
   FBW           := ABandWidth;
-  FindNarrowBandParams(FCutFreq1,FBW,FSamplingRate,K,R,CoF);
+  FindNarrowBandParams(FCornerFreq,FBW,FSamplingRate,K,R,CoF);
 end;
 
 procedure TNarrowBandFilter.Filter(StartIndex: integer; EndIndex: integer);
 var
   I:integer;
-  J:integer;
   En: integer;
 begin
   for I := -2 to 0 do
@@ -268,13 +272,13 @@ begin
   I := StartIndex+2;
   while I < En do // I := StartIndex+2 to EndIndex do
   begin
-    for J := -2 to -1 do
-      Old[J] := Old[J+1];
+    Old[-2] := Old[-1];
+    Old[-1] := Old[0];
     Old[0] := OnInput(I);
     NewVal := Old[0]*A[0]+Old[-1]*A[1]+Old[-2]*A[2]+New[-1]*B[1]+New[-2]*B[2];
     New[0] := NewVal;
-    for J := -2 to -1 do
-      New[J] := New[J+1];
+    New[-2] := New[-1];
+    New[-1] := New[0];
     OnOutput(NewVal,I);
     inc(I);
   end;
@@ -293,34 +297,31 @@ begin
 end;
 
 procedure TNarrowBandFilter.NextPoint;
-var
-  J:integer;
 begin
-  for J := -2 to -1 do
-    Old[J] := Old[J+1];
+  Old[-2] := Old[-1];
+  Old[-1] := Old[0];
   Old[0] := OnInput(Index);
   NewVal := Old[0]*A[0]+Old[-1]*A[1]+Old[-2]*A[2]+New[-1]*B[1]+New[-2]*B[2];
   New[0] := NewVal;
-  for J := -2 to -1 do
-    New[J] := New[J+1];
+  New[-2] := New[-1];
+  New[-1] := New[0];
   OnOutput(NewVal,Index);
   inc(Index);
 end;
 
 {%ENDREGION}
 {%REGION TNotchFilter }
-
-procedure TNotchFilter.SetupFilter(ASamplingRate, ABandFreq, ABandWidth: float);
+procedure TNotchFilter.SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth: float);
 begin
-  inherited SetupFilter(ASamplingRate, ABandFreq, ABandWidth);
+  inherited SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth);
   FindNotchCoeffs(K,R,CoF,A,B);
 end;
 {%ENDREGION}
 {%REGION TBandPassFilter }
 
-procedure TBandPassFilter.SetupFilter(ASamplingRate, ABandFreq, ABandWidth: float);
+procedure TBandPassFilter.SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth: float);
 begin
-  inherited SetupFilter(ASamplingRate, ABandFreq, ABandWidth);
+  inherited SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth);
   FindBandPassCoeffs(K,R,CoF,A,B);
 end;
 {%ENDREGION}
