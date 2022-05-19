@@ -45,11 +45,13 @@ type
     FOnInput:TInputFunc;
     FOnOutput:TOutputProc;
     Index:integer;
+    ReadyToUse : boolean;
   public
     //receives inpus signal values by calls OnInput, makes actual filtering and outputs result by calls of OnOutput
     procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;
     procedure InitFiltering; virtual;
-    procedure NextPoint; virtual; abstract;
+    procedure NextPoint; virtual;
+    procedure AfterConstruction; override;
   published
     // function(Index:integer):Float; must provide value of input signal at index Index. Is called from procedure Filter
     property OnInput:TInputFunc read FOnInput write FOnInput;
@@ -67,15 +69,15 @@ type
   TOneFreqFilter = class(TDigFilter)
   protected
     FSamplingRate : Float;
-    FCutFreq1     : Float;
+    FCornerFreq     : Float;
     procedure SetSamplingrate(AValue: Float); virtual;
-    procedure SetCutFreq1(ACutFreq1:float); virtual;
+    procedure SetCornerFreq(ACornerFreq:float); virtual;
   public
     constructor Create(AOwner:TComponent); override;
-    procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;
+    procedure SetupFilter(ASamplingRate, ACornerFreq : Float); virtual;
   published
     property SamplingRate : Float read FSamplingRate write SetSamplingrate;
-    property CornerFreq   : Float read FCutFreq1 write SetCutFreq1;
+    property CornerFreq   : Float read FCornerFreq write SetCornerFreq;
   end;
  {%ENDREGION}
   {%REGION **************** TFIRFilter *****************}
@@ -86,23 +88,23 @@ type
     PrevPtr:integer;
     WindowData:TVector;
     procedure SetWinLength(L:integer); virtual;
-    procedure InitFiltering; override;
   public
     constructor Create(AOwner:TComponent); override;
+    procedure InitFiltering; override;
   published
     property WinLength : integer read FWinLength write SetWinLength;
   end;
-{%ENDREGION}
-{%REGION **************** TMovAvFilter ***************************}
+ {%ENDREGION}
+ {%REGION **************** TMovAvFilter **********************}
 
 //moving average filter
   TMovAvFilter = class(TFIRFilter)
   protected
-    Buffer : extended;
+    Buffer : float;
     procedure SetWinLength(L:integer); override;
   public
     procedure Filter(StartIndex, EndIndex:integer); override;
-    procedure SetupFilter(ASamplingRate, ACutFreq:Float); override;
+    procedure SetupFilter(ASamplingRate, ACornerFreq:Float); override;
     procedure InitFiltering; override;
     procedure NextPoint; override;
   published
@@ -124,12 +126,12 @@ type
     procedure BackwardFilter(StartIndex, EndIndex:integer);
   public
     constructor Create(AOwner:TComponent); override;
-    procedure SetupFilter(ASamplingRate, ACutFreq1: Float); override;
+    procedure SetupFilter(ASamplingRate, ACornerFreq: Float); override;
     procedure Filter(StartIndex, EndIndex:integer); override;
   published
     // Used for input during BackwardFilter procedure. It must read data already processed by ForwardFilter.
     // Hence, must read from output array. If filtering takes place in situ, input and output array are the same,
-    // defining this property is not necessary. If it is not defines, usual OnInput is used.
+    // defining this property is not necessary. If it is not defined, usual OnInput is used.
     property OnInputBackward : TInputFunc read FOnInputBackward write FOnInputBackward;
   end;
   {%ENDREGION}
@@ -161,18 +163,29 @@ begin
   Index := 0;
 end;
 
+procedure TDigFilter.NextPoint;
+begin
+   //
+end;
+
+procedure TDigFilter.AfterConstruction;
+begin
+  inherited AfterConstruction;
+  ReadyToUse := true;
+end;
+
 {%REGION ********************** TOneFreqFilter *************************}
 
 procedure TOneFreqFilter.SetSamplingrate(AValue: Float);
 begin
   if FSamplingRate = AValue then Exit;
-  SetupFilter(AValue,FCutFreq1);
+  SetupFilter(AValue,FCornerFreq);
 end;
 
-procedure TOneFreqFilter.SetCutFreq1(ACutFreq1: float);
+procedure TOneFreqFilter.SetCornerFreq(ACornerFreq: float);
 begin
-  if FCutFreq1 = ACutFreq1 then Exit;
-  SetupFilter(FSamplingRate, ACutFreq1);
+  if FCornerFreq = ACornerFreq then Exit;
+  SetupFilter(FSamplingRate, ACornerFreq);
 end;
 
 constructor TOneFreqFilter.Create(AOwner: TComponent);
@@ -181,12 +194,12 @@ begin
   SetupFilter(14400, 4000);
 end;
 
-procedure TOneFreqFilter.SetupFilter(ASamplingRate, ACutFreq1: Float);
+procedure TOneFreqFilter.SetupFilter(ASamplingRate, ACornerFreq: Float);
 begin
-  if FCutFreq1 > FSamplingrate / 2 then
+  if FCornerFreq > FSamplingrate / 2 then
     raise EFilterException.Create('Cutoff frequency > Sampling rate / 2');
   FSamplingRate := ASamplingRate;
-  FCutFreq1     := ACutFreq1;
+  FCornerFreq     := ACornerFreq;
 end;
 {%ENDREGION}
 {%REGION **************** TFIRFilter *****************}
@@ -234,8 +247,6 @@ begin
 end;
 
 procedure TMedianFilter.NextPoint;
-var
-  I,J:integer;
 begin
   WindowData[PrevPTR] := FOnInput(Index);
   FOnOutput(FindMedian,Index);
@@ -317,7 +328,7 @@ procedure TGaussFilter.FindParams;
 var
   Q2, Q3 : extended;
 begin
-  FSigma := FSamplingrate*0.83/(2*Pi*FCutFreq1);
+  FSigma := FSamplingrate*0.83/(2*Pi*FCornerFreq);
   if FSigma >= 2.5 then
     Q := 0.98711 * FSigma - 0.96330
   else
@@ -394,9 +405,9 @@ begin
   FindParams;
 end;
 
-procedure TGaussFilter.SetupFilter(ASamplingRate, ACutFreq1: Float);
+procedure TGaussFilter.SetupFilter(ASamplingRate, ACornerFreq: Float);
 begin
-  inherited SetupFilter(ASamplingRate, ACutFreq1);
+  inherited SetupFilter(ASamplingRate, ACornerFreq);
   FindParams;
 end;
 
@@ -414,7 +425,7 @@ end;
 procedure TMovAvFilter.SetWinLength(L: integer);
 begin
   FWinLength := L;
-  FCutFreq1 := 0.44292/Sqrt(L*L-1)*FSamplingRate;
+  FCornerFreq := 0.44292/Sqrt(L*L-1)*FSamplingRate;
 end;
 
 procedure TMovAvFilter.Filter(StartIndex, EndIndex: integer);
@@ -473,10 +484,10 @@ begin
   inc(Index);
 end;
 
-procedure TMovAvFilter.SetupFilter(ASamplingRate, ACutFreq: Float);
+procedure TMovAvFilter.SetupFilter(ASamplingRate, ACornerFreq: Float);
 begin
-  inherited SetupFilter(ASamplingRate, ACutFreq);
-  FWinLength := MoveAvFindWindow(ASamplingRate,ACutFreq);
+  inherited SetupFilter(ASamplingRate, ACornerFreq);
+  FWinLength := MoveAvFindWindow(ASamplingRate,ACornerFreq);
 end;
 {%ENDREGION}
 {%REGION ********************* General functions *********************************}
