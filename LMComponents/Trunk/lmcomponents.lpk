@@ -27,7 +27,7 @@
     </CompilerOptions>
     <Description Value="Several digital filters implemented as components; TCoordSys: simple component for functions and data visualizations; simple float editing components."/>
     <License Value="GDP"/>
-    <Version Minor="6"/>
+    <Version Minor="6" Release="1"/>
     <Files Count="8">
       <Item1>
         <Filename Value="lmcoordsys.pas"/>
