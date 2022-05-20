@@ -471,11 +471,11 @@ begin
          MedianFilter1.filter(0,N-1);
        end;
     3: begin
-         NotchFilter1.SetupFilter(SR,CutOffFreq,BW);
+         NotchFilter1.SetupNarrowBandFilter(SR,CutOffFreq,BW);
          NotchFilter1.Filter(0,N);
        end;
     4: begin
-         BandpassFilter1.SetupFilter(SR,CutOffFreq,BW);
+         BandpassFilter1.SetupNarrowBandFilter(SR,CutOffFreq,BW);
          BandPassFilter1.Filter(0,N);
        end;
     5: begin
