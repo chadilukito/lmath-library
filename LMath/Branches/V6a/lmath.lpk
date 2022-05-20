@@ -14,7 +14,7 @@
         <SmartLinkUnit Value="True"/>
       </CodeGeneration>
     </CompilerOptions>
-    <Version Minor="6"/>
+    <Version Minor="6" Release="1"/>
     <RequiredPkgs Count="13">
       <Item1>
         <PackageName Value="lmDSP"/>

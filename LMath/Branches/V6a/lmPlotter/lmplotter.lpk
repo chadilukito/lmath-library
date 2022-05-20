@@ -22,7 +22,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Version Minor="6"/>
+    <Version Minor="6" Release="1"/>
     <Files Count="4">
       <Item1>
         <Filename Value="uhsvrgb.pas"/>
