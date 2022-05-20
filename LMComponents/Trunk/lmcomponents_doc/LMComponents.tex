@@ -4,7 +4,7 @@
 \defaultfontfeatures{Ligatures=TeX}
 \setmainfont{Crimson}
 \setsansfont{Century Gothic}
-\setmonofont[Scale=0.8]{Liberation Mono}
+\setmonofont[Scale=0.8]{DejaVu Sans Mono}
 \usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash]{caption} % figures and tables caption options
 \usepackage[top=1in, bottom=1in, left=1.5in, right=1.0in]{geometry}
 \usepackage[compact]{titlesec}
@@ -34,8 +34,10 @@
 \renewcommand{\labelitemii}{$\bullet$}
 \newcommand{\euler}{\mathrm{e}}
 \newcommand{\keyword}[1]{\textbf{#1}}
-\newcommand{\declarationitem}[1]{{\addfontfeatures{FakeBold=1.3} #1}}
+\newcommand{\declarationitem}[1]{{\addfontfeatures{FakeSlant} #1}}
 \newcommand{\descriptiontitle}[1]{{\addfontfeatures{FakeSlant}#1}}
+\newcommand{\inlineitem}[1]{{\addfontfeatures{FakeBold} #1}}
+
 \newcommand{\code}[1]{\texttt{#1}}  
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
@@ -52,7 +54,7 @@
 \label{lmPointsVec}
 \index{lmPointsVec}
 \section{Description}
-\code{TPoints} is a class wrapper around \code{TRealPointVector} (see LMath.pdf, Chapter 2). Its properties X[index] and Y[index] provide access to X and Y fields as to separate arrays \code{Float}; if the package was compiled with -dDebug setting, range check is completed for Index. However, use of \code{X} and \code{Y} properties has a considerable penalty on performance. Direct access to underlying array \code{TPoints.Points} is provided for use in time-critical code sections, but in general it is safer to use \code{X} and \code{Y} properties.
+\code{TPoints} is a class wrapper around \code{TRealPointVector} (see LMath.pdf, Chapter 2). Its properties X[index] and Y[index] provide access to X and Y fields as to separate arrays of \code{Float}; if the package was compiled with -dDebug setting, range check is done for \code{Index}. However, use of \code{X} and \code{Y} properties has a considerable penalty on performance. Direct access to underlying array \code{TPoints.Points} is provided for use in time-critical code sections, but in general it is safer to use \code{X} and \code{Y} properties.
 
 If \code{Append} procedure is used for adding new points, \code{Count} is adjusted automatically; by exceeding current \code{Capacity}, memory is automatically reallocated.
 
@@ -114,19 +116,19 @@ end;
 
 \subsubsection{Properties}
 \begin{itemize}
-	\item[\declarationitem{X}\hfill]
+	\item[\inlineitem{X}\hfill]
 	\begin{flushleft}
 		\code{public property X[I:integer]: Float;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Shortcut to \code{Points[index].X}. By \textit{assigning} X[index], if  \code{Index} $>$ \code{Count-1}, Count is increased to \code{Index+1}. If \code{index} $>$ \code{Capacity} and -dDebug is set, \code{ERealPointException} is raised. 
+	Shortcut to \code{Points[index].X} with additional range check. By \textit{assigning} X[index], if  \code{Index} $>$ \code{Count-1}, Count is increased to \code{Index+1}. If \code{index} $>$ \code{Capacity} and -dDebug is set, \code{ERealPointException} is raised. 
 	
 	By reading the field, if -dDebug and \code{index} $>$ \code{Count}, then exception is raised.
 	
 	Use of this field has, however, penalty on performance; use direct access to \code{Points} array in time-critical procedures. 
 	\par  \label{lmPointsVec.TPoints-Y}
 	\index{Y}
-	\item[\declarationitem{Y}\hfill]
+	\item[\inlineitem{Y}\hfill]
 	\begin{flushleft}
 		\code{
 			public property Y[I:integer]: Float;}
@@ -135,7 +137,7 @@ end;
 	Shortcut to \code{Points[index].Y}. See X property above for description of its behaviour. 
 	\par  \label{lmPointsVec.TPoints-ThePoints}
 	\index{ThePoints}
-	\item[\declarationitem{ThePoints}\hfill]
+	\item[\inlineitem{ThePoints}\hfill]
 	\begin{flushleft}
 		\code{
 			public property ThePoints[I:integer]: TRealPoint;}
@@ -144,7 +146,7 @@ end;
 	Access to \code{Points} with range-check; behaviour is similar to X and Y properties, as well as performance penalty.
 	\par  \label{lmPointsVec.TPoints-DataBuffer}
 	\index{DataBuffer}
-	\item[\declarationitem{DataBuffer}\hfill]
+	\item[\inlineitem{DataBuffer}\hfill]
 	\begin{flushleft}
 		\code{
 			public property DataBuffer[I:integer]: pointer;}
@@ -156,7 +158,7 @@ end;
 \begin{itemize}
 	\label{lmPointsVec.TPoints-Points}
 	\index{Points}
-	\item[\declarationitem{Points}\hfill]
+	\item[\inlineitem{Points}\hfill]
 	\begin{flushleft}
 		\code{
 			public Points:TRealPointVector;}
@@ -167,7 +169,7 @@ This is actual array of data. Public access to it is provided for direct operati
 	
 \par  \label{lmPointsVec.TPoints-Capacity}
 \index{Capacity}
-	\item[\declarationitem{Capacity}\hfill]
+	\item[\inlineitem{Capacity}\hfill]
 	\begin{flushleft}
 		\code{
 			public Capacity:integer;}
@@ -177,7 +179,7 @@ This is actual array of data. Public access to it is provided for direct operati
 	  
 	\par  \label{lmPointsVec.TPoints-Index}
 	\index{Index}
-	\item[\declarationitem{Index}\hfill]
+	\item[\inlineitem{Index}\hfill]
 	\begin{flushleft}
 		\code{
 			public Index:integer;}
@@ -188,7 +190,7 @@ This is actual array of data. Public access to it is provided for direct operati
 	\par  \label{lmPointsVec.TPoints-Count}
 \index{Count}
 \begin{itemize}
-\item[\declarationitem{Count}\hfill]
+\item[\inlineitem{Count}\hfill]
 \begin{flushleft}
 	\code{
 		public Count:integer;}
@@ -376,19 +378,22 @@ $RangeY=MaxY-MinY$
 \label{lmfilters}
 \index{lmfilters}
 \section{Description}
-Unit lmFilters includes several digital filters of a signal which are implemented as non-visual components, most of them can be used both for filtering of earlier sampled data in any format and for filtering in real time, during data aquisition. You can drop a component on your form, define sampling rate and cut-off frequency, define \code{OnInput} and \code{OnOutput} events. After that, either call \code{Filter} method for off-line filtering of existing data, or initiate filtering in real time. For this, call \code{InitFiltering} and then call \code{NextPoint} method whenever new datapoint is aquired. \code{OnInput} event is called from \code{Filter} method whenever the filtering procedure needs next input value, and \code{OnOutput} when it is ready to return a next value. Similarly, \code{NextPoint} calls \code{OnInput} and \code{OnOutput} when is invoked. This technique with \code{OnInput} and \code{OnOutput} events makes the components independent of a format of data which are filtered.
+Unit lmFilters includes several digital filters of a signal. They are implemented as non-visual components. Most of them can be used both for filtering of earlier sampled data saved in any format and for filtering in real time, during data acquisition. To make the components format-independent, data points are fed into filter with user-defined \code{OnInput} event (see \ref{lmfilters-TInputFunc} and \ref{lmfilters.TDigFilter-OnInput}) and returned by another user-defined \code{OnOutput} event (\ref{lmfilters-TOutputproc} and \ref{lmfilters.TDigFilter-OnOutput}). You can drop a component onto a form and define \code{OnInput} and \code{OnOutput} events. Afterwards, set sampling rate and cut-off frequency by call of \code{SetupFilter} (\ref{lmfilters.TOneFreqFilter-SetupFilter}) method. For moving average filter (\ref{lmfilters.TMovAvFilter}), one has an alternative to define averaging window length instead of defining sampling rate and cut-off frequency. For median filter (\ref{lmfilters.TMedianFilter}), this is the only possibility, because for this filter cut-off frequency is not defined. After setting up the filter properties,  either call \code{Filter} (\ref{lmfilters.TDigFilter-Filter}) method for off-line filtering of existing data, or initiate filtering in real time. To do so, call \code{InitFiltering} (\ref{lmfilters.TDigFilter-InitFiltering}) and then call \code{NextPoint} (\ref{lmfilters.TDigFilter-NextPoint}) method whenever new datapoint is aquired. \code{OnInput} event is called from \code{Filter} method when the filtering procedure needs next input value, and \code{OnOutput} when it is ready to return a next output value. Similarly, \code{NextPoint} calls \code{OnInput} and \code{OnOutput} when is invoked. This technique with \code{OnInput} and \code{OnOutput} events makes the components independent of a format of data which are filtered. 
 
-Implemented are gaussian filter, moving average filter, which are probably the best ``smoothing'' filters for time domain, and median filter which is ideal to remove short spikes preserving sharp edges. One-pole high-pass filter, notch filter and Chebyshev filter are implemented in \code{lmRecursFilters} unit. All of these filters except Gaussian can be used for both real time and off-line filtering. Gaussian filter requires forward and backward filtering, hence, can be used only off line.
+Implemented are gaussian filter (\ref{lmfilters.TGaussFilter}), moving average filter (\ref{lmfilters.TMovAvFilter}), which are probably the best ``smoothing'' filters for time domain, and median filter (\ref{lmfilters.TMedianFilter}) which is ideal to remove short spikes preserving sharp edges. One-pole high-pass filter, notch filter and Chebyshev filter are implemented in \code{lmRecursFilters} unit (\ref{lmRecursFilters}). All of these filters except Gaussian can be used for both real time and off-line filtering. Gaussian filter requires forward and backward filtering, hence, can be used only off line.
 
 \section{Types}
 \subsection{TInputFunc}
 \label{lmfilters-TInputFunc}
 \index{TInputFunc}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
 			TInputFunc = function(Index:integer):Float of Object;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Procedural type used by \code{OnInput} event of \code{TDigFilter} (\ref{lmfilters.TDigFilter}) and its inheritants.
 \end{itemize}
 \subsection{TOutputProc}
 \label{lmfilters-TOutputproc}
@@ -398,6 +403,8 @@ Implemented are gaussian filter, moving average filter, which are probably the b
 		\code{
 			TOutputproc = procedure(Val:Float; Index:integer) of Object;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+Procedural type used by \code{OnOutput} event of \code{TDigFilter} (\ref{lmfilters.TDigFilter}) and its inheritants.
 \end{itemize}
 \section{Classes, Interfaces, Objects and Records}
 \subsection{EFilterException Class}
@@ -432,21 +439,21 @@ TDigFilter is an abstract ancestor class for all digital filters. Itself it is n
 \subsubsection{Events}
 \begin{itemize}\label{lmfilters.TDigFilter-OnInput}
 	\index{OnInput}
-	\item[\declarationitem{OnInput}\hfill]
+	\item[\inlineitem{OnInput}\hfill]
 	\begin{flushleft}
 		\code{
 			published property OnInput: TInputFunc read FOnInput write FOnInput;}
 	\end{flushleft}
 	\par \code{function(Index:integer):Float of object;} must provide a value of input signal at index \code{Index}. It is called from \code{Filter}\label{lmfilters.TDigFilter-OnOutput} method.
 	\index{OnOutput}
-	\item[\declarationitem{OnOutput}\hfill]
+	\item[\inlineitem{OnOutput}\hfill]
 	\begin{flushleft}
 		\code{
 			published property OnOutput: TOutputProc read FOnOutput write FOnOutput;}
 	\end{flushleft}
-	\par \code{procedure(Val:Float; Index:integer) of object} receives a value of filtered signal at \code{Index} and can do with it what a user needs. It is called from \code{Filter} method.
+	\par \code{procedure(Val:Float; Index:integer) of object} receives a value of filtered signal at \code{Index} and can do with it what a user needs.
 
-	Both OnInput and OnOutput events are called from Filter method, to get next value from the data stream been filtered. This technique makes the filter independent from an actual data format.
+	Both OnInput and OnOutput events are called from Filter (\ref{lmfilters.TDigFilter-Filter}) method, to get next value from the data stream been filtered. This technique makes the filter independent from an actual data format.
 
 	The most simple implementation of these events may be following:
 \begin{verbatim}
@@ -464,10 +471,9 @@ begin
   DataArr[Index] := Val;
 end;
 \end{verbatim}
-
 \end{itemize}
 \subsubsection{Fields}
-\paragraph{Index}\hspace*{\fill}
+\paragraph{Index}\label{lmfilters.TDigFilter-index}
 \begin{itemize}
 	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
@@ -476,23 +482,22 @@ end;
 	\end{flushleft}
 	\par  
 \item[\descriptiontitle{Description}]
-Integer field for points indexing. Successors use it in \code{NextPoint} method.
+Integer field for indexing of the data points. Descendants use it in \code{NextPoint} (\ref{lmfilters.TDigFilter-NextPoint}) method.
 \end{itemize}
 \subsubsection{Methods}
-\paragraph{Filter}\hspace*{\fill}
+\paragraph{Filter}
 \label{lmfilters.TDigFilter-Filter}
 \index{Filter}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
 			public procedure Filter(StartIndex, EndIndex:integer); virtual; abstract;}
-		
 	\end{flushleft}
 	\par
 	\item[\descriptiontitle{Description}]
-	Receives inpus signal values calling \code{OnInput}, makes actual filtering and outputs result calling \code{OnOutput}.
-
-\paragraph{InitFiltering}\hspace*{\fill}
+	Receives input signal values calling \code{OnInput} (\ref{lmfilters.TDigFilter-OnInput}), makes actual filtering and outputs result calling \code{OnOutput} (\ref{lmfilters.TDigFilter-OnInput}).
+\end{itemize}
+\paragraph{InitFiltering}
 \label{lmfilters.TDigFilter-InitFiltering}
 \index{InitFiltering}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -500,17 +505,25 @@ Integer field for points indexing. Successors use it in \code{NextPoint} method.
 		\code{
 			procedure InitFiltering; virtual;}
 	\end{flushleft}
-	\item[\descriptiontitle{Description}] Calls \code{inherited Create}, sets \code{WinLength} to 5.
+	\item[\descriptiontitle{Description}] Initiates process of online filtering; sets \code{Index} to zero.
+\end{itemize}
+\paragraph{NextPoint}
+\label{lmfilters.TDigFilter-NextPoint}
+\index{NextPoint}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{
+			procedure NextPoint; virtual; abstract;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Descendants use it for real-time filtering. Calls \code{OnInput} (\ref{lmfilters.TDigFilter-OnInput}) with passing \code{Index} \ref{lmfilters.TDigFilter-index} value as parameter to get input value, calculates filtered output value, calls \code{onOutput} (\ref{lmfilters.TDigFilter-OnOutput})passing \code{Index} and calculated value as parameters and increments \code{Index}.
+	\item[\descriptiontitle{How to use.}] Define \code{OnInput} and \code{OnOutput} events such that \code{OnInput} returns a newly acquired data value and \code{OnOutput} returns in \code{Val} the calculated filtered value to your final dataset. Before the beginning of data aquisition, call \code{InitFiltering}. Value of \code{Index} field is initially set to zero. During the aquisition cycle, simply call \code{NextPoint} whenever new data value is acquired. 
 \end{itemize}
 
-
-\end{itemize}
 \subsection{TOneFreqFilter Class}
 \label{lmfilters.TOneFreqFilter}
 \index{TOneFreqFilter}
 \subsubsection{Hierarchy}
-TOneFreqFilter {$>$} \code{TDigFilter} {$>$} 
-TComponent
+TOneFreqFilter {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
 \subsubsection{Declaration}
 \begin{verbatim}
 TOneFreqFilter = class(TDigFilter)
@@ -519,35 +532,35 @@ private
   FCutFreq1     : Float;
 public
   constructor Create(AOwner:TComponent); override;
-  procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;
+  procedure SetupFilter(ASamplingRate, ACornerFreq : Float); virtual;
 published
-  property SamplingRate : Float read FSamplingRate;
-  property CornerFreq     : Float read FCutFreq1;
+  property SamplingRate : Float;
+  property CornerFreq     : Float;
 end;
 \end{verbatim}
 \subsubsection{Description}
-Descendant of \code{TDigFilter} which describes lowpass or highpass filters (but not pass- or stopband) with Infinite Impulse Response. Introduces \code{SamplingRate} and \code{CutFreq1} properties.
+Descendant of \code{TDigFilter} \ref{lmfilters.TDigFilter} which defines filters with one cut-off frequency (that is, not pass-band or stop-band with distinct cut-offs for low and high frequencies). Introduces \code{SamplingRate} and \code{CornerFreq} properties.
 \subsubsection{Properties}
 \begin{itemize}\label{lmfilters.TOneFreqFilter-SamplingRate}
 	\index{SamplingRate}
-	\item[\declarationitem{SamplingRate}\hfill]
+	\item[\inlineitem{SamplingRate}\hfill]
 	\begin{flushleft}
 		\code{
-			published property SamplingRate : Float read FSamplingRate;}
+			published property SamplingRate;}
 	\end{flushleft}
 	\item[\descriptiontitle{Description}]
-	Sampling rate, usually Hz.
+	Sampling rate, usually Hz; must have same units as \code{CornerFreq}.
 	\label{lmfilters.TOneFreqFilter-Cutfreq1}
 	\index{Cutfreq1}
-	\item[\declarationitem{CornerFreq}\hfill]
+	\item[\inlineitem{CornerFreq}\hfill]
 	\begin{flushleft}
 		\code{
-			published property CornerFreq     : Float read FCutFreq1;}
+			published property CornerFreq;}
 	\end{flushleft}
-	\item[\descriptiontitle{Description}] Cut (or corner) frequency, usually Hz. Must be less then \code{SamplingRate}.
+	\item[\descriptiontitle{Description}] Cut-off (or corner) frequency, usually Hz. Must have same units as \code{SamplingRate} and be less then \code{$SamplingRate/2$}.
 	\end{itemize}
 \subsubsection{Methods}
-\paragraph{Create}\hspace*{\fill}
+\paragraph{Create}
 \label{lmfilters.TOneFreqFilter-Create}
 \index{Create}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -555,30 +568,33 @@ Descendant of \code{TDigFilter} which describes lowpass or highpass filters (but
 		\code{
 			public constructor Create(AOwner:TComponent); override;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Calls \code{inherited Create}, sets \code{SamplingRate} to 14400 and \code{CutFreq1} at 4000.
+\item[\descriptiontitle{Description}] Calls \code{inherited Create}, sets \code{SamplingRate} to 14400 and \code{CornerFreq} at 4000.
 \end{itemize}
-\paragraph{SetupFilter}\hspace*{\fill}
+\paragraph{SetupFilter}
 \label{lmfilters.TOneFreqFilter-SetupFilter}
 \index{SetupFilter}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			public procedure SetupFilter(ASamplingRate, ACutFreq1 : Float); virtual;}
+			public procedure SetupFilter(ASamplingRate, ACornerFreq : Float); virtual;}
 	\end{flushleft}
-	\item[\descriptiontitle{Description}] Procedure which sets \code{SamplingRate} and \code{CutFrequency}. It must be called before first call of \code{Filter} method.	
+	\item[\descriptiontitle{Description}] Procedure which sets \code{SamplingRate} and \code{CornerFreq}. It must be called before first call of \code{Filter} method. 	
 \end{itemize}
 \subsection{TFIRFilter Class}
 \label{lmfilters.TFIRFilter}
 \index{TFIRFilter}
 \subsubsection{Hierarchy}
-TFIRFilter {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} 
+TFIRFilter {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} 
 TComponent
 \subsubsection{Declaration}
 \begin{verbatim}
 TFIRFilter = class(TOneFreqFilter)
 protected
   FWinLength : integer;
+  PrevPtr:integer;
+  WindowData:TVector;
   procedure SetWinLength(L:integer); virtual;
+  procedure InitFiltering; override;
 public
   constructor Create(AOwner:TComponent); override;
 published
@@ -590,7 +606,7 @@ TFIRFilter: Finite Impulse response filter. Abstract class, descendant of \code{
 \subsubsection{Properties}
 \begin{itemize}\label{lmfilters.TFIRFilter-WinLength}
 	\index{WinLength}
-	\item[\declarationitem{WinLength}\hfill]
+	\item[\inlineitem{WinLength}\hfill]
 	\begin{flushleft}
 		\code{
 			published property WinLength : integer read FWinLength write SetWinLength;}
@@ -598,12 +614,27 @@ TFIRFilter: Finite Impulse response filter. Abstract class, descendant of \code{
   \end{itemize}
 \subsubsection{Fields}
 \begin{itemize}\label{lmfilters.TFIRFilter-FWinLength}
-	\index{FWinLength}
-	\item[\declarationitem{FWinLength}\hfill]
+	\item[\inlineitem{FWinLength}\hfill]
+	\begin{flushleft}
+		\code{
+			protected PrevPtr:integer;}
+	\end{flushleft}
+\end{itemize}
+\begin{itemize}\label{lmfilters.TFIRFilter-PrevPtr}
+	\item[\inlineitem{PrevPtr}\hfill]
 	\begin{flushleft}
 		\code{
 			protected FWinLength: integer;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}] Used internally by \code{InitFiltering} and \code{NextPoint}
+\end{itemize}
+\begin{itemize}\label{lmfilters.TFIRFilter-WindowData}
+	\item[\inlineitem{WindowData}\hfill]
+	\begin{flushleft}
+		\code{
+			protected WindowData:TVector;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Used internally by \code{InitFiltering} and \code{NextPoint}
 \end{itemize}
 \subsubsection{Methods}
 \paragraph{Create}\hspace*{\fill}
@@ -624,37 +655,42 @@ TFIRFilter: Finite Impulse response filter. Abstract class, descendant of \code{
 		\code{
 			protected procedure SetWinLength(L:integer); virtual;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Sets \hyperref[lmfilters.TFIRFilter-WinLength]{WinLength} to L.
+\item[\descriptiontitle{Description}] Sets \hyperref[lmfilters.TFIRFilter-WinLength]{WinLength} to L, allocates \code{WindowData}.
 \end{itemize}
 \subsection{TMovAvFilter Class}
 \label{lmfilters.TMovAvFilter}
 \index{TMovAvFilter}
 \subsubsection{Hierarchy}
-TMovAvFilter {$>$} \code{TFIRFilter} {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} 
+TMovAvFilter {$>$} \hyperref[lmfilters.TFIRFilter]{\code{TFIRFilter}} {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} 
 TComponent
 \subsubsection{Declaration}
 \begin{verbatim}
 TMovAvFilter = class(TFIRFilter)
 protected
+  Buffer : float;
   procedure SetWinLength(L:integer); override;
 public
   procedure Filter(StartIndex, EndIndex:integer); override;
-  procedure SetupFilter(ASamplingRate, ACutFreq:Float); override;
+  procedure SetupFilter(ASamplingRate, ACornerFreq:Float); override;
+  procedure InitFiltering; override;
+  procedure NextPoint; override;
 published
   property WinLength : integer read FWinLength write SetWinLength;
 end;
 \end{verbatim}
 \subsubsection{Description}
-Implements moving average filter. It is possible to use \hyperref[lmfilters.TMovAvFilter-SetupFilter]{SetupFilter} procedure to set \code{CutFreq1} and \code{SamplingRate} fields or directly set \hyperref[lmfilters.TFIRFilter-WinLength]{WinLength}. In the first case, needed \code{WinLength} is automatically calculated; in the second case, resulting \code{CutFreq1} is automatically found, provided that \code{SamplingRate} was previously set. So, these approaches are mutually exclusive. 
+Implements moving average filter. It is possible to use \hyperref[lmfilters.TMovAvFilter-SetupFilter]{SetupFilter} procedure to set \\ \hyperref[lmfilters.TOneFreqFilter-Cutfreq1]{\code{CornerFreq}}  and \hyperref[lmfilters.TOneFreqFilter-SamplingRate]{\code{SamplingRate}} properties or directly set \hyperref[lmfilters.TFIRFilter-WinLength]{WinLength}. In the first case, needed \code{WinLength}{} is automatically calculated; in the second case, resulting \code{CornerFreq} is automatically found, provided that \code{SamplingRate} was previously set. So, these approaches are mutually exclusive. 
 \subsubsection{Properties}
+\paragraph{WinLength}\hspace*{\fill}
 \begin{itemize}\label{lmfilters.TMovAvFilter-WinLength}
 	\index{WinLength}
-	\item[\declarationitem{WinLength}\hfill]
+	\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
 			published property WinLength : integer read FWinLength write SetWinLength;}
 	\end{flushleft}
- \end{itemize}
+\item[\descriptiontitle{Description}] Contains length of the data window for averaging.
+\end{itemize}
 \subsubsection{Methods}
 \paragraph{SetWinLength}
 \label{lmfilters.TMovAvFilter-SetWinLength}
@@ -664,7 +700,7 @@ Implements moving average filter. It is possible to use \hyperref[lmfilters.TMov
 		\code{
 			protected procedure SetWinLength(L:integer); override;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Sets WinLength, calculates corresponding \code{CutFreq1}.
+\item[\descriptiontitle{Description}] Sets WinLength, calculates corresponding \code{CornerFreq}.
 \end{itemize}
 \paragraph{Filter}\hspace*{\fill}
 \label{lmfilters.TMovAvFilter-Filter}
@@ -674,6 +710,7 @@ Implements moving average filter. It is possible to use \hyperref[lmfilters.TMov
 		\code{
 			public procedure Filter(StartIndex, EndIndex:integer); override;}
 	\end{flushleft}
+\item[\descriptiontitle{Description}] Filters a dataset, sequentially calling \hyperref[lmfilters.TDigFilter-OnInput]{\code{OnInput}} and \hyperref[lmfilters.TDigFilter-OnOutput]{\code{OnOutput}} beginning from \code{StartIndex} to \code{EndIndex}.
 \end{itemize}
 \paragraph{SetupFilter}\hspace*{\fill}
 \label{lmfilters.TMovAvFilter-SetupFilter}
@@ -681,28 +718,107 @@ Implements moving average filter. It is possible to use \hyperref[lmfilters.TMov
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			public procedure SetupFilter(ASamplingRate, ACutFreq:Float); override;}
+			public procedure SetupFilter(ASamplingRate, ACornerFreq:Float); override;}
 	\end{flushleft}
+\item[\descriptiontitle{Description}] Sets \code{SamplingRate} and \code{CornerFreq}, calculates and sets corresponding \code{WinLength}. Importantly, if WinLength is set directly, corresponding new value for \code{CornerFreq} is set. 
 \end{itemize}
+\paragraph{NextPoint}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure NextPoint; override;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] During real time filtering calculates next data point. See \ref{lmfilters.TDigFilter-NextPoint}.
+\end{itemize}	
 \subsection{TGaussFilter Class}
 \label{lmfilters.TGaussFilter}
 \index{TGaussFilter}
 \subsubsection{Hierarchy}
-TGaussFilter {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} TComponent
+TGaussFilter {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
 \subsubsection{Declaration}
 \begin{verbatim}
 TGaussFilter = class(TOneFreqFilter)
 public
   constructor Create(AOwner:TComponent); override;
-  procedure SetupFilter(ASamplingRate, ACutFreq1: Float); override;
+  procedure SetupFilter(ASamplingRate, ACornerFreq: Float); override;
   procedure Filter(StartIndex, EndIndex:integer); override;
+published
+  property OnInputBackward : TInputFunc;
 end;
 \end{verbatim}
 \subsubsection{Description}
 Implements gaussian filter with the algorithm described in:\\
 Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // Signal Processing, 44 (1995) 139-151
+\subsubsection{Properties}
+\label{lmFilters:OnInputBackward}
+\paragraph{OnInputBackward}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	property OnInputBackward : TInputFunc;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] \code{TGaussFilter} filters data in two steps: forward and backward filtering. Backward filtering uses data which were already processed by forward filtering. Hence, if you place filtered data into a new variable, you must define \code{OnInputBackward} event which should read data from the output variable. If, in contrast, you filter \code{in situ} such that input data are transformed rather than new data created, defining \code{OnInputBackward} event is not necessary.
+	\item[\descriptiontitle{Example 1.}] Different structures are used for input and output. \code{OnInputBackward} event is needed.
+	\begin{verbatim}
+var
+  MyGaussFilter : TGaussFilter;
+  MyInputVector, MyOutputVector : TVector;
+.........
+function SomeObject.InputFunction(I:Integer):float;
+begin
+  Result := MyInputVector[I];
+end;
+
+{Note that output goes to a different place than input...}
+procedure SomeObject.OutProcedure(Val: Float; I:Integer);
+begin
+  MyOutputVector[I] := Val;
+end;
+
+{...Hence, InputBackward event is needed to read values
+which were processed by forward filtering procedure}
+function SomeObject.InputBackward(I:Integer):float;
+begin
+  Result := MyOutputVector[I];
+end;
+.......
+begin
+  MyGaussfilter := TGaussFilter.Create(nil);
+  MyGaussFilter.OnInput := @MyObject.InputFunction;
+  MyGaussFilter.OnInputBackward := @SomeObject.InputBackward;
+  MyGaussFilter.OnOutput := @SomeObject.OutProcedure;
+  MyGaussFilter.Filter(0,High(MyInputVector));
+end;
+	\end{verbatim} 
+	\item[\descriptiontitle{Example 2.}] Filtering in place. No need for separate \code{InputBackward} procedure.
+	\begin{verbatim}
+	var
+	  MyGaussFilter : TGaussFilter;
+	  MyDataVector  : TVector;
+	.........
+	function SomeObject.InputFunction(I:Integer):float;
+	begin
+	  Result := MyDataVector[I];
+	end;
+	
+	{Note that output goes to the same place where from input was read.}
+	procedure SomeObject.OutProcedure(Val: Float; I:Integer);
+	begin
+	  MyDataVector[I] := Val;
+	end;
+	.......
+	begin
+	  MyGaussfilter := TGaussFilter.Create(nil);
+	  MyGaussFilter.OnInput := @MyObject.InputFunction;
+	  {Separate OnInputBackward is not needed and is not assigned.}
+	  MyGaussFilter.OnOutput := @SomeObject.OutProcedure;
+	  MyGaussFilter.Filter(0,High(MyInputVector));
+	end;
+\end{verbatim}	
+\end{itemize}	
+
 \subsubsection{Methods}
-\paragraph{Create}\hspace*{\fill}
+\paragraph{Create}
 \label{lmfilters.TGaussFilter-Create}
 \index{Create}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -712,17 +828,17 @@ Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // 
 	\end{flushleft}
 \item[\descriptiontitle{Description}] Calls \code{inherited Create}, calculates all necessary filter coefficients.
 \end{itemize}
-\paragraph{SetupFilter}\hspace*{\fill}
+\paragraph{SetupFilter}
 \label{lmfilters.TGaussFilter-SetupFilter}
 \index{SetupFilter}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			public procedure SetupFilter(ASamplingRate, ACutFreq1: Float); override;}
+			public procedure SetupFilter(ASamplingRate, ACornerFreq: Float); override;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Sets \code{SamplingRate} and \code{CutFreq1}, calculates corresponding filter coefficients. 
+\item[\descriptiontitle{Description}] Sets \hyperref[lmfilters.TOneFreqFilter-Cutfreq1]{\code{CornerFreq}}  and \hyperref[lmfilters.TOneFreqFilter-SamplingRate]{\code{SamplingRate}}, calculates corresponding filter coefficients. 
 \end{itemize}
-\paragraph{Filter}\hspace*{\fill}
+\paragraph{Filter}
 \label{lmfilters.TGaussFilter-Filter}
 \index{Filter}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -730,12 +846,13 @@ Young I.T., L.J. van Vliet. Recursive implementation of the Gaussian Filter. // 
 		\code{
 			public procedure Filter(StartIndex, EndIndex:integer); override;}
 	\end{flushleft}
+\item[\descriptiontitle{Description}] Filters a dataset, sequentially calling \hyperref[lmfilters.TDigFilter-OnInput]{\code{OnInput}} and \hyperref[lmfilters.TDigFilter-OnOutput]{\code{OnOutput}} beginning from \code{StartIndex} to \code{EndIndex}.
 \end{itemize}
 \subsection{TMedianFilter Class}
 \label{lmfilters.TMedianFilter}
 \index{TMedianFilter}
 \subsubsection{Hierarchy}
-TMedianFilter {$>$} \code{TFIRFilter} {$>$} \code{TOneFreqFilter} {$>$} \code{TDigFilter} {$>$} TComponent
+TMedianFilter {$>$} \hyperref[lmfilters.TFIRFilter]{\code{TFIRFilter}} {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
 \subsubsection{Declaration}
 \begin{verbatim}
 TMedianFilter = class(TFIRFilter)
@@ -743,32 +860,34 @@ protected
   function FindMedian:Float;
   procedure SetWinLength(L:integer); override;
 public
+  procedure InitFiltering; override;
+  procedure NextPoint; override;
   constructor Create(AOwner:TComponent); override;
   procedure filter(StartIndex, EndIndex:integer); override;
 end;
 \end{verbatim}
 \subsubsection{Description}
-Implementation of Median Filter
+Implementation of Median Filter. Use \code{Filter} method to filter a ready data set, use \code{InitFiltering} and \code{NextPoint} methods for real time signal filtering.
 \subsubsection{Methods}
-\paragraph{FindMedian}\hspace*{\fill}
+\paragraph{FindMedian}
 \label{lmfilters.TMedianFilter-FindMedian}
 \index{FindMedian}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{protected function FindMedian:Float;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Finds Median of the filtering window. Is called from \code{Filter}.
+\item[\descriptiontitle{Description}] Finds Median of the filtering window. Is called from \code{Filter}, a user does not need to call it directly.
 \end{itemize}
-\paragraph{SetWinLength}\hspace*{\fill}
+\paragraph{SetWinLength}
 \label{lmfilters.TMedianFilter-SetWinLength}
 \index{SetWinLength}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{protected procedure SetWinLength(L:integer); override;}
 	\end{flushleft}
-\item[\descriptiontitle{Description}] Sets WinLength property, internally allocates buffer for median search. WinLength must be $\ge 3$ and odd.
+\item[\descriptiontitle{Description}] Sets WinLength property, internally allocates buffer for median search.\\ WinLength must be $\ge 3$ and odd. 
 \end{itemize}
-\paragraph{Create}\hspace*{\fill}
+\paragraph{Create}
 \label{lmfilters.TMedianFilter-Create}
 \index{Create}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
@@ -777,71 +896,36 @@ Implementation of Median Filter
 	\end{flushleft}
 \item[\descriptiontitle{Description}] Calls \code{inherited Create}, setting window length to 5, allocates corresponding buffer for median search.
 \end{itemize}
-\paragraph{Filter}\hspace*{\fill}
+\label{FindMedian.InitFiltering}
+\index{InitFiltering}
+\paragraph{InitFiltering}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure InitFiltering; override;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}]
+	Initiates real time filtering. Call this procedure before start of acquiring and filtering of real time signal.
+\end{itemize}	
+\paragraph{NextPoint}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure NextPoint; override;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] During real time filtering calculates next data point. See \ref{lmfilters.TDigFilter-NextPoint}.
+\end{itemize}	
+\paragraph{Filter}
 \label{lmfilters.TMedianFilter-filter}
 \index{filter}
 \begin{itemize}\item[\declarationitem{Declaration}\hfill]
 	\begin{flushleft}
 		\code{
-			public procedure Filter(StartIndex, EndIndex:integer); override;}
+			procedure Filter(StartIndex, EndIndex:integer); override;}
 	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] See \ref{lmfilters.TDigFilter-Filter}.
 \end{itemize}
 \section{Functions and Procedures}
-\subsection{GaussCascadeFreq}
-\label{lmfilters-GaussCascadeFreq}
-\index{GaussCascadeFreq}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function GaussCascadeFreq(Freq1, Freq2:Float):Float;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Finds effective cutoff frequency of cascade of 2 gaussian filters.
-\end{itemize}
-\subsection{GaussRiseTime}
-\label{lmfilters-GaussRiseTime}
-\index{GaussRiseTime}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function GaussRiseTime(Freq:Float):Float;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Finds risetime (10--90{\%}) of a gaussian filter with given cut{-}off frequency.
-\end{itemize}
-\subsection{MovAvRiseTime}
-\label{lmfilters-MovAvRiseTime}
-\index{MovAvRiseTime}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function MovAvRiseTime(SamplingRate:Float; WLength:integer):Float;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Risetime of moving average filter (0--100{\%}).
-\end{itemize}
-\subsection{MoveAvCutOffFreq}
-\label{lmfilters-MoveAvCutOffFreq}
-\index{MoveAvCutOffFreq}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function MoveAvCutOffFreq(SamplingRate:Float; WLength:integer):Float;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Cut{-}off frequency of a moving average filter, given sampling rate and window length.
-\end{itemize}
-\subsection{MoveAvFindWindow}
-\label{lmfilters-MoveAvFindWindow}
-\index{MoveAvFindWindow}
-\begin{itemize}\item[\declarationitem{Declaration}\hfill]
-	\begin{flushleft}
-		\code{
-			function MoveAvFindWindow(SamplingRate, CutOffFreq:Float):Integer;}
-	\end{flushleft}
-	\item[\descriptiontitle{Description}]
-	Finds required window length from desired cut{-}off frequency and given sampling rate.
-\end{itemize}
 \subsection{Register}
 \label{lmfilters-Register}
 \index{Register}
@@ -849,6 +933,277 @@ Implementation of Median Filter
 	\begin{flushleft}
 		\code{
 			procedure Register;}
+	\end{flushleft}
+\end{itemize}
+
+\chapter{Unit lmRecursFilters}
+\label{lmRecursFilters}
+\index{lmRecursFilters}
+\section{Overview}
+Several components implementing infinite impulse response filters are defined in this unit:\\
+	\hyperref[lmRecursFilters.THighPassFilter]{\code{THighPassFilter}}\\ 
+	\hyperref[lmRecursFilters.TNarrowBandFilter]{\code{TNarrowBandFilter}}\\
+	\hyperref[lmRecursFilters.TNotchFilter]{\code{TNotchFilter}}\\
+	\hyperref[lmRecursFilters.TBandPassFilter]{\code{TBandPassFilter}}\\
+	\hyperref[lmRecursFilters.TChebyshevFilter]{\code{TChebyshevFilter}}
+\section{Classes}
+\subsection{THighPassFilter Class}
+\label{lmRecursFilters.THighPassFilter}
+\index{THighPassFilter}
+\subsubsection{Hierarchy}
+THighPassFilter {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+THighPassFilter = class(TOneFreqFilter)
+public
+  procedure SetupFilter(ASamplingRate, ACornerFreq : Float); override;
+  procedure Filter(StartIndex, EndIndex:integer); override;
+  procedure InitFiltering; override;
+  procedure NextPoint; override;
+end;
+\end{verbatim}
+\subsubsection{Description}
+\code{THighPassFilter} component implements a single-pole high-pass filter. Call \code{SetupFilter} method to set sampling rate and corner (cut-off) frequency. Procedure \code{Filter} can be used to filter an existing data set.
+\subsubsection{Methods}
+\paragraph{SetupFilter}
+\label{lmRecursFilters.THighPassFilter-SetupFilter}
+\index{SetupFilter}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{	public procedure SetupFilter(ASamplingRate, ACornerFreq : Float); override;}		
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] Sets \code{SamplingRate} and \code{CornerFreq} and calculates filter coefficients. 
+\end{itemize}
+\paragraph{Filter}\hspace*{\fill}
+\label{lmRecursFilters.THighPassFilter-Filter}
+\index{Filter}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{public procedure Filter(StartIndex, EndIndex:integer); override;}
+	\end{flushleft}
+\item[\descriptiontitle{Description}] Filters a dataset, sequentially calling \hyperref[lmfilters.TDigFilter-OnInput]{\code{OnInput}} and \hyperref[lmfilters.TDigFilter-OnOutput]{\code{OnOutput}} beginning from \code{StartIndex} to \code{EndIndex}.
+\end{itemize}
+\paragraph{InitFiltering}\hspace*{\fill}
+\label{lmRecursFilters.THighPassFilter-InitFiltering}
+\index{InitFiltering}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+			\code{public procedure InitFiltering; override;}
+	\end{flushleft}
+\item[\descriptiontitle{Description}] Initiates real time filtering. Call this procedure before start of acquiring and filtering of real time signal. \hyperref[lmfilters.TOneFreqFilter-Cutfreq1]{\code{CornerFreq}}  and \hyperref[lmfilters.TOneFreqFilter-SamplingRate]{\code{SamplingRate}}, calculates corresponding filter coefficients. \end{itemize}
+\paragraph{NextPoint}
+\label{lmRecursFilters.THighPassFilter-NextPoint}
+\index{NextPoint}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+			\code{public procedure NextPoint; override;}
+	\end{flushleft}
+\item[\descriptiontitle{Description}] 
+During real time filtering calculates next data point. See \ref{lmfilters.TDigFilter-NextPoint}.
+\end{itemize}
+\subsection{TNarrowBandFilter Class}
+\label{lmRecursFilters.TNarrowBandFilter}
+\index{TNarrowBandFilter}
+\subsubsection{Hierarchy}
+TNarrowBandFilter {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+ TNarrowBandFilter = class(TOneFreqFilter)
+ protected
+  Old: array[-2..0] of Float;
+  New: array[-2..0] of Float;
+  NewVal: float;
+  procedure SetBandWidth(ABandWidth:float); virtual;
+  procedure SetSamplingrate(AValue: Float); override;
+  procedure SetCornerFreq(ACornerFreq:float); override;
+public
+  procedure SetupFilter(ASamplingRate, ACornerFreq : float); override;
+  procedure SetupNarrowBandFilter(ASamplingRate, ABandFreq, ABandWidth : float); virtual;
+  procedure Filter(StartIndex: integer; EndIndex:integer); override;
+  procedure InitFiltering; override;
+  procedure NextPoint; override;
+published
+  property BandWidth : float;
+end;
+\end{verbatim}
+\subsubsection{Description}
+\code{TNarrowBandFilter} is an ancestor class for one-pole band-reject, called also notch, filter (\code{TNotchFilter},  \ref{lmRecursFilters.TNotchFilter}) and one-pole band-pass filter (\code{TBandpassFilter}, \ref{lmRecursFilters.TBandPassFilter}). These filters have two properties: central frequency which is completely suppressed (notch filter) or completely passed (band-pass) and band width, which describes how steep is the frequency response of the filter. Central frequency is defined by \hyperref[lmfilters.TOneFreqFilter-Cutfreq1]{CornerFreq}. For band width, new property is introduced: \hyperref[lmRecursFilters.TNarrowBandFilter-BandWidth]{\code{BandWidth}}.    
+\subsubsection{Properties}
+\begin{itemize}\label{lmRecursFilters.TNarrowBandFilter-BandWidth}
+	\index{BandWidth}
+	\item[\inlineitem{BandWidth}\hfill]
+	\begin{flushleft}
+		\code{published property BandWidth : float;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] Defines the width of rejected or passed band between points with energy 0.5, which means amplitude 0.707 of original. Smaller is the value, steeper is the frequency response, but at the expense of larger ripple in time domain. Default value is 5.0. 
+	\end{itemize}
+\subsubsection{Methods}
+\paragraph{SetBandWidth}
+\label{lmRecursFilters.TNarrowBandFilter-SetBandWidth}
+\index{SetBandWidth}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{protected procedure SetBandWidth(ABandWidth:float); virtual;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] 
+		\begin{flushleft}
+		Setter of \code{BandWidth}. Sets new value and calls \hyperref[lmRecursFilters.TNarrowBandFilter-SetupNarrowBandFilter]{\code{SetupNarrowBandFilter}} with new values.
+	\end{flushleft}
+\end{itemize}
+\paragraph{SetSamplingrate}
+\label{lmRecursFilters.TNarrowBandFilter-SetSamplingrate}
+\index{SetSamplingrate}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+			protected procedure SetSamplingrate(AValue: Float); override;
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] 
+\begin{flushleft}
+	Setter of \code{SamplingRate}. Sets new value and calls \hyperref[lmRecursFilters.TNarrowBandFilter-SetupNarrowBandFilter]{\code{SetupNarrowBandFilter}} with new values.
+\end{flushleft}
+\end{itemize}
+\paragraph{SetCornerFreq}
+\label{lmRecursFilters.TNarrowBandFilter-SetCutFreq1}
+\index{SetCutFreq1}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+			\code{protected procedure SetCornerFreq(ACornerFreq:float); override;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] 
+\begin{flushleft}
+	Setter of \code{CornerFreq}. Sets new value and calls \hyperref[lmRecursFilters.TNarrowBandFilter-SetupNarrowBandFilter]{\code{SetupNarrowBandFilter}} with new values.
+\end{flushleft}
+\end{itemize}
+\paragraph{SetupFilter}
+\label{lmRecursFilters.TNarrowBandFilter-SetupFilter}
+\index{SetupFilter}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{public procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] 
+	\begin{flushleft}
+		Calls \hyperref[lmRecursFilters.TNarrowBandFilter-SetupNarrowBandFilter]{\code{SetupNarrowBandFilter}} with new values for \code{Samplingrate}, and \code{CornerFreq} leaving \hyperref[lmRecursFilters.TNarrowBandFilter-BandWidth]{\code{BandWidth}} unchanged (default value is 5.0) and calculates filter coefficients accordingly. It is more efficient to call \code{SetupNarrowBandFilter} directly rather than set values of the properties or call \code{SetupFilter}. However, \code{SetupFilter} allows to use descendants of \code{TNarrowBandFilter} in more generic code where variable of \code{TDigFilter} class is used.
+	\end{flushleft}
+\end{itemize}
+\paragraph{Filter}
+\label{lmRecursFilters.TNarrowBandFilter-Filter}
+\index{Filter}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{public procedure Filter(StartIndex: integer; EndIndex:integer); override;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] See \ref{lmfilters.TDigFilter-Filter}.
+\end{itemize}
+\paragraph{InitFiltering}
+\label{lmRecursFilters.TNarrowBandFilter-InitFiltering}
+\index{InitFiltering}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{public procedure InitFiltering; override;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] See \ref{lmfilters.TDigFilter-InitFiltering}.
+\end{itemize}
+\paragraph{NextPoint}
+\label{lmRecursFilters.TNarrowBandFilter-NextPoint}
+\index{NextPoint}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+			\code{public procedure NextPoint; override;}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] See \ref{lmfilters.TDigFilter-NextPoint}.
+\end{itemize}
+\subsection{TNotchFilter Class}
+\label{lmRecursFilters.TNotchFilter}
+\index{TNotchFilter}
+\subsubsection{Hierarchy}
+TNotchFilter {$>$} \hyperref[lmRecursFilters.TNarrowBandFilter]{TNarrowBandFilter} {$>$} 
+\hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TNotchFilter = class(TNarrowBandFilter)
+  public
+  procedure SetupFilter(ASamplingRate, ABandFreq, ABandWidth : float); override;
+end;
+\end{verbatim}
+\subsubsection{Description}
+Implements notch (band-reject) filter, which may be used, for example, to eliminate a 50 Hz hum from a signal. See \ref{lmRecursFilters.TNarrowBandFilter} for methods and properties. 
+\subsection{TBandPassFilter Class}
+\label{lmRecursFilters.TBandPassFilter}
+\index{TBandPassFilter}
+\subsubsection{Hierarchy}
+TBandPassFilter {$>$} \hyperref[lmRecursFilters.TNarrowBandFilter]{TNarrowBandFilter} {$>$} 
+\hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
+\subsubsection{Description}
+Implements band-pass filter, which allows to isolate a narrow band around given frequency. See \ref{lmRecursFilters.TNarrowBandFilter} for methods and properties. 
+\subsection{TChebyshevFilter Class}
+\label{lmRecursFilters.TChebyshevFilter}
+\index{TChebyshevFilter}
+\subsubsection{Hierarchy}
+TChebyshevFilter {$>$} \hyperref[lmfilters.TOneFreqFilter]{\code{TOneFreqFilter}} {$>$} \hyperref[lmfilters.TDigFilter]{\code{TDigFilter}} {$>$} TComponent
+\subsubsection{Declaration}
+\begin{verbatim}
+TChebyshevFilter = class(TOneFreqFilter)
+  procedure Filter(StartIndex, EndIndex:integer); override;
+  procedure SetupChebyshevFilter(ASamplingRate: Float; ACornerFreq: Float;
+   ANPoles: integer; APRipple: float; AHighPass:boolean);
+  procedure SetupFilter(ASamplingRate, ACornerFreq : float); 
+  procedure InitFiltering; 
+  procedure NextPoint;
+end;
+\end{verbatim}
+\subsubsection{Description}
+\code{TChebyshevFilter} implements a Chebyshev filter, which may be used both as a high- or low-pass filter. Main characteristic of this filter is a steep frequency response at the expense of a considerable signal distortion in time domain. Another noticeable feature of Chebyshev filters is a ripple in frequency domain; here is implemented type 1 filter where ripple is allowed only in pass-band. Larger ripple comes with a steeper frequency response. Setting ripple to zero converts Chebyshev filter to the Butterworth maximally flat filter. Drawback is a relatively flat frequency response. In most cases, ripple 0.5 \% is a good choice, when frequency response is already almost maximally steep, while ripple is nearly invisible. Setting ripple to 0 converts Chebyshev filter to ``maximally flat'' Butterworth filter. More poles make the frequency response steeper, but calculations are more complicated. With too many  poles filter performance can deteriorate due to rounding errors, hence, in this implementation maximal number of poles is limited to 10. Usually, 6 poles is a good choice. Note, that \code{SetupFilter} is not used for \code{TChebyshevFilter}. Rather, use \code{TChebyshevFilter.SetupChebyshevFilter} method.
+\paragraph{SetupChebyshevFilter}
+\label{lmRecursFilters.TChebyshevFilter-SetupChebyshevFilter}
+\index{SetupChebyshevFilter}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	\code{public procedure SetupChebyshevFilter(ASamplingRate: Float; ACornerFreq: Float; ANPoles: integer; APRipple: float; AHighPass:boolean);}
+	\end{flushleft}
+	\item[\descriptiontitle{Description}\hfill] Similar to \code{SetupFilter}, defines \code{SamplingRate} and \code{CornerFreq}. Additionally, with \code{APoles} it defines number of poles; APRipple defines amount of ripple in the pass band; finally, AHighPass defines if a high pass (if true) or low pass (if false) filter is requested. \code{APoles} must be positive even below or equal 10.
+\end{itemize}
+\paragraph{Filter}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure Filter(StartIndex, EndIndex:integer);	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Filters a dataset, sequentially calling \hyperref[lmfilters.TDigFilter-OnInput]{\code{OnInput}} and \hyperref[lmfilters.TDigFilter-OnOutput]{\code{OnOutput}} beginning from \code{StartIndex} to \code{EndIndex}.
+\end{itemize}	
+\paragraph{SetupFilter}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure SetupFilter(ASamplingRate, ACornerFreq : float);
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Calls \code{SetupChebyshevFilter} with given \code{ASamplingRate} and \code{ACornerFreq} and leaves other parameters unchanged. Default values after construction are 6 poles, ripple 0.5\% and low pass filter. It is more efficient to call \code{SetupChebyshevFilter} directly rather than use \code{SetupFilter}. However, this latter methid allows to use Chebyshev filter in a generic code where variable of \code{TDigFilter} type is used.
+\end{itemize}	
+\paragraph{InitFiltering}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+	procedure InitFiltering;	
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] Initiates real time filtering. Call this procedure before start of acquiring and filtering of real time signal.
+\end{itemize}	
+\paragraph{NextPoint}\hspace*{\fill}
+\begin{itemize}
+	\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		procedure NextPoint;
+	\end{flushleft}
+	\item[\descriptiontitle{Description}] During real time filtering calculates next data point. See \ref{lmfilters.TDigFilter-NextPoint}.
+	
+\end{itemize}	
+
+\subsection{Functions and Procedures}
+\subsubsection{Register}
+\label{lmRecursFilters-Register}
+\index{Register}
+\begin{itemize}\item[\declarationitem{Declaration}\hfill]
+	\begin{flushleft}
+		\code{procedure Register;}
 	\end{flushleft}
 \end{itemize}
 
@@ -928,32 +1283,33 @@ public
   procedure ReScale(CoeffX, CoeffY:Float);
   procedure FastDraw(APoints:TRealPointVector; Lb, Ub: integer);
   procedure DrawSpline(APoints:TPoints; Lb, Ub: integer);
-  procedure DrawFunc(AFunc:TParamFunc; Params:Pointer; LeftX, RightX : Float); virtual;
+  procedure DrawFunc(AFunc:TParamFunc; Params:Pointer; 
+       LeftX, RightX : Float); virtual;
 published                                    
   property XAxisLabel:string read FXAxisLabel write FXAxisLabel;
   property YAxisLabel:string read FYAxisLabel write FYAxisLabel;
-  property MinX:Float read FMinX write SetMinX; 
-  property MinY:Float read FMinY write SetMinY;
-  property MaxX:Float read FMaxX write SetMaxX;
+  property MinX:Float; 
+  property MinY:Float;
+  property MaxX:Float;
   property MaxY:Float read FMaxY write SetMaxY;
   property XPos:Float read FXPos write SetXPos;
   property YPos:Float read FYPos write SetYPos;
   property Font:TFont read GetFont;
-  property AxisPen:TPen read FAxisPen write SetAxisPen;
-  property OutputPen:TPen read FOutputPen write SetOutputPen;
-  property GridPen:TPen read FGridPen write SetGridPen;
-  property LeftMargin:integer read FLeftMargin write SetLeftMargin default 0;
-  property RightMargin:integer read FRightMargin write SetRightMargin default 0;
-  property LowerMargin:integer read FLowerMargin write SetLowerMargin default 0;
-  property UpperMargin:integer read FUpperMargin write SetUpperMargin default 0;
-  property XGridDist:Float read FXGridDist write SetXGridDist;
-  property YGridDist:Float read FYGridDist write SetYGridDist;
-  property XGridNumbersPrecision: integer read FXGridNumbersPrecision write FXGridNumbersPrecision default 5;
-  property XGridNumbersDecimals: integer read FXGridNumbersDecimals write FXGridNumbersDecimals default 2;
-  property YGridNumbersPrecision: integer read FYGridNumbersPrecision write FYGridNumbersPrecision default 9;
-  property YGridNumbersDecimals: integer read FYGridNumbersDecimals write FYGridNumbersDecimals default 4;
+  property AxisPen:TPen;
+  property OutputPen:TPen;
+  property GridPen:TPen;
+  property LeftMargin:integer default 0;
+  property RightMargin:integer default 0;
+  property LowerMargin:integer default 0;
+  property UpperMargin:integer default 0;
+  property XGridDist:Float;
+  property YGridDist:Float;
+  property XGridNumbersPrecision: integer default 5;
+  property XGridNumbersDecimals: integer default 2;
+  property YGridNumbersPrecision: integer default 9;
+  property YGridNumbersDecimals: integer default 4;
   property Canvas;
-  property OnDrawData:TNotifyEvent read FOnPaint write FOnPaint;
+  property OnDrawData:TNotifyEvent;
 end;
 \end{verbatim}
 \subsubsection{Description}
@@ -961,7 +1317,7 @@ TCoordSys
 \subsubsection{Properties}
 \begin{itemize}\label{lmcoordsys.TCoordSys-PenPos}
 \index{PenPos}
-\item[\declarationitem{PenPos}\hfill]
+\item[\inlineitem{PenPos}\hfill]
 \begin{flushleft}
 \code{
 public property PenPos: TRealPoint;}
@@ -969,7 +1325,7 @@ public property PenPos: TRealPoint;}
 
 Starting position for \hyperref[sec:lineto]{LineTo}. It can be set with \hyperref[lmcoordsys.TCoordSys-GoToXY]{GoToXY} method, or assigned directly. Difference is that for direct assignment coordinates must be represented as \code{TRealPoint}, while for \code{GoToXY} as separate \code{X,Y:Float}. \label{lmcoordsys.TCoordSys-XAxisLabel}
 \index{XAxisLabel}
-\item[\declarationitem{XAxisLabel}\hfill]
+\item[\inlineitem{XAxisLabel}\hfill]
 \begin{flushleft}
 \code{
 published property XAxisLabel: string;}\label{lmcoordsys.TCoordSys-YAxisLabel}
@@ -984,7 +1340,7 @@ published property YAxisLabel: string read FYAxisLabel write FYAxisLabel;}
 \end{flushleft}
 \par Label of Y axis.  
 \index{MinX}
-\item[\declarationitem{MinX,MinY,MaxX,MaxY}\hfill]
+\item[\inlineitem{MinX,MinY,MaxX,MaxY}\hfill]
 \begin{flushleft}
 \code{
 published property MinX: Float;\\
@@ -1001,7 +1357,7 @@ published property MaxY: Float;
 \label{lmcoordsys.TCoordSys-XPos}
 \index{XPos}
 
-\item[\declarationitem{XPos}\hfill]
+\item[\inlineitem{XPos}\hfill]
 \begin{flushleft}
 \code{
 published property XPos: Float;}
@@ -1009,7 +1365,7 @@ published property XPos: Float;}
 \label{lmcoordsys.TCoordSys-YPos}
 \item[\descriptiontitle{Description}] Position of X-axis in Y-coordinate. Default is 0 as well as for YPos, such that axes cross at (0,0) point.
 \index{YPos}
-\item[\declarationitem{YPos}\hfill]
+\item[\inlineitem{YPos}\hfill]
 \begin{flushleft}
 \code{
 published property YPos: Float;}
@@ -1017,44 +1373,38 @@ published property YPos: Float;}
 \item[\descriptiontitle{Description}] Position of Y-axis in X-coordinate. Default is 0 as well as for XPos, such that axes cross at (0,0) point.
 \label{lmcoordsys.TCoordSys-Font}
 \index{Font}
-\item[\declarationitem{Font}\hfill]
+\item[\inlineitem{Font}\hfill]
 \begin{flushleft}
 \code{
 published property Font: TFont;}
-
 \end{flushleft}
-
-
 \par  \label{lmcoordsys.TCoordSys-AxisPen}
 \index{AxisPen}
-\item[\declarationitem{AxisPen}\hfill]
+\item[\inlineitem{AxisPen}\hfill]
 \begin{flushleft}
 \code{
 published property AxisPen: TPen;}
 \end{flushleft}
-
 \par Pen to draw axis.\label{lmcoordsys.TCoordSys-OutputPen}
 \index{OutputPen}
-\item[\declarationitem{OutputPen}\hfill]
+\item[\inlineitem{OutputPen}\hfill]
 \begin{flushleft}
 \code{
 published property OutputPen: TPen;}
 \end{flushleft}
-
 \par Pen to draw user's output (from OnDrawData event).\label{lmcoordsys.TCoordSys-GridPen}
 \index{GridPen}
-\item[\declarationitem{GridPen}\hfill]
+\item[\inlineitem{GridPen}\hfill]
 \begin{flushleft}
 \code{
 published property GridPen: TPen;}
 \end{flushleft}
-
 Pen to draw gridlines.
 \label{lmcoordsys.TCoordSys-LeftMargin}\label{lmcoordsys.TCoordSys-RightMargin}
 \index{LeftMargin}
-\item[\declarationitem{LeftMargin, RightMargin}\hfill]
-\item[\declarationitem{Upper Margin}\hfill]
-\item[\declarationitem{LowerMargin}\hfill]
+\item[\inlineitem{LeftMargin, RightMargin}\hfill]
+\item[\inlineitem{Upper Margin}\hfill]
+\item[\inlineitem{LowerMargin}\hfill]
 \begin{flushleft}
 \code{
 published property LeftMargin: integer; default 0;\\
@@ -1068,14 +1418,14 @@ published property UpperMargin: integer; default 0;}
 \index{UpperMargin}
 \label{lmcoordsys.TCoordSys-XGridDist}
 \index{XGridDist}
-\item[\declarationitem{XGridDist}\hfill]
+\item[\inlineitem{XGridDist}\hfill]
 \begin{flushleft}
 \code{
 published property XGridDist: Float;}
 \end{flushleft}
 Distance between grid lines or ticks on X axis in user space coordinates. \label{lmcoordsys.TCoordSys-YGridDist}
 \index{YGridDist}
-\item[\declarationitem{YGridDist}\hfill]
+\item[\inlineitem{YGridDist}\hfill]
 \begin{flushleft}
 \code{
 published property YGridDist: Float;}
@@ -1084,7 +1434,7 @@ Distance between grid lines or ticks on Y axis in user space coordinates.
 
 \label{lmcoordsys.TCoordSys-XGridNumbersPrecision}
 \index{XGridNumbersPrecision}
-\item [\declarationitem{Axis numbering}]
+\item [\inlineitem{Axis numbering}]
 \begin{flushleft}
 \code{
 published property XGridNumbersPrecision:integer; default 5;\\
@@ -1101,14 +1451,14 @@ published property YGridNumbersDecimals: integer; default 4;}
 \index{YGridNumbersDecimals}
 \label{lmcoordsys.TCoordSys-Canvas}
 \index{Canvas}
-\item[\declarationitem{Canvas}\hfill]
+\item[\inlineitem{Canvas}\hfill]
 \begin{flushleft}
 \code{
 published property Canvas;}
 \end{flushleft}
 \label{lmcoordsys.TCoordSys-OnDrawData}
 \index{OnDrawData}
-\item[\declarationitem{OnDrawData}\hfill]
+\item[\inlineitem{OnDrawData}\hfill]
 \begin{flushleft}
 \code{
 published property OnDrawData: TNotifyEvent;}
@@ -1117,7 +1467,7 @@ All drawing of user data (like \hyperref[lmcoordsys.TCoordSys-DrawFunc]{drawfunc
 \subsubsection{Fields}
 \begin{itemize}\label{lmcoordsys.TCoordSys-ScaleX}
 \index{ScaleX}
-\item[\declarationitem{ScaleX, ScaleY}\hfill]
+\item[\inlineitem{ScaleX, ScaleY}\hfill]
 \begin{flushleft}
 \code{
 public ScaleX:Float;\\
@@ -1543,21 +1893,21 @@ end;
 TFloatEdit\paragraph{Properties}\hspace*{\fill} class defines an Edit component for float numbers. Usage: Drop the component on a form; set and read \code{Value} property. 
 \begin{itemize}\label{lmnumericedits.TFloatEdit-DecimalPlaces}
 \index{DecimalPlaces}
-\item[\declarationitem{DecimalPlaces}\hfill]
+\item[\inlineitem{DecimalPlaces}\hfill]
 \begin{flushleft}
 \code{
 published property DecimalPlaces: Integer default 2;}
 \end{flushleft}
 \label{lmnumericedits.TFloatEdit-Value}
 \index{Value}
-\item[\declarationitem{Value}\hfill]
+\item[\inlineitem{Value}\hfill]
 \begin{flushleft}
 \code{
 published property Value: Float;}
 \end{flushleft}
 \label{lmnumericedits.TFloatEdit-ValueEmpty}
 \index{ValueEmpty}
-\item[\declarationitem{ValueEmpty}\hfill]
+\item[\inlineitem{ValueEmpty}\hfill]
 \begin{flushleft}
 \code{
 published property ValueEmpty: Boolean default False;}
