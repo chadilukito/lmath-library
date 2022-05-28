@@ -51,13 +51,13 @@
 \subsection{Purpose of this manual}
 LMath is a further development of DMath library by Jean Debord. Most of available functions are described in the \hyperref{file:DMath.pdf}{}{}{manual for DMath}. However, LMath changes names or behavior of some DMath functions and adds some new ones. This document contains brief description of such changes and additions. More formal definitions can be found in the \hyperref{file:LMath05.pdf}{}{}{Reference Guide for LMath}.  
 \subsection{Installation and use of the library}
-First, download LMath\_and\_Components.zip from the official site of the program. 
+First, download LMath\_and\_Components061.zip from the official site of the program. 
 You can download and use trunk of SVN repository to study and research the latest development, but I do not guarantee that code in the trunk was properly tested or even that it is a working code at all. 
 
 LMath is organized as a set of Lazarus packages. Their complete list is located in the \hyperref{file:LMath05.pdf}{}{}{Reference Guide}. To install, copy directory structure contained in LMath\_and\_Components.zip on your hard drive and compile packages (.lpk files) in the following order:\\
-lmGenMath; lmMathUtil; lmIntegrals.lpk; lmLinearAlgebra; lmMathStat; lmRandoms; lmOptimum; lmNonLinEq; lmPolynoms; lmPlotter; lmRegression; \\ lmSpecRegress. Finally, compile LMath.lpk.
+lmGenMath; lmMathUtil; lmIntegrals.lpk; lmLinearAlgebra; lmMathStat; lmRandoms; lmOptimum; lmNonLinEq; lmPolynoms; lmPlotter; lmRegression; \\ lmSpecRegress, lmDSP. Finally, compile LMath.lpk.
  
-For maximally broad compatibility, all LPK files have low level of optimization in options. Change them before compilation of final version of your program to the settings, optimal for your system. Try optimization levels 3 or 4. If you compile 32-bit packages and applications, for modern systems you may want tomuse -OpCOREAVX2 and -CfAVX2 options. Consider also use of -OoFASTMATH and -OoLOOPUNROLL. 
+For maximally broad compatibility, all LPK files have low level of optimization in options. Change them before compilation of final version of your program to the settings, optimal for your system. Try optimization levels 3 or 4. If you compile 32-bit packages and applications, for modern systems you may want to use -OpCOREAVX2 and -CfAVX2 options. Consider also use of -OoFASTMATH and -OoLOOPUNROLL. 
 
 Conversely, if you get weird errors, inspect options of the packages and make sure that they are indeed conservative enough.
 
@@ -74,12 +74,12 @@ It must be noted here that many functions in DMath/LMath library were translated
 Second, in Fortran array indexing begins from ``1'', while in Pascal from ``0''. In DMath/LMath, many internal procedures are written in Fortran manner, beginning numeration with ``1'' which in Pascal implementation means of course that a first element of an array, indexed ``0'', remains unused. This is a small price which we pay for the possibility to use algorithms developed in Fortran without modifications and introducing new bugs. 
 
 However, it would be somewhat awkward to force the users of the library adopt ``1''-based indexing. This is one of the reasons that in most cases when an array is passed as a parameter to a routine of the library, there are additional parameters \code{Lb} and \code{Ub} which stands for ``Low bound'' and ``Upper bound'' and which define a slice of an array on which the operation must be performed. Typically, \code{Lb} can be ``0'' or ``1'' and \code{Ub} can be \code{High(Passed\_array)} although of course they may take any values in between provided that $Lb<Ub$. This convention makes our library more flexible, although, admittedly, at the expense of more complicated syntax. When ``0''-based or ``1''-based array is mentioned in this manual, it means that actual data begin from index 0 or 1; technically, all dynamic arrays in Object Pascal are 0-based.
-\section{Using open array parameters: LMath 0.6}
-\code{Lb, Ub} convention adopted by DMath and LMath is rather flexible, but has two drawbacks: first, the calls are rather complicated with a lot of parameters passed and, second, passing TVector as a parameter excludes use of static arrays. Modern Pascal allows to define open array parameters and, importantly, pass subarrays to the procedures and functions. Use of open arrays allows to make calls more concise when a complete array must be passed, yet even more flexible when only partial array is needed. Therefore, beginning from LMath 0.6.0, many funnctions and procedures with open array parameters instead of \code{TVector, Lb, Ub} are developed. Older versions are kept as well.
+\section{Using open array parameters: LMath 0.6 and later.}
+\code{Lb, Ub} convention adopted by DMath and LMath is rather flexible, but has two drawbacks: first, the calls are rather complicated with a lot of parameters passed and, second, passing TVector as a parameter excludes use of static arrays. Modern Pascal allows to define open array parameters and, importantly, pass subarrays to the procedures and functions. Use of open arrays allows to make calls more concise when a complete array must be passed, yet even more flexible when only partial array is needed. Therefore, beginning from LMath 0.6.0, many functions and procedures with open array parameters instead of \code{TVector, Lb, Ub} are developed. Older versions are kept as well.
 
 Now, what must be kept in mind, and is important. Passing for example \\
 SomeFunc(V,2,5):TVector in the form \code{TVector, Lb, Ub} and \\
-SomeProc(V[2..5], R):TVector in the form \code{Open Array} \\ would not be the same, because in the first case the whole array is passed to the function and returned, but whatever it does is applied to a slice \code{[2..2]}, while in the second case only part of the array is passed and returned. This is the reason why in some cases, when it is important, functions were converted to procedures.  
+SomeProc(V[2..5], R):TVector in the form \code{Open Array} \\ would not be the same, because in the first case the whole array is passed to the function and returned, but whatever it does is applied to a slice \code{[2..5]}, while in the second case only part of the array is passed and returned. This is the reason why in some cases, when it is important, functions were converted to procedures.  
   
 \section{Changes since version 0.4 which may require modification of calling code}
 \begin{enumerate}
