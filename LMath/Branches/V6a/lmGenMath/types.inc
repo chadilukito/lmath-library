@@ -169,7 +169,7 @@ THessGrad = procedure(X, G : TVector; H : TMatrix);
 
 TParamFunc = function(X:Float; Params:Pointer):Float;
 
-// type for general comparison functions (Val, Ref):boolean;
+// type for general test and comparison functions (Val, Ref):boolean;
 TComparator = function(Val,Ref:float):boolean;
 TIntComparator = function(Val,Ref:integer):boolean;
 
